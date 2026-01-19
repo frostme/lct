@@ -1,0 +1,20 @@
+[general]
+import = ["~/.config/alacritty/themes/themes/hyper.toml"]
+
+[font]
+normal.family = "MesloLGL Nerd Font"
+size = 14.0
+
+[window]
+decorations = "Transparent"
+blur = true
+startup_mode = "Maximized"
+title = "Terminal"
+decorations_theme_variant = "dark"
+[window.padding]
+x = 30
+y = 30
+
+[cursor]
+[cursor.style]
+shape = "Block"

@@ -1,0 +1,21 @@
+layout {
+    pane size=1 split_direction="vertical" {
+      pane size="75%" borderless=true {
+          plugin location="tab-bar"
+      }
+      pane size="25%" borderless=true {
+        plugin location="zellij-datetime" {
+          timezone1 "EST/-5"
+        }
+      }
+    }
+    pane
+    pane size=1 split_direction="vertical" {
+      pane size="65%" borderless=true {
+          plugin location="status-bar"
+      }
+      pane size="35%" borderless=true {
+        plugin location="zellij-load"
+      }
+    }
+}

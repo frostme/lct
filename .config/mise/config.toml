@@ -1,0 +1,9 @@
+[tools]
+node = "25"
+ruby = "3.4"
+python = "3.14"
+go = "1.25"
+java = "25"
+pnpm = "latest"
+rust = "1.92"
+just = "1.46.0"
