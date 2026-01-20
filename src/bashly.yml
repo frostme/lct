@@ -1,0 +1,31 @@
+name: lct
+help: Local configuration tool
+version: 0.1.0
+
+commands:
+  - name: completions
+    help: |-
+      Generate bash completions
+      Usage: eval "\$(lct completions)"
+  - name: bootstrap
+    alias: b
+    help: Bootstrap your local configuration
+    examples:
+      - lct bootstrap -c 26.01.20
+    flags:
+      - long: --config
+        short: -c
+        arg: config
+        help: Config version to bootstrap
+        completions:
+          - $(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr '\n' ' ' 2> /dev/null)
+
+  - name: gather
+    alias: g
+    help: Gather local configuration files
+    examples:
+      - lct gather
+    flags:
+      - long: --force
+        short: -f
+        help: overwrite existing version if conflicting

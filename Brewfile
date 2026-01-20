@@ -1,1 +1,2 @@
 brew "scdoc"
+brew "coreutils"
