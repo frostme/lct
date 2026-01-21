@@ -1,5 +1,3 @@
-set -Eeuo pipefail
-
 # Function to handle errors
 error_handler() {
   local exit_code=$? # Capture the exit code of the failed command

@@ -1,11 +1,14 @@
 # lct
 
-To install
+## Installation
 
-- clone
-- make install
+- `git clone`
+- `make install`
 
-To use
+## Usage
 
-- lct bootstrap
-- lct gather
+[See docs](./docs/README.md)
+
+## Contributing
+
+- make build

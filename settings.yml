@@ -55,7 +55,7 @@ source_dir: src
 config_path: '%{source_dir}/bashly.yml'
 
 # The path to use for creating the bash script
-target_dir: .
+target_dir: target
 
 # The path to use for common library files, relative to source_dir
 lib_dir: lib
@@ -84,7 +84,7 @@ partials_extension: sh
 # strict: false      # Only exit on errors (set -e)
 # strict: ''         # Do not add any 'set' directive
 # strict: <string>   # Add any other custom 'set' directive
-strict: false
+strict: set -Eeuo pipefail
 
 # When true, the generated script will use tab indentation instead of spaces
 # (every 2 leading spaces will be converted to a tab character)
