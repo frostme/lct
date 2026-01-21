@@ -142,4 +142,4 @@ fi
 
 echo "✅ Bootstrap complete"
 echo "Feel free to add  the following to your zshrc file"
-echo 'eval "$(zellij setup --generate-auto-start zsh)"'
+echo 'eval "$(lct setup)"'

@@ -40,3 +40,11 @@ fi
 if [ -z "${CACHE_DIR+x}" ]; then
   CACHE_DIR="$HOME/.cache"
 fi
+
+LCT_SHARE_DIR="${SHARE_DIR}/lct"
+LCT_CONFIG_DIR="${CONFIG_DIR}/lct"
+LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
+
+[[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
+[[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
+[[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"

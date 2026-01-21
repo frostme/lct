@@ -1,8 +1,12 @@
 name: lct
 help: Local configuration tool
-version: 0.1.0
+version: 0.2.0
 
 commands:
+  - name: setup
+    help: Setup lct in your shell
+    examples:
+      - eval "$(lct setup)"
   - name: completions
     help: |-
       Generate bash completions
@@ -29,3 +33,36 @@ commands:
       - long: --force
         short: -f
         help: overwrite existing version if conflicting
+  - name: env
+    alias: e
+    help: Manage local environment variables
+    examples:
+      - lct env set API_KEY 123
+      - lct env get API_KEY
+      - lct env unset API_KEY
+      - lct env list
+    commands:
+      - name: set
+        help: Set a configuration variable
+        args:
+          - name: key
+            help: Configuration key
+            required: true
+          - name: value
+            help: Configuration value
+            required: true
+      - name: unset
+        help: Unset a configuration variable
+        args:
+          - name: key
+            help: Configuration key
+            required: true
+      - name: list
+        help: List all configuration variables
+        flags:
+          - long: --key
+            short: -k
+            arg: key
+            help: Output in export format for shell sourcing
+            completions:
+              - $(yq 'keys | join(" ")' $LCT_ENV_FILE 2> /dev/null)

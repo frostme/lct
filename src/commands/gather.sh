@@ -39,6 +39,8 @@ for file in "${DOTFILES[@]}"; do
   cp "$HOME/$file" "$VERSION_DIR/dotfiles/"
 done
 
+cp -r "$HOME/.zsh_config" "$VERSION_DIR/dotfiles/"
+
 echo "✅ Dotfiles successfully gathered"
 
 LAZYVIM_DIR="$CONFIG_DIR/nvim"

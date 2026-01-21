@@ -1,5 +1,5 @@
 build: 
-	bashly generate
+	bashly generate -q
 
 install: build
 	cp lct /usr/local/bin/lct
