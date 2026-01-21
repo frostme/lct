@@ -1,9 +1,0 @@
-export EDITOR='nvim'
-export VISUAL='nvim'
-export GITSTATUS_LOG_LEVEL=DEBUG
-export LOCAL_IP=$(ifconfig -l | xargs -n1 ipconfig getifaddr)
-export SCRIPTS_DIR=$HOME/software/scripts
-export ROCKETMONEY_MONOREPO=$HOME/code/rocketmoney
-export PNPM_HOME=$HOME/Library/pnpm
-export PATH="$PATH:$PNPM_HOME"
-export CURRENT_IP_ADDRESS=$(dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com)

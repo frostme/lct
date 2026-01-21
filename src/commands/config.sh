@@ -1,0 +1,1 @@
+eval "$EDITOR $LCT_CONFIG_FILE"

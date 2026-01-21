@@ -18,15 +18,6 @@ if [ -z "${CONFIG_DIR+x}" ]; then
   CONFIG_DIR="$HOME/.config"
 fi
 
-if [ -z "${LCT_DIR+x}" ]; then
-  LCT_DIR="$HOME/code/personal/local"
-fi
-
-if [ -z "${LATEST_LCT_VERSION+x}" ]; then
-  LATEST_LCT_VERSION=$(yq '.latest' "$LCT_DIR/config_versions/lct.yaml")
-  LATEST_LCT_VERSION_DIR="$LCT_DIR/config_versions/$LATEST_LCT_VERSION"
-fi
-
 if [ -z "${SHARE_DIR+x}" ]; then
   SHARE_DIR="$HOME/.local/share"
 fi
@@ -42,7 +33,20 @@ fi
 LCT_SHARE_DIR="${SHARE_DIR}/lct"
 LCT_CONFIG_DIR="${CONFIG_DIR}/lct"
 LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
+LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
+LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
+LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
 
 [[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
 [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
+[[ -d "${LCT_VERSIONS_DIR}" ]] || mkdir -p "${LCT_VERSIONS_DIR}"
 [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
+[[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
+[[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
+
+eval "$(yq -o=shell '.' ${LCT_CONFIG_FILE})"
+
+if [ -z "${LATEST_LCT_VERSION+x}" ]; then
+  LATEST_LCT_VERSION=$(yq '.latest' "$LCT_VERSIONS_FILE")
+  LATEST_LCT_VERSION_DIR="$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION"
+fi

@@ -1,8 +1,8 @@
-latest_version=$(yq '.latest' "$LCT_DIR/config_versions/lct.yaml")
+latest_version=$(yq '.latest' "$LCT_VERSIONS_FILE")
 this_version=$(date +%Y.%m.%d)
 
 FORCE=${args[--force]:-0}
-VERSION_DIR="$LCT_DIR/config_versions/$this_version"
+VERSION_DIR="$LCT_VERSIONS_DIR/$this_version"
 
 if [ "$this_version" == "$latest_version" ]; then
   if [[ $FORCE -eq 1 ]]; then
@@ -52,6 +52,6 @@ cp -r "$LAZYVIM_DIR/lua" "$VERSION_DIR/lazyvim/"
 echo "✅ LazyVim config successfully gathered"
 
 # Update latest version in lct.yaml
-yq -i ".latest = \"$this_version\"" "$LCT_DIR/config_versions/lct.yaml"
+yq -i ".latest = \"$this_version\"" "$LCT_VERSIONS_FILE"
 
 echo "✅ Config gather for version $this_version completed successfully"

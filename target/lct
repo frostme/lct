@@ -18,6 +18,7 @@ lct_usage() {
   echo
   # :command.usage_commands
   printf "%s\n" "Commands:"
+  printf "  %s   Open your lct config file in your $EDITOR\n" "config     "
   printf "  %s   Setup lct in your shell\n" "setup      "
   printf "  %s   Generate bash completions\n" "completions"
   printf "  %s   Bootstrap your local configuration\n" "bootstrap  "
@@ -36,6 +37,33 @@ lct_usage() {
     echo
     printf "  %s\n" "--version, -v"
     printf "    Show version number\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_config_usage() {
+  printf "lct config - Open your lct config file in your $EDITOR\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct config\n"
+  printf "  lct config --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  lct config\n"
     echo
 
   fi
@@ -518,6 +546,14 @@ send_environment() {
 
 # :command.command_functions
 # :command.function
+lct_config_command() {
+
+  # src/commands/config.sh
+  eval "$EDITOR $LCT_CONFIG_FILE"
+
+}
+
+# :command.function
 lct_setup_command() {
 
   # src/commands/setup.sh
@@ -697,11 +733,11 @@ lct_bootstrap_command() {
 lct_gather_command() {
 
   # src/commands/gather.sh
-  latest_version=$(yq '.latest' "$LCT_DIR/config_versions/lct.yaml")
+  latest_version=$(yq '.latest' "$LCT_VERSIONS_FILE")
   this_version=$(date +%Y.%m.%d)
 
   FORCE=${args[--force]:-0}
-  VERSION_DIR="$LCT_DIR/config_versions/$this_version"
+  VERSION_DIR="$LCT_VERSIONS_DIR/$this_version"
 
   if [ "$this_version" == "$latest_version" ]; then
     if [[ $FORCE -eq 1 ]]; then
@@ -751,7 +787,7 @@ lct_gather_command() {
   echo "✅ LazyVim config successfully gathered"
 
   # Update latest version in lct.yaml
-  yq -i ".latest = \"$this_version\"" "$LCT_DIR/config_versions/lct.yaml"
+  yq -i ".latest = \"$this_version\"" "$LCT_VERSIONS_FILE"
 
   echo "✅ Config gather for version $this_version completed successfully"
 
@@ -825,6 +861,13 @@ parse_requirements() {
   case $action in
     -*) ;;
 
+    config)
+      action="config"
+      shift
+      lct_config_parse_requirements "$@"
+      shift $#
+      ;;
+
     setup)
       action="setup"
       shift
@@ -872,6 +915,53 @@ parse_requirements() {
       ;;
 
   esac
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_config_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_config_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="config"
 
   # :command.parse_requirements_while
   while [[ $# -gt 0 ]]; do
@@ -1404,15 +1494,6 @@ initialize() {
     CONFIG_DIR="$HOME/.config"
   fi
 
-  if [ -z "${LCT_DIR+x}" ]; then
-    LCT_DIR="$HOME/code/personal/local"
-  fi
-
-  if [ -z "${LATEST_LCT_VERSION+x}" ]; then
-    LATEST_LCT_VERSION=$(yq '.latest' "$LCT_DIR/config_versions/lct.yaml")
-    LATEST_LCT_VERSION_DIR="$LCT_DIR/config_versions/$LATEST_LCT_VERSION"
-  fi
-
   if [ -z "${SHARE_DIR+x}" ]; then
     SHARE_DIR="$HOME/.local/share"
   fi
@@ -1428,10 +1509,23 @@ initialize() {
   LCT_SHARE_DIR="${SHARE_DIR}/lct"
   LCT_CONFIG_DIR="${CONFIG_DIR}/lct"
   LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
+  LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
+  LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
+  LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
 
   [[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
   [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
+  [[ -d "${LCT_VERSIONS_DIR}" ]] || mkdir -p "${LCT_VERSIONS_DIR}"
   [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
+  [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
+  [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
+
+  eval "$(yq -o=shell '.' ${LCT_CONFIG_FILE})"
+
+  if [ -z "${LATEST_LCT_VERSION+x}" ]; then
+    LATEST_LCT_VERSION=$(yq '.latest' "$LCT_VERSIONS_FILE")
+    LATEST_LCT_VERSION_DIR="$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION"
+  fi
 
 }
 
@@ -1448,6 +1542,7 @@ run() {
   parse_requirements "${input[@]}"
 
   case "$action" in
+    "config") lct_config_command ;;
     "setup") lct_setup_command ;;
     "completions") lct_completions_command ;;
     "bootstrap") lct_bootstrap_command ;;
