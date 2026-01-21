@@ -19,8 +19,6 @@ else
   mkdir -p "$VERSION_DIR/lazyvim"
 fi
 
-CONFIGS=("alacritty" "mise" "zellij")
-
 echo "Gather library configs"
 
 for lib in "${CONFIGS[@]}"; do
@@ -30,28 +28,31 @@ done
 
 echo "✅ Configs successfully gathered"
 
-DOTFILES=(".zshrc" ".p10k.zsh" ".gitconfig" ".gitignore_global")
-
 echo "Gathering dotfiles"
 
 for file in "${DOTFILES[@]}"; do
   echo "Copying $file"
-  cp "$HOME/$file" "$VERSION_DIR/dotfiles/"
+  cp -r "$HOME/$file" "$VERSION_DIR/dotfiles/"
 done
-
-cp -r "$HOME/.zsh_config" "$VERSION_DIR/dotfiles/"
 
 echo "✅ Dotfiles successfully gathered"
 
-LAZYVIM_DIR="$CONFIG_DIR/nvim"
+echo "Gathering other files"
+for key in "${!OTHERFILES[@]}"; do
+  src_file="$HOME/${OTHERFILES[$key]}"
+  dest_file="$VERSION_DIR/$key"
+  dest_dir=$(dirname "$dest_file")
+  echo "Copying $src_file to $dest_file"
+  mkdir -p "$dest_dir"
+  cp -r "$src_file" "$dest_file"
+done
 
-echo "Gathering LazyVim config"
-cp -r "$LAZYVIM_DIR/lazyvim.json" "$VERSION_DIR/lazyvim/"
-cp -r "$LAZYVIM_DIR/lua" "$VERSION_DIR/lazyvim/"
-
-echo "✅ LazyVim config successfully gathered"
+echo "✅ Other files successfully gathered"
 
 # Update latest version in lct.yaml
 yq -i ".latest = \"$this_version\"" "$LCT_VERSIONS_FILE"
 
+git -C "$LCT_VERSIONS_DIR" add .
+git -C "$LCT_VERSIONS_DIR" commit -m "Gather configs for version $this_version" || echo "No changes to commit"
+git -C "$LCT_VERSIONS_DIR" push origin main || echo "No remote repository configured, skipping push"
 echo "✅ Config gather for version $this_version completed successfully"
