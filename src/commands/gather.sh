@@ -49,6 +49,11 @@ done
 
 echo "✅ Other files successfully gathered"
 
+echo "Compressing gathered configuration"
+tar -cJf "$LCT_VERSIONS_DIR/$this_version.tar.xz" -C "$LCT_VERSIONS_DIR" "$this_version"
+rm -rf "$VERSION_DIR"
+echo "✅ Successfully compressed configuration"
+
 # Update latest version in lct.yaml
 yq -i ".latest = \"$this_version\"" "$LCT_VERSIONS_FILE"
 
