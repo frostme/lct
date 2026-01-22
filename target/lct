@@ -55,6 +55,7 @@ lct_lib_usage() {
   printf "%s\n" "Commands:"
   printf "  %s   Add a library to lct\n" "add   "
   printf "  %s   Remove a library from lct\n" "remove"
+  printf "  %s   Dump the current lct libraries to your Brewfile\n" "dump  "
   printf "  %s   List all lct libraries\n" "list  "
   echo
 
@@ -81,7 +82,7 @@ lct_lib_add_usage() {
   printf "lct lib add - Add a library to lct\n\n"
 
   printf "%s\n" "Usage:"
-  printf "  lct lib add NAME\n"
+  printf "  lct lib add LIBRARY\n"
   printf "  lct lib add --help | -h\n"
   echo
 
@@ -99,8 +100,8 @@ lct_lib_add_usage() {
     printf "%s\n" "Arguments:"
 
     # :argument.usage
-    printf "  %s\n" "NAME"
-    printf "    Library name\n"
+    printf "  %s\n" "LIBRARY"
+    printf "    Name of the library to add\n"
     echo
 
   fi
@@ -111,7 +112,7 @@ lct_lib_remove_usage() {
   printf "lct lib remove - Remove a library from lct\n\n"
 
   printf "%s\n" "Usage:"
-  printf "  lct lib remove NAME\n"
+  printf "  lct lib remove LIBRARY\n"
   printf "  lct lib remove --help | -h\n"
   echo
 
@@ -129,8 +130,30 @@ lct_lib_remove_usage() {
     printf "%s\n" "Arguments:"
 
     # :argument.usage
-    printf "  %s\n" "NAME"
-    printf "    Library name\n"
+    printf "  %s\n" "LIBRARY"
+    printf "    Name of the library to remove\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_lib_dump_usage() {
+  printf "lct lib dump - Dump the current lct libraries to your Brewfile\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct lib dump\n"
+  printf "  lct lib dump --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
     echo
 
   fi
@@ -141,7 +164,7 @@ lct_lib_list_usage() {
   printf "lct lib list - List all lct libraries\n\n"
 
   printf "%s\n" "Usage:"
-  printf "  lct lib list\n"
+  printf "  lct lib list [OPTIONS]\n"
   printf "  lct lib list --help | -h\n"
   echo
 
@@ -149,6 +172,12 @@ lct_lib_list_usage() {
   if [[ -n "$long_usage" ]]; then
     # :command.usage_options
     printf "%s\n" "Options:"
+
+    # :command.usage_flags
+    # :flag.usage
+    printf "  %s\n" "--type, -t TYPE"
+    printf "    Filter libraries by type\n"
+    echo
 
     # :command.usage_fixed_flags
     printf "  %s\n" "--help, -h"
@@ -666,11 +695,9 @@ send_environment() {
 lct_lib_add_command() {
 
   # src/commands/lib/add.sh
-  echo "# This file is located at 'src/commands/lib/add.sh'."
-  echo "# It contains the implementation for the 'lct lib add' command."
-  echo "# The code you write here will be wrapped by a function named 'lct_lib_add_command()'."
-  echo "# Feel free to edit this file; your changes will persist when regenerating."
-  inspect_args
+  libname=${args[library]}
+
+  brew bundle add $libname --file=$LCT_BREW_FILE
 
 }
 
@@ -678,11 +705,17 @@ lct_lib_add_command() {
 lct_lib_remove_command() {
 
   # src/commands/lib/remove.sh
-  echo "# This file is located at 'src/commands/lib/remove.sh'."
-  echo "# It contains the implementation for the 'lct lib remove' command."
-  echo "# The code you write here will be wrapped by a function named 'lct_lib_remove_command()'."
-  echo "# Feel free to edit this file; your changes will persist when regenerating."
-  inspect_args
+  libname=${args[library]}
+
+  brew bundle remove $libname --file=$LCT_BREW_FILE
+
+}
+
+# :command.function
+lct_lib_dump_command() {
+
+  # src/commands/lib/dump.sh
+  brew bundle dump --file=$LCT_BREW_FILE --force --describe
 
 }
 
@@ -690,11 +723,8 @@ lct_lib_remove_command() {
 lct_lib_list_command() {
 
   # src/commands/lib/list.sh
-  echo "# This file is located at 'src/commands/lib/list.sh'."
-  echo "# It contains the implementation for the 'lct lib list' command."
-  echo "# The code you write here will be wrapped by a function named 'lct_lib_list_command()'."
-  echo "# Feel free to edit this file; your changes will persist when regenerating."
-  inspect_args
+  lib_type=${args[--type]:-"all"}
+  eval $(echo "brew bundle list --file=$LCT_BREW_FILE --${lib_type}")
 
 }
 
@@ -1161,6 +1191,13 @@ lct_lib_parse_requirements() {
       shift $#
       ;;
 
+    dump)
+      action="dump"
+      shift
+      lct_lib_dump_parse_requirements "$@"
+      shift $#
+      ;;
+
     list)
       action="list"
       shift
@@ -1242,8 +1279,8 @@ lct_lib_add_parse_requirements() {
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
         # :argument.case
-        if [[ -z ${args['name']+x} ]]; then
-          args['name']=$1
+        if [[ -z ${args['library']+x} ]]; then
+          args['library']=$1
           shift
         else
           printf "invalid argument: %s\n" "$key" >&2
@@ -1256,8 +1293,8 @@ lct_lib_add_parse_requirements() {
   done
 
   # :command.required_args_filter
-  if [[ -z ${args['name']+x} ]]; then
-    printf "missing required argument: NAME\nusage: lct lib add NAME\n" >&2
+  if [[ -z ${args['library']+x} ]]; then
+    printf "missing required argument: LIBRARY\nusage: lct lib add LIBRARY\n" >&2
 
     exit 1
   fi
@@ -1302,8 +1339,8 @@ lct_lib_remove_parse_requirements() {
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
         # :argument.case
-        if [[ -z ${args['name']+x} ]]; then
-          args['name']=$1
+        if [[ -z ${args['library']+x} ]]; then
+          args['library']=$1
           shift
         else
           printf "invalid argument: %s\n" "$key" >&2
@@ -1316,11 +1353,58 @@ lct_lib_remove_parse_requirements() {
   done
 
   # :command.required_args_filter
-  if [[ -z ${args['name']+x} ]]; then
-    printf "missing required argument: NAME\nusage: lct lib remove NAME\n" >&2
+  if [[ -z ${args['library']+x} ]]; then
+    printf "missing required argument: LIBRARY\nusage: lct lib remove LIBRARY\n" >&2
 
     exit 1
   fi
+
+}
+
+# :command.parse_requirements
+lct_lib_dump_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_lib_dump_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="lib dump"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
 
 }
 
@@ -1352,6 +1436,19 @@ lct_lib_list_parse_requirements() {
   while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
+      # :flag.case
+      --type | -t)
+
+        # :flag.case_arg
+        if [[ -n ${2+x} ]]; then
+          args['--type']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--type requires an argument: --type, -t TYPE" >&2
+          exit 1
+        fi
+        ;;
 
       -?*)
         printf "invalid option: %s\n" "$key" >&2
@@ -2030,6 +2127,7 @@ run() {
     "lib") lct_lib_command ;;
     "lib add") lct_lib_add_command ;;
     "lib remove") lct_lib_remove_command ;;
+    "lib dump") lct_lib_dump_command ;;
     "lib list") lct_lib_list_command ;;
     "config") lct_config_command ;;
     "setup") lct_setup_command ;;

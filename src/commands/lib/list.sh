@@ -1,5 +1,2 @@
-echo "# This file is located at 'src/commands/lib/list.sh'."
-echo "# It contains the implementation for the 'lct lib list' command."
-echo "# The code you write here will be wrapped by a function named 'lct_lib_list_command()'."
-echo "# Feel free to edit this file; your changes will persist when regenerating."
-inspect_args
+lib_type=${args[--type]:-"all"}
+eval $(echo "brew bundle list --file=$LCT_BREW_FILE --${lib_type}")

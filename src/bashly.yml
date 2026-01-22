@@ -11,17 +11,33 @@ commands:
       - name: add
         help: Add a library to lct
         args:
-          - name: name
-            help: Library name
+          - name: library
+            help: Name of the library to add
             required: true
       - name: remove
         help: Remove a library from lct
         args:
-          - name: name
-            help: Library name
+          - name: library
+            help: Name of the library to remove
             required: true
+      - name: dump
+        help: Dump the current lct libraries to your Brewfile
       - name: list
         help: List all lct libraries
+        flags:
+          - long: --type
+            short: -t
+            arg: type
+            help: Filter libraries by type
+            completions:
+              - cargo
+              - cask
+              - flatpak
+              - formula
+              - go
+              - mas
+              - tap
+              - vscode
   - name: config
     help: Open your lct config file in your $EDITOR
     examples:
