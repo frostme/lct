@@ -3,6 +3,7 @@ this_version=$(date +%Y.%m.%d)
 
 FORCE=${args[--force]:-0}
 VERSION_DIR="$LCT_VERSIONS_DIR/$this_version"
+LCT_FILES=("$LCT_BREW_FILE")
 
 if [ "$this_version" == "$latest_version" ]; then
   if [[ $FORCE -eq 1 ]]; then
@@ -11,13 +12,19 @@ if [ "$this_version" == "$latest_version" ]; then
     echo "✅ Configs are already up to date"
     exit 0
   fi
-else
-  echo "Gathering configs for new version: $this_version"
-  mkdir -p "$VERSION_DIR"
-  mkdir -p "$VERSION_DIR/config"
-  mkdir -p "$VERSION_DIR/dotfiles"
-  mkdir -p "$VERSION_DIR/lazyvim"
 fi
+
+echo "Gathering configs for new version: $this_version"
+mkdir -p "$VERSION_DIR"
+mkdir -p "$VERSION_DIR/config"
+mkdir -p "$VERSION_DIR/dotfiles"
+mkdir -p "$VERSION_DIR/lazyvim"
+
+echo "Gathering LCT files"
+for file in "${LCT_FILES[@]}"; do
+  echo "Copying $(basename "$file")"
+  cp -r "$file" "$VERSION_DIR/"
+done
 
 echo "Gather library configs"
 

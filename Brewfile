@@ -1,2 +1,0 @@
-brew "scdoc"
-brew "coreutils"

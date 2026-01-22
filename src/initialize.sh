@@ -56,6 +56,7 @@ detect_directories() {
   LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
   LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
   LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
+  LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
 }
 
 setup_directories() {
@@ -68,6 +69,7 @@ setup_directories() {
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
   [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
   [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init "$LCT_VERSIONS_DIR"
+  [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
 }
 
 load_configuration() {

@@ -1,12 +1,22 @@
 CONFIG_VERSION=${args[--config]:-""}
+TMP_DIR=$(mktemp -d)
 
-if [[ -z $CONFIG_VERSION ]]; then
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+if [[ ! -z $CONFIG_VERSION ]]; then
   LATEST_LCT_VERSION="$CONFIG_VERSION"
-  LATEST_LCT_VERSION_DIR="$LCT_DIR/config_versions/$LATEST_LCT_VERSION"
 fi
 
+LATEST_LCT_VERSION_DIR="$TMP_DIR/$LATEST_LCT_VERSION"
+
+echo "Starting Bootstrap Process"
+
+echo "Decompressing latest configuration version: $LATEST_LCT_VERSION"
+tar -xJf "$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION.tar.xz" -C "$TMP_DIR"
+echo "✅ Decompression complete"
+
 echo "Installing homebrew dependencies"
-brew bundle --file "$LCT_DIR/Brewfile"
+brew bundle --file "$LCT_BREW_FILE"
 echo "✅ homebrew dependencies succesfully installed"
 
 if [ -d "$SOFTWARE_DIR" ]; then
@@ -15,8 +25,6 @@ else
   echo " Creating $SOFTWARE_DIR"
   mkdir -p $SOFTWARE_DIR
 fi
-
-CONFIGS=("alacritty" "mise" "zellij")
 
 echo "Applying library configs"
 

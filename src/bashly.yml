@@ -3,6 +3,25 @@ help: Local configuration tool
 version: 0.2.0
 
 commands:
+  - name: lib
+    help: Manage lct libraries
+    examples:
+      - lct lib add mylib
+    commands:
+      - name: add
+        help: Add a library to lct
+        args:
+          - name: name
+            help: Library name
+            required: true
+      - name: remove
+        help: Remove a library from lct
+        args:
+          - name: name
+            help: Library name
+            required: true
+      - name: list
+        help: List all lct libraries
   - name: config
     help: Open your lct config file in your $EDITOR
     examples:
