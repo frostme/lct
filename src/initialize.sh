@@ -50,18 +50,22 @@ detect_directories() {
     CACHE_DIR="$HOME/.cache"
   fi
 
+  LCT_SOFTWARE_DIR="${SOFTWARE_DIR}/lct"
   LCT_SHARE_DIR="${SHARE_DIR}/lct"
   LCT_CONFIG_DIR="${CONFIG_DIR}/lct"
+  LCT_CACHE_DIR="${CACHE_DIR}/lct"
   LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
   LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
   LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
   LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
   LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
+  LCT_PLUGINS_DIR="${LCT_CACHE_DIR}/plugins"
 }
 
 setup_directories() {
   detect_directories
 
+  [[ -d "${LCT_SOFTWARE_DIR}" ]] || mkdir -p "${LCT_SOFTWARE_DIR}"
   [[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
   [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
   [[ -d "${LCT_VERSIONS_DIR}" ]] || mkdir -p "${LCT_VERSIONS_DIR}"
@@ -70,16 +74,21 @@ setup_directories() {
   [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
   [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init "$LCT_VERSIONS_DIR"
   [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
+  [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
 }
 
 load_configuration() {
+  # TODO: change to a central registry
   # Load LCT configuration
   if [[ -f "${LCT_CONFIG_FILE}" ]]; then
     REMOTE_CONFIG_REPO=$(yq '.remote' ${LCT_CONFIG_FILE})
     CONFIGS=($(yq -o=csv '.configs[]' ${LCT_CONFIG_FILE}))
     DOTFILES=($(yq -o=csv '.dotfiles[]' ${LCT_CONFIG_FILE}))
     declare -gA OTHERFILES
-    eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ~/.config/lct/config.yaml | paste -sd' ' -))"
+    eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
+    declare -gA PLUGINS
+    eval "PLUGINS=($(yq -r '.plugins | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
+    REGISTRY=$(yq '.registry // "git@github.com:frostme/local-plugins.git"' ${LCT_CONFIG_FILE})
   fi
 }
 

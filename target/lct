@@ -20,6 +20,7 @@ lct_usage() {
   printf "%s\n" "Commands:"
   printf "  %s   Manage lct libraries\n" "lib        "
   printf "  %s   Manage local environment variables\n" "env        "
+  printf "  %s   Develop and manage lct plugins\n" "plugin     "
   printf "  %s   Bootstrap your local configuration\n" "bootstrap  "
   printf "  %s   Generate bash completions\n" "completions"
   printf "  %s   Open your lct config file in your $EDITOR\n" "config     "
@@ -342,6 +343,183 @@ lct_env_list_usage() {
 }
 
 # :command.usage
+lct_plugin_usage() {
+  printf "lct plugin - Develop and manage lct plugins\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct plugin COMMAND\n"
+  printf "  lct plugin [COMMAND] --help | -h\n"
+  echo
+  # :command.usage_commands
+  printf "%s\n" "Commands:"
+  printf "  %s   Create a new lct plugin\n" "create "
+  printf "  %s   Publish an lct plugin to the registry\n" "publish"
+  printf "  %s   Install an lct plugin from the registry\n" "install"
+  printf "  %s   Remove an installed lct plugin\n" "remove "
+  printf "  %s   List all installed lct plugins\n" "list   "
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  lct plugin create myplugin\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_plugin_create_usage() {
+  printf "lct plugin create - Create a new lct plugin\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct plugin create PLUGIN\n"
+  printf "  lct plugin create --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "PLUGIN"
+    printf "    Name of the plugin to create\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_plugin_publish_usage() {
+  printf "lct plugin publish - Publish an lct plugin to the registry\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct plugin publish PLUGIN\n"
+  printf "  lct plugin publish --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "PLUGIN"
+    printf "    Name of the plugin to publish\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_plugin_install_usage() {
+  printf "lct plugin install - Install an lct plugin from the registry\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct plugin install PLUGIN\n"
+  printf "  lct plugin install --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "PLUGIN"
+    printf "    Name of the plugin to install\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_plugin_remove_usage() {
+  printf "lct plugin remove - Remove an installed lct plugin\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct plugin remove PLUGIN\n"
+  printf "  lct plugin remove --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "PLUGIN"
+    printf "    Name of the plugin to remove\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_plugin_list_usage() {
+  printf "lct plugin list - List all installed lct plugins\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct plugin list\n"
+  printf "  lct plugin list --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
+# :command.usage
 lct_bootstrap_usage() {
   printf "lct bootstrap - Bootstrap your local configuration\n\n"
   printf "Alias: b\n"
@@ -624,6 +802,22 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
+  echo $'    \'plugin install\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'plugin publish\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'plugin remove\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'plugin create\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
   echo $'    \'e list\'*\'--key\')'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
@@ -632,28 +826,32 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr \'\n\' \' \' 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'completions\'*)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
-  echo $'      ;;'
-  echo $''
-  echo $'    \'lib install\'*)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
-  echo $'      ;;'
-  echo $''
   echo $'    \'env list\'*\'-k\')'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'plugin list\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'lib list\'*\'-t\')'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "cargo cask flatpak formula go mas tap vscode")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'lib remove\'*)'
+  echo $'    \'lib install\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'completions\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'b\'*\'--config\')'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr \'\n\' \' \' 2> /dev/null)")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'lib remove\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'e list\'*\'-k\')'
@@ -694,6 +892,10 @@ send_completions() {
   echo $''
   echo $'    \'config\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'plugin\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h create install list publish remove")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'e list\'*)'
@@ -737,7 +939,7 @@ send_completions() {
   echo $'      ;;'
   echo $''
   echo $'    *)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --version -h -v b bootstrap completions config e env g gather lib setup")" -- "$cur")'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --version -h -v b bootstrap completions config e env g gather lib plugin setup")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'  esac'
@@ -769,6 +971,7 @@ lct_lib_add_command() {
   # src/commands/lib/add.sh
   libname=${args[library]}
 
+  brew install $libname
   brew bundle add $libname --file=$LCT_BREW_FILE
 
 }
@@ -779,6 +982,7 @@ lct_lib_remove_command() {
   # src/commands/lib/remove.sh
   libname=${args[library]}
 
+  brew uninstall $libname
   brew bundle remove $libname --file=$LCT_BREW_FILE
 
 }
@@ -837,6 +1041,138 @@ lct_env_list_command() {
 }
 
 # :command.function
+lct_plugin_create_command() {
+
+  # src/commands/plugin/create.sh
+  plugin_name=${args[plugin]}
+  PLUGINS_DIR=${LCT_SOFTWARE_DIR}/plugins
+
+  echo "Creating plugin directory for '${plugin_name}'"
+  mkdir -p "${PLUGINS_DIR}/${plugin_name}"
+
+  echo "Creating initial files for plugin '${plugin_name}'"
+  cat <<EOF >"${PLUGINS_DIR}/${plugin_name}/README.md"
+# ${plugin_name} Plugin for LCT
+#
+# Describe the purpose and functionality of the plugin here.
+Install the ${plugin_name} plugin and configure it as needed.
+EOF
+  cat <<EOF >"${PLUGINS_DIR}/${plugin_name}/main.sh"
+# ${plugin_name} Plugin Main Script
+# Add your plugin logic here.
+EOF
+  cat <<EOF >"${PLUGINS_DIR}/${plugin_name}/config.yaml"
+# ${plugin_name} Plugin Configuration
+# Add your plugin configuration options here.
+name: ${plugin_name}
+version: 0.1.0
+filename: main.sh
+EOF
+  echo "✅ Plugin '${plugin_name}' created successfully in '${PLUGINS_DIR}/${plugin_name}'"
+
+}
+
+# :command.function
+lct_plugin_publish_command() {
+
+  # src/commands/plugin/publish.sh
+  plugin_name=${args[plugin]}
+  PLUGINS_DIR=${LCT_SOFTWARE_DIR}/plugins
+  PLUGIN_DIR="${PLUGINS_DIR}/${plugin_name}"
+  PLUGIN_CONFIG_FILE="${PLUGIN_DIR}/config.yaml"
+  PLUGIN_VERSION=$(yq '.version' "$PLUGIN_CONFIG_FILE")
+  PLUGIN_FILENAME=$(yq '.filename' "$PLUGIN_CONFIG_FILE")
+  TMP_DIR=$(mktemp -d)
+
+  trap 'rm -rf "$TMP_DIR"' EXIT
+
+  mkdir -p "$TMP_DIR/$plugin_name/src"
+  mkdir -p "$TMP_DIR/$plugin_name/target"
+
+  git clone -q "$REGISTRY" "$TMP_DIR/registry"
+
+  echo "Packaging plugin '${plugin_name}' version '${PLUGIN_VERSION}'"
+  cp -r "$PLUGIN_DIR/$PLUGIN_FILENAME" "$TMP_DIR/$plugin_name/src/"
+  PLUGIN_DESCRIPTION=$(cat $PLUGIN_DIR/README.md | sed 's/^/  /')
+
+  cat <<EOF >"${TMP_DIR}/${plugin_name}/src/bashly.yml"
+name: ${plugin_name}
+version: ${PLUGIN_VERSION}
+help: |
+  ${plugin_name} Plugin for LCT
+${PLUGIN_DESCRIPTION}
+filename: ${PLUGIN_FILENAME}
+EOF
+
+  cat <<EOF >"${TMP_DIR}/${plugin_name}/settings.yml"
+target_dir: target
+partials_extension: sh
+strict: set -Eeuo pipefail
+tab_indent: false
+word_wrap: 80
+formatter: internal
+EOF
+
+  cat <<EOF >"${TMP_DIR}/${plugin_name}/src/header.sh"
+#!/usr/bin/env bash
+EOF
+
+  cd "$TMP_DIR/$plugin_name"
+
+  echo "Validating Plugin Bashly configuration"
+  bashly validate
+  echo "Generating Plugin Bashly files"
+  bashly generate
+  mv target/${plugin_name} target/${plugin_name}-${PLUGIN_VERSION}
+  echo "Packaging Plugin into tar.xz archive"
+  tar -cJf "$TMP_DIR/registry/plugins/${plugin_name}-${PLUGIN_VERSION}.tar.xz" -C "$TMP_DIR/$plugin_name/target" "${plugin_name}-${PLUGIN_VERSION}"
+  echo "Publishing Plugin to registry"
+  # TODO: change to publishing to a central repo
+  cd "$TMP_DIR/registry"
+  git add .
+  git commit -m "Publish plugin ${plugin_name} version ${PLUGIN_VERSION}" || echo "No changes to commit"
+  git push origin main || echo "No remote repository configured, skipping push"
+  echo "✅ Plugin '${plugin_name}' version '${PLUGIN_VERSION}' published successfully"
+
+}
+
+# :command.function
+lct_plugin_install_command() {
+
+  # src/commands/plugin/install.sh
+  echo "# This file is located at 'src/commands/plugin/install.sh'."
+  echo "# It contains the implementation for the 'lct plugin install' command."
+  echo "# The code you write here will be wrapped by a function named 'lct_plugin_install_command()'."
+  echo "# Feel free to edit this file; your changes will persist when regenerating."
+  inspect_args
+
+}
+
+# :command.function
+lct_plugin_remove_command() {
+
+  # src/commands/plugin/remove.sh
+  echo "# This file is located at 'src/commands/plugin/remove.sh'."
+  echo "# It contains the implementation for the 'lct plugin remove' command."
+  echo "# The code you write here will be wrapped by a function named 'lct_plugin_remove_command()'."
+  echo "# Feel free to edit this file; your changes will persist when regenerating."
+  inspect_args
+
+}
+
+# :command.function
+lct_plugin_list_command() {
+
+  # src/commands/plugin/list.sh
+  echo "# This file is located at 'src/commands/plugin/list.sh'."
+  echo "# It contains the implementation for the 'lct plugin list' command."
+  echo "# The code you write here will be wrapped by a function named 'lct_plugin_list_command()'."
+  echo "# Feel free to edit this file; your changes will persist when regenerating."
+  inspect_args
+
+}
+
+# :command.function
 lct_bootstrap_command() {
 
   # src/commands/bootstrap.sh
@@ -881,40 +1217,21 @@ lct_bootstrap_command() {
 
   echo "✅ Configs successfully copied"
 
-  # INSTALL OH-MY-ZSH
-  if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "✅ oh-my-zsh already installed"
-  else
-    echo "installing oh-my-zsh"
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/master/tools/insall.sh)"
-    echo "✅ oh-my-zsh succesfully installed"
-  fi
+  for key in "${!PLUGINS[@]}"; do
+    version="${PLUGINS[$key]}"
+    plugin=${key}
+    if [ -f "$LCT_PLUGINS_DIR/$plugin-$version" ]; then
+      echo "✅ $plugin already installed"
+    else
+      echo "installing $plugin"
+      [[ -d $TMP_DIR/registry ]] || git clone -q $REGISTRY $TMP_DIR/registry
 
-  # INSTALL ZSH ITEMS
-
-  if [ -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions" ]; then
-    echo "✅ zsh-completions already installed"
-  else
-    echo "installing zsh-completions"
-    git clone https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
-    echo "✅ zsh-completions succesfully installed"
-  fi
-
-  if [ -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-syntax-highlighting" ]; then
-    echo "✅ zsh-syntax-highlighting already installed"
-  else
-    echo "installing zsh-syntax-highlighting"
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    echo "✅ zsh-syntax-highlighting successfully installed"
-  fi
-
-  if [ -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autosuggestions" ]; then
-    echo "✅ zsh-autosuggestions already installed"
-  else
-    echo "installing zsh-autosuggestions"
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    echo "✅ zsh-autosuggestions successfully installed"
-  fi
+      # TODO: change to downloading from a central repo
+      tar -xJf "$TMP_DIR/registry/plugins/$plugin-$version.tar.xz" -C "$LCT_PLUGINS_DIR/"
+    fi
+    eval "$LCT_PLUGINS_DIR/$plugin-$version"
+  done
+  # ##################################################
 
   # INSTALL POWERLEVEL10K
   if [ -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/themes/powerlevel10k" ]; then
@@ -1148,6 +1465,13 @@ parse_requirements() {
       action="env"
       shift
       lct_env_parse_requirements "$@"
+      shift $#
+      ;;
+
+    plugin)
+      action="plugin"
+      shift
+      lct_plugin_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1869,6 +2193,391 @@ lct_env_list_parse_requirements() {
 }
 
 # :command.parse_requirements
+lct_plugin_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_plugin_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action=${1:-}
+
+  case $action in
+    -*) ;;
+
+    create)
+      action="create"
+      shift
+      lct_plugin_create_parse_requirements "$@"
+      shift $#
+      ;;
+
+    publish)
+      action="publish"
+      shift
+      lct_plugin_publish_parse_requirements "$@"
+      shift $#
+      ;;
+
+    install)
+      action="install"
+      shift
+      lct_plugin_install_parse_requirements "$@"
+      shift $#
+      ;;
+
+    remove)
+      action="remove"
+      shift
+      lct_plugin_remove_parse_requirements "$@"
+      shift $#
+      ;;
+
+    list)
+      action="list"
+      shift
+      lct_plugin_list_parse_requirements "$@"
+      shift $#
+      ;;
+
+    # :command.command_fallback
+    "")
+      lct_plugin_usage >&2
+      exit 1
+      ;;
+
+    *)
+      printf "invalid command: %s\n" "$action" >&2
+      exit 1
+      ;;
+
+  esac
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_plugin_create_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_plugin_create_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="plugin create"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        # :argument.case
+        if [[ -z ${args['plugin']+x} ]]; then
+          args['plugin']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['plugin']+x} ]]; then
+    printf "missing required argument: PLUGIN\nusage: lct plugin create PLUGIN\n" >&2
+
+    exit 1
+  fi
+
+}
+
+# :command.parse_requirements
+lct_plugin_publish_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_plugin_publish_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="plugin publish"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        # :argument.case
+        if [[ -z ${args['plugin']+x} ]]; then
+          args['plugin']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['plugin']+x} ]]; then
+    printf "missing required argument: PLUGIN\nusage: lct plugin publish PLUGIN\n" >&2
+
+    exit 1
+  fi
+
+}
+
+# :command.parse_requirements
+lct_plugin_install_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_plugin_install_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="plugin install"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        # :argument.case
+        if [[ -z ${args['plugin']+x} ]]; then
+          args['plugin']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['plugin']+x} ]]; then
+    printf "missing required argument: PLUGIN\nusage: lct plugin install PLUGIN\n" >&2
+
+    exit 1
+  fi
+
+}
+
+# :command.parse_requirements
+lct_plugin_remove_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_plugin_remove_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="plugin remove"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        # :argument.case
+        if [[ -z ${args['plugin']+x} ]]; then
+          args['plugin']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['plugin']+x} ]]; then
+    printf "missing required argument: PLUGIN\nusage: lct plugin remove PLUGIN\n" >&2
+
+    exit 1
+  fi
+
+}
+
+# :command.parse_requirements
+lct_plugin_list_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_plugin_list_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="plugin list"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
 lct_bootstrap_parse_requirements() {
   local key
 
@@ -2181,18 +2890,22 @@ initialize() {
       CACHE_DIR="$HOME/.cache"
     fi
 
+    LCT_SOFTWARE_DIR="${SOFTWARE_DIR}/lct"
     LCT_SHARE_DIR="${SHARE_DIR}/lct"
     LCT_CONFIG_DIR="${CONFIG_DIR}/lct"
+    LCT_CACHE_DIR="${CACHE_DIR}/lct"
     LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
     LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
     LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
     LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
     LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
+    LCT_PLUGINS_DIR="${LCT_CACHE_DIR}/plugins"
   }
 
   setup_directories() {
     detect_directories
 
+    [[ -d "${LCT_SOFTWARE_DIR}" ]] || mkdir -p "${LCT_SOFTWARE_DIR}"
     [[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
     [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
     [[ -d "${LCT_VERSIONS_DIR}" ]] || mkdir -p "${LCT_VERSIONS_DIR}"
@@ -2201,16 +2914,21 @@ initialize() {
     [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
     [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init "$LCT_VERSIONS_DIR"
     [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
+    [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
   }
 
   load_configuration() {
+    # TODO: change to a central registry
     # Load LCT configuration
     if [[ -f "${LCT_CONFIG_FILE}" ]]; then
       REMOTE_CONFIG_REPO=$(yq '.remote' ${LCT_CONFIG_FILE})
       CONFIGS=($(yq -o=csv '.configs[]' ${LCT_CONFIG_FILE}))
       DOTFILES=($(yq -o=csv '.dotfiles[]' ${LCT_CONFIG_FILE}))
       declare -gA OTHERFILES
-      eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ~/.config/lct/config.yaml | paste -sd' ' -))"
+      eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
+      declare -gA PLUGINS
+      eval "PLUGINS=($(yq -r '.plugins | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
+      REGISTRY=$(yq '.registry // "git@github.com:frostme/local-plugins.git"' ${LCT_CONFIG_FILE})
     fi
   }
 
@@ -2260,6 +2978,12 @@ run() {
     "env set") lct_env_set_command ;;
     "env unset") lct_env_unset_command ;;
     "env list") lct_env_list_command ;;
+    "plugin") lct_plugin_command ;;
+    "plugin create") lct_plugin_create_command ;;
+    "plugin publish") lct_plugin_publish_command ;;
+    "plugin install") lct_plugin_install_command ;;
+    "plugin remove") lct_plugin_remove_command ;;
+    "plugin list") lct_plugin_list_command ;;
     "bootstrap") lct_bootstrap_command ;;
     "completions") lct_completions_command ;;
     "config") lct_config_command ;;

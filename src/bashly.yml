@@ -5,6 +5,7 @@ version: 0.2.0
 commands:
   - import: src/commands/lib/lib.yml
   - import: src/commands/env/env.yml
+  - import: src/commands/plugin/plugin.yml
   - name: bootstrap
     alias: b
     help: Bootstrap your local configuration

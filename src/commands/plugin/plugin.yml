@@ -1,0 +1,31 @@
+name: plugin
+help: Develop and manage lct plugins
+examples:
+  - lct plugin create myplugin
+commands:
+  - name: create
+    help: Create a new lct plugin
+    args:
+      - name: plugin
+        help: Name of the plugin to create
+        required: true
+  - name: publish
+    help: Publish an lct plugin to the registry
+    args:
+      - name: plugin
+        help: Name of the plugin to publish
+        required: true
+  - name: install
+    help: Install an lct plugin from the registry
+    args:
+      - name: plugin
+        help: Name of the plugin to install
+        required: true
+  - name: remove
+    help: Remove an installed lct plugin
+    args:
+      - name: plugin
+        help: Name of the plugin to remove
+        required: true
+  - name: list
+    help: List all installed lct plugins

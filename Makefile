@@ -1,5 +1,5 @@
 build: 
-	bashly generate
+	bashly generate --upgrade
 
 install:
 	cp target/lct /usr/local/bin/lct
