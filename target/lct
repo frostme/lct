@@ -19,12 +19,12 @@ lct_usage() {
   # :command.usage_commands
   printf "%s\n" "Commands:"
   printf "  %s   Manage lct libraries\n" "lib        "
+  printf "  %s   Manage local environment variables\n" "env        "
+  printf "  %s   Bootstrap your local configuration\n" "bootstrap  "
+  printf "  %s   Generate bash completions\n" "completions"
   printf "  %s   Open your lct config file in your $EDITOR\n" "config     "
   printf "  %s   Setup lct in your shell\n" "setup      "
-  printf "  %s   Generate bash completions\n" "completions"
-  printf "  %s   Bootstrap your local configuration\n" "bootstrap  "
   printf "  %s   Gather local configuration files\n" "gather     "
-  printf "  %s   Manage local environment variables\n" "env        "
   echo
 
   # :command.long_usage
@@ -53,10 +53,11 @@ lct_lib_usage() {
   echo
   # :command.usage_commands
   printf "%s\n" "Commands:"
-  printf "  %s   Add a library to lct\n" "add   "
-  printf "  %s   Remove a library from lct\n" "remove"
-  printf "  %s   Dump the current lct libraries to your Brewfile\n" "dump  "
-  printf "  %s   List all lct libraries\n" "list  "
+  printf "  %s   Install libraries\n" "install"
+  printf "  %s   Add a library to lct\n" "add    "
+  printf "  %s   Remove a library from lct\n" "remove "
+  printf "  %s   Dump the current lct libraries to your Brewfile\n" "dump   "
+  printf "  %s   List all lct libraries\n" "list   "
   echo
 
   # :command.long_usage
@@ -72,6 +73,28 @@ lct_lib_usage() {
     # :command.usage_examples
     printf "%s\n" "Examples:"
     printf "  lct lib add mylib\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_lib_install_usage() {
+  printf "lct lib install - Install libraries\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct lib install\n"
+  printf "  lct lib install --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
     echo
 
   fi
@@ -182,157 +205,6 @@ lct_lib_list_usage() {
     # :command.usage_fixed_flags
     printf "  %s\n" "--help, -h"
     printf "    Show this help\n"
-    echo
-
-  fi
-}
-
-# :command.usage
-lct_config_usage() {
-  printf "lct config - Open your lct config file in your $EDITOR\n\n"
-
-  printf "%s\n" "Usage:"
-  printf "  lct config\n"
-  printf "  lct config --help | -h\n"
-  echo
-
-  # :command.long_usage
-  if [[ -n "$long_usage" ]]; then
-    # :command.usage_options
-    printf "%s\n" "Options:"
-
-    # :command.usage_fixed_flags
-    printf "  %s\n" "--help, -h"
-    printf "    Show this help\n"
-    echo
-
-    # :command.usage_examples
-    printf "%s\n" "Examples:"
-    printf "  lct config\n"
-    echo
-
-  fi
-}
-
-# :command.usage
-lct_setup_usage() {
-  printf "lct setup - Setup lct in your shell\n\n"
-
-  printf "%s\n" "Usage:"
-  printf "  lct setup\n"
-  printf "  lct setup --help | -h\n"
-  echo
-
-  # :command.long_usage
-  if [[ -n "$long_usage" ]]; then
-    # :command.usage_options
-    printf "%s\n" "Options:"
-
-    # :command.usage_fixed_flags
-    printf "  %s\n" "--help, -h"
-    printf "    Show this help\n"
-    echo
-
-    # :command.usage_examples
-    printf "%s\n" "Examples:"
-    printf "  eval \"$(lct setup)\"\n"
-    echo
-
-  fi
-}
-
-# :command.usage
-lct_completions_usage() {
-  if [[ -n $long_usage ]]; then
-    printf "lct completions\n\n"
-    printf "  Generate bash completions\n  Usage: eval \"\$(lct completions)\"\n\n"
-  else
-    printf "lct completions - Generate bash completions\n\n"
-  fi
-
-  printf "%s\n" "Usage:"
-  printf "  lct completions\n"
-  printf "  lct completions --help | -h\n"
-  echo
-
-  # :command.long_usage
-  if [[ -n "$long_usage" ]]; then
-    # :command.usage_options
-    printf "%s\n" "Options:"
-
-    # :command.usage_fixed_flags
-    printf "  %s\n" "--help, -h"
-    printf "    Show this help\n"
-    echo
-
-  fi
-}
-
-# :command.usage
-lct_bootstrap_usage() {
-  printf "lct bootstrap - Bootstrap your local configuration\n\n"
-  printf "Alias: b\n"
-  echo
-
-  printf "%s\n" "Usage:"
-  printf "  lct bootstrap [OPTIONS]\n"
-  printf "  lct bootstrap --help | -h\n"
-  echo
-
-  # :command.long_usage
-  if [[ -n "$long_usage" ]]; then
-    # :command.usage_options
-    printf "%s\n" "Options:"
-
-    # :command.usage_flags
-    # :flag.usage
-    printf "  %s\n" "--config, -c CONFIG"
-    printf "    Config version to bootstrap\n"
-    echo
-
-    # :command.usage_fixed_flags
-    printf "  %s\n" "--help, -h"
-    printf "    Show this help\n"
-    echo
-
-    # :command.usage_examples
-    printf "%s\n" "Examples:"
-    printf "  lct bootstrap -c 26.01.20\n"
-    echo
-
-  fi
-}
-
-# :command.usage
-lct_gather_usage() {
-  printf "lct gather - Gather local configuration files\n\n"
-  printf "Alias: g\n"
-  echo
-
-  printf "%s\n" "Usage:"
-  printf "  lct gather [OPTIONS]\n"
-  printf "  lct gather --help | -h\n"
-  echo
-
-  # :command.long_usage
-  if [[ -n "$long_usage" ]]; then
-    # :command.usage_options
-    printf "%s\n" "Options:"
-
-    # :command.usage_flags
-    # :flag.usage
-    printf "  %s\n" "--force, -f"
-    printf "    overwrite existing version if conflicting\n"
-    echo
-
-    # :command.usage_fixed_flags
-    printf "  %s\n" "--help, -h"
-    printf "    Show this help\n"
-    echo
-
-    # :command.usage_examples
-    printf "%s\n" "Examples:"
-    printf "  lct gather\n"
     echo
 
   fi
@@ -469,6 +341,157 @@ lct_env_list_usage() {
   fi
 }
 
+# :command.usage
+lct_bootstrap_usage() {
+  printf "lct bootstrap - Bootstrap your local configuration\n\n"
+  printf "Alias: b\n"
+  echo
+
+  printf "%s\n" "Usage:"
+  printf "  lct bootstrap [OPTIONS]\n"
+  printf "  lct bootstrap --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_flags
+    # :flag.usage
+    printf "  %s\n" "--config, -c CONFIG"
+    printf "    Config version to bootstrap\n"
+    echo
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  lct bootstrap -c 26.01.20\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_completions_usage() {
+  if [[ -n $long_usage ]]; then
+    printf "lct completions\n\n"
+    printf "  Generate bash completions\n  Usage: eval \"\$(lct completions)\"\n\n"
+  else
+    printf "lct completions - Generate bash completions\n\n"
+  fi
+
+  printf "%s\n" "Usage:"
+  printf "  lct completions\n"
+  printf "  lct completions --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_config_usage() {
+  printf "lct config - Open your lct config file in your $EDITOR\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct config\n"
+  printf "  lct config --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  lct config\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_setup_usage() {
+  printf "lct setup - Setup lct in your shell\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  lct setup\n"
+  printf "  lct setup --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  eval \"$(lct setup)\"\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+lct_gather_usage() {
+  printf "lct gather - Gather local configuration files\n\n"
+  printf "Alias: g\n"
+  echo
+
+  printf "%s\n" "Usage:"
+  printf "  lct gather [OPTIONS]\n"
+  printf "  lct gather --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_flags
+    # :flag.usage
+    printf "  %s\n" "--force, -f"
+    printf "    overwrite existing version if conflicting\n"
+    echo
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  lct gather\n"
+    echo
+
+  fi
+}
+
 # :command.normalize_input
 # :command.normalize_input_function
 normalize_input() {
@@ -593,7 +616,15 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr \'\n\' \' \' 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
+  echo $'    \'lib list\'*\'--type\')'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "cargo cask flatpak formula go mas tap vscode")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
   echo $'    \'env list\'*\'--key\')'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'e list\'*\'--key\')'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
@@ -601,11 +632,11 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr \'\n\' \' \' 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'e list\'*\'--key\')'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
+  echo $'    \'completions\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'completions\'*)'
+  echo $'    \'lib install\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
@@ -613,27 +644,39 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'b\'*\'--config\')'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr \'\n\' \' \' 2> /dev/null)")" -- "$cur")'
+  echo $'    \'lib list\'*\'-t\')'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "cargo cask flatpak formula go mas tap vscode")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'env unset\'*)'
+  echo $'    \'lib remove\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'bootstrap\'*)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--config --help -c -h")" -- "$cur")'
+  echo $'    \'b\'*\'--config\')'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr \'\n\' \' \' 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'e list\'*\'-k\')'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "$(yq \'keys | join(" ")\' $LCT_ENV_FILE 2> /dev/null)")" -- "$cur")'
   echo $'      ;;'
   echo $''
+  echo $'    \'bootstrap\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--config --help -c -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'env unset\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
   echo $'    \'env list\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --key -h -k")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'env set\'*)'
+  echo $'    \'lib list\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --type -h -t")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'lib dump\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
@@ -641,15 +684,31 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'gather\'*)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--force --help -f -h")" -- "$cur")'
+  echo $'    \'env set\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'lib add\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'config\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'e list\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --key -h -k")" -- "$cur")'
   echo $'      ;;'
   echo $''
+  echo $'    \'gather\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--force --help -f -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
   echo $'    \'e set\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
+  echo $'    \'setup\'*)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
@@ -661,8 +720,8 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h list set unset")" -- "$cur")'
   echo $'      ;;'
   echo $''
-  echo $'    \'e\'*)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h list set unset")" -- "$cur")'
+  echo $'    \'lib\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h add dump install list remove")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'g\'*)'
@@ -673,8 +732,12 @@ send_completions() {
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--config --help -c -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
+  echo $'    \'e\'*)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help -h list set unset")" -- "$cur")'
+  echo $'      ;;'
+  echo $''
   echo $'    *)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --version -h -v b bootstrap completions e env g gather")" -- "$cur")'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_lct_completions_filter "--help --version -h -v b bootstrap completions config e env g gather lib setup")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'  esac'
@@ -690,6 +753,15 @@ send_environment() {
 }
 
 # :command.command_functions
+
+# :command.function
+lct_lib_install_command() {
+
+  # src/commands/lib/install.sh
+  brew bundle --file=$LCT_BREW_FILE
+  mise install
+
+}
 
 # :command.function
 lct_lib_add_command() {
@@ -729,34 +801,38 @@ lct_lib_list_command() {
 }
 
 # :command.function
-lct_config_command() {
+lct_env_set_command() {
 
-  # src/commands/config.sh
-  eval "$EDITOR $LCT_CONFIG_FILE"
+  # src/commands/env/set.sh
+  env_key=${args[key]}
+  env_value=${args[value]}
 
-}
-
-# :command.function
-lct_setup_command() {
-
-  # src/commands/setup.sh
-  echo $"autoload -Uz +X bashcompinit && bashcompinit"
-  printf '\n\n'
-  send_environment
-  printf '\n\n'
-  send_completions
-  printf '\n\n'
-  zoxide init zsh
-  printf '\n\n'
-  zellij setup --generate-auto-start zsh
+  yq -i ".${env_key} = \"${env_value}\"" $LCT_ENV_FILE
+  eval "$(send_environment)"
 
 }
 
 # :command.function
-lct_completions_command() {
+lct_env_unset_command() {
 
-  # src/commands/completions.sh
-  send_completions
+  # src/commands/env/unset.sh
+  env_key=${args[key]}
+  yq -i "del(.${env_key})" $LCT_ENV_FILE
+  unset -v $env_key
+  eval "$(send_environment)"
+
+}
+
+# :command.function
+lct_env_list_command() {
+
+  # src/commands/env/list.sh
+  env_key=${args[--key]:-""}
+  if [ -z "$env_key" ]; then
+    yq -o=shell $LCT_ENV_FILE
+  else
+    echo "$env_key=$(yq ".$env_key" $LCT_ENV_FILE)"
+  fi
 
 }
 
@@ -921,6 +997,38 @@ lct_bootstrap_command() {
 }
 
 # :command.function
+lct_completions_command() {
+
+  # src/commands/completions.sh
+  send_completions
+
+}
+
+# :command.function
+lct_config_command() {
+
+  # src/commands/config.sh
+  eval "$EDITOR $LCT_CONFIG_FILE"
+
+}
+
+# :command.function
+lct_setup_command() {
+
+  # src/commands/setup.sh
+  echo $"autoload -Uz +X bashcompinit && bashcompinit"
+  printf '\n\n'
+  send_environment
+  printf '\n\n'
+  send_completions
+  printf '\n\n'
+  zoxide init zsh
+  printf '\n\n'
+  zellij setup --generate-auto-start zsh
+
+}
+
+# :command.function
 lct_gather_command() {
 
   # src/commands/gather.sh
@@ -997,42 +1105,6 @@ lct_gather_command() {
 
 }
 
-# :command.function
-lct_env_set_command() {
-
-  # src/commands/env/set.sh
-  env_key=${args[key]}
-  env_value=${args[value]}
-
-  yq -i ".${env_key} = \"${env_value}\"" $LCT_ENV_FILE
-  eval "$(send_environment)"
-
-}
-
-# :command.function
-lct_env_unset_command() {
-
-  # src/commands/env/unset.sh
-  env_key=${args[key]}
-  yq -i "del(.${env_key})" $LCT_ENV_FILE
-  unset -v $env_key
-  eval "$(send_environment)"
-
-}
-
-# :command.function
-lct_env_list_command() {
-
-  # src/commands/env/list.sh
-  env_key=${args[--key]:-""}
-  if [ -z "$env_key" ]; then
-    yq -o=shell $LCT_ENV_FILE
-  else
-    echo "$env_key=$(yq ".$env_key" $LCT_ENV_FILE)"
-  fi
-
-}
-
 # :command.parse_requirements
 parse_requirements() {
   local key
@@ -1072,6 +1144,27 @@ parse_requirements() {
       shift $#
       ;;
 
+    env | e)
+      action="env"
+      shift
+      lct_env_parse_requirements "$@"
+      shift $#
+      ;;
+
+    bootstrap | b)
+      action="bootstrap"
+      shift
+      lct_bootstrap_parse_requirements "$@"
+      shift $#
+      ;;
+
+    completions)
+      action="completions"
+      shift
+      lct_completions_parse_requirements "$@"
+      shift $#
+      ;;
+
     config)
       action="config"
       shift
@@ -1086,31 +1179,10 @@ parse_requirements() {
       shift $#
       ;;
 
-    completions)
-      action="completions"
-      shift
-      lct_completions_parse_requirements "$@"
-      shift $#
-      ;;
-
-    bootstrap | b)
-      action="bootstrap"
-      shift
-      lct_bootstrap_parse_requirements "$@"
-      shift $#
-      ;;
-
     gather | g)
       action="gather"
       shift
       lct_gather_parse_requirements "$@"
-      shift $#
-      ;;
-
-    env | e)
-      action="env"
-      shift
-      lct_env_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1177,6 +1249,13 @@ lct_lib_parse_requirements() {
   case $action in
     -*) ;;
 
+    install)
+      action="install"
+      shift
+      lct_lib_install_parse_requirements "$@"
+      shift $#
+      ;;
+
     add)
       action="add"
       shift
@@ -1217,6 +1296,53 @@ lct_lib_parse_requirements() {
       ;;
 
   esac
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_lib_install_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_lib_install_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="lib install"
 
   # :command.parse_requirements_while
   while [[ $# -gt 0 ]]; do
@@ -1448,261 +1574,6 @@ lct_lib_list_parse_requirements() {
           printf "%s\n" "--type requires an argument: --type, -t TYPE" >&2
           exit 1
         fi
-        ;;
-
-      -?*)
-        printf "invalid option: %s\n" "$key" >&2
-        exit 1
-        ;;
-
-      *)
-        # :command.parse_requirements_case
-        # :command.parse_requirements_case_simple
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
-
-        ;;
-
-    esac
-  done
-
-}
-
-# :command.parse_requirements
-lct_config_parse_requirements() {
-  local key
-
-  # :command.fixed_flags_filter
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      --help | -h)
-        long_usage=yes
-        lct_config_usage
-        exit
-        ;;
-
-      *)
-        break
-        ;;
-
-    esac
-  done
-
-  # :command.command_filter
-  action="config"
-
-  # :command.parse_requirements_while
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-
-      -?*)
-        printf "invalid option: %s\n" "$key" >&2
-        exit 1
-        ;;
-
-      *)
-        # :command.parse_requirements_case
-        # :command.parse_requirements_case_simple
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
-
-        ;;
-
-    esac
-  done
-
-}
-
-# :command.parse_requirements
-lct_setup_parse_requirements() {
-  local key
-
-  # :command.fixed_flags_filter
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      --help | -h)
-        long_usage=yes
-        lct_setup_usage
-        exit
-        ;;
-
-      *)
-        break
-        ;;
-
-    esac
-  done
-
-  # :command.command_filter
-  action="setup"
-
-  # :command.parse_requirements_while
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-
-      -?*)
-        printf "invalid option: %s\n" "$key" >&2
-        exit 1
-        ;;
-
-      *)
-        # :command.parse_requirements_case
-        # :command.parse_requirements_case_simple
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
-
-        ;;
-
-    esac
-  done
-
-}
-
-# :command.parse_requirements
-lct_completions_parse_requirements() {
-  local key
-
-  # :command.fixed_flags_filter
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      --help | -h)
-        long_usage=yes
-        lct_completions_usage
-        exit
-        ;;
-
-      *)
-        break
-        ;;
-
-    esac
-  done
-
-  # :command.command_filter
-  action="completions"
-
-  # :command.parse_requirements_while
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-
-      -?*)
-        printf "invalid option: %s\n" "$key" >&2
-        exit 1
-        ;;
-
-      *)
-        # :command.parse_requirements_case
-        # :command.parse_requirements_case_simple
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
-
-        ;;
-
-    esac
-  done
-
-}
-
-# :command.parse_requirements
-lct_bootstrap_parse_requirements() {
-  local key
-
-  # :command.fixed_flags_filter
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      --help | -h)
-        long_usage=yes
-        lct_bootstrap_usage
-        exit
-        ;;
-
-      *)
-        break
-        ;;
-
-    esac
-  done
-
-  # :command.command_filter
-  action="bootstrap"
-
-  # :command.parse_requirements_while
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      # :flag.case
-      --config | -c)
-
-        # :flag.case_arg
-        if [[ -n ${2+x} ]]; then
-          args['--config']="$2"
-          shift
-          shift
-        else
-          printf "%s\n" "--config requires an argument: --config, -c CONFIG" >&2
-          exit 1
-        fi
-        ;;
-
-      -?*)
-        printf "invalid option: %s\n" "$key" >&2
-        exit 1
-        ;;
-
-      *)
-        # :command.parse_requirements_case
-        # :command.parse_requirements_case_simple
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
-
-        ;;
-
-    esac
-  done
-
-}
-
-# :command.parse_requirements
-lct_gather_parse_requirements() {
-  local key
-
-  # :command.fixed_flags_filter
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      --help | -h)
-        long_usage=yes
-        lct_gather_usage
-        exit
-        ;;
-
-      *)
-        break
-        ;;
-
-    esac
-  done
-
-  # :command.command_filter
-  action="gather"
-
-  # :command.parse_requirements_while
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      # :flag.case
-      --force | -f)
-
-        # :flag.case_no_arg
-        args['--force']=1
-        shift
         ;;
 
       -?*)
@@ -1997,6 +1868,261 @@ lct_env_list_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+lct_bootstrap_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_bootstrap_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="bootstrap"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      # :flag.case
+      --config | -c)
+
+        # :flag.case_arg
+        if [[ -n ${2+x} ]]; then
+          args['--config']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--config requires an argument: --config, -c CONFIG" >&2
+          exit 1
+        fi
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_completions_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_completions_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="completions"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_config_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_config_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="config"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_setup_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_setup_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="setup"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+# :command.parse_requirements
+lct_gather_parse_requirements() {
+  local key
+
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        lct_gather_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="gather"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      # :flag.case
+      --force | -f)
+
+        # :flag.case_no_arg
+        args['--force']=1
+        shift
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
 # :command.initialize
 initialize() {
   declare -g version="0.2.0"
@@ -2125,19 +2251,20 @@ run() {
 
   case "$action" in
     "lib") lct_lib_command ;;
+    "lib install") lct_lib_install_command ;;
     "lib add") lct_lib_add_command ;;
     "lib remove") lct_lib_remove_command ;;
     "lib dump") lct_lib_dump_command ;;
     "lib list") lct_lib_list_command ;;
-    "config") lct_config_command ;;
-    "setup") lct_setup_command ;;
-    "completions") lct_completions_command ;;
-    "bootstrap") lct_bootstrap_command ;;
-    "gather") lct_gather_command ;;
     "env") lct_env_command ;;
     "env set") lct_env_set_command ;;
     "env unset") lct_env_unset_command ;;
     "env list") lct_env_list_command ;;
+    "bootstrap") lct_bootstrap_command ;;
+    "completions") lct_completions_command ;;
+    "config") lct_config_command ;;
+    "setup") lct_setup_command ;;
+    "gather") lct_gather_command ;;
   esac
 }
 

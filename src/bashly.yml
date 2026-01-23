@@ -3,53 +3,8 @@ help: Local configuration tool
 version: 0.2.0
 
 commands:
-  - name: lib
-    help: Manage lct libraries
-    examples:
-      - lct lib add mylib
-    commands:
-      - name: add
-        help: Add a library to lct
-        args:
-          - name: library
-            help: Name of the library to add
-            required: true
-      - name: remove
-        help: Remove a library from lct
-        args:
-          - name: library
-            help: Name of the library to remove
-            required: true
-      - name: dump
-        help: Dump the current lct libraries to your Brewfile
-      - name: list
-        help: List all lct libraries
-        flags:
-          - long: --type
-            short: -t
-            arg: type
-            help: Filter libraries by type
-            completions:
-              - cargo
-              - cask
-              - flatpak
-              - formula
-              - go
-              - mas
-              - tap
-              - vscode
-  - name: config
-    help: Open your lct config file in your $EDITOR
-    examples:
-      - lct config
-  - name: setup
-    help: Setup lct in your shell
-    examples:
-      - eval "$(lct setup)"
-  - name: completions
-    help: |-
-      Generate bash completions
-      Usage: eval "\$(lct completions)"
+  - import: src/commands/lib/lib.yml
+  - import: src/commands/env/env.yml
   - name: bootstrap
     alias: b
     help: Bootstrap your local configuration
@@ -62,7 +17,18 @@ commands:
         help: Config version to bootstrap
         completions:
           - $(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr '\n' ' ' 2> /dev/null)
-
+  - name: completions
+    help: |-
+      Generate bash completions
+      Usage: eval "\$(lct completions)"
+  - name: config
+    help: Open your lct config file in your $EDITOR
+    examples:
+      - lct config
+  - name: setup
+    help: Setup lct in your shell
+    examples:
+      - eval "$(lct setup)"
   - name: gather
     alias: g
     help: Gather local configuration files
@@ -72,36 +38,3 @@ commands:
       - long: --force
         short: -f
         help: overwrite existing version if conflicting
-  - name: env
-    alias: e
-    help: Manage local environment variables
-    examples:
-      - lct env set API_KEY 123
-      - lct env get API_KEY
-      - lct env unset API_KEY
-      - lct env list
-    commands:
-      - name: set
-        help: Set a configuration variable
-        args:
-          - name: key
-            help: Configuration key
-            required: true
-          - name: value
-            help: Configuration value
-            required: true
-      - name: unset
-        help: Unset a configuration variable
-        args:
-          - name: key
-            help: Configuration key
-            required: true
-      - name: list
-        help: List all configuration variables
-        flags:
-          - long: --key
-            short: -k
-            arg: key
-            help: Output in export format for shell sourcing
-            completions:
-              - $(yq 'keys | join(" ")' $LCT_ENV_FILE 2> /dev/null)
