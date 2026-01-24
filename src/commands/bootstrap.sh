@@ -76,21 +76,6 @@ else
   echo "✅ mise already installed"
 fi
 
-# INSTALL alacritty
-if [ -d "/Applications/Alacritty.app" ]; then
-  echo "✅ alacritty already installed"
-else
-  echo "installing alacritty"
-  git clone git@github.com:alacritty/alacritty.git $SOFTWARE_DIR/alacritty
-  cd $SOFTWARE_DIR/alacritty
-  make app
-  cp -r target/release/osx/Alacritty.app /Applications/
-  ln -s /Applications/Alacritty.app/Contents/MacOS/alacritty /usr/local/bin/alacritty
-  sudo tic -xe alacritty,alacritty-direct extra/alacritty.info
-  cp extra/completions/_alacritty ~/.zsh_functions/_alacritty
-  echo "✅ alacritty succesfully \installed"
-fi
-
 # INSTALL jrnl
 if ! command -v jrnl &>/dev/null; then
   echo "installing jrnl"
