@@ -56,65 +56,6 @@ for key in "${!PLUGINS[@]}"; do
 done
 # ##################################################
 
-# INSTALL POWERLEVEL10K
-if [ -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/themes/powerlevel10k" ]; then
-  echo "✅ powerlevel10k already installed"
-else
-  echo "installing powerlevel10k"
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-  echo "✅ powerlevel10k succesfully installed"
-fi
-
-# INSTALL MISE
-if ! command -v mise &>/dev/null; then
-  echo "installing mise"
-  curl https://mise.run | sh
-  echo 'eval "$(~/.local/bin/mise activate zsh)"' >>~/.zshrc
-  mise install
-  echo "✅ mise succesfully installed"
-else
-  echo "✅ mise already installed"
-fi
-
-# INSTALL jrnl
-if ! command -v jrnl &>/dev/null; then
-  echo "installing jrnl"
-  pip install jrnl
-  echo "✅ jrnl succesfully installed"
-else
-  echo "✅ jrnl already installed"
-fi
-
-# INSTALL lazyvim
-if [ -f "$CONFIG_DIR/nvim/lazyvim.json" ]; then
-  echo "✅ LazyVim already installed"
-else
-  echo "Installing LavyVim"
-  echo "Applying LazyVim config"
-  echo "Backing up existing nvim config if it exists"
-  if [ -d $CONFIG_DIR/nvim ]; then
-    mv $CONFIG_DIR/nvim $CONFIG_DIR/nvim.bak
-  fi
-
-  if [ -d $SHARE_DIR/nvim ]; then
-    mv $SHARE_DIR/nvim $SHARE_DIR/nvim.bak
-  fi
-
-  if [ -d "$STATE_DIR/nvim" ]; then
-    mv "$STATE_DIR/nvim" "$STATE_DIR/nvim.bak"
-  fi
-
-  if [ -d "$CACHE_DIR/nvim" ]; then
-    mv "$CACHE_DIR/nvim" "$CACHE_DIR/nvim.bak"
-  fi
-
-  git clone https://github.com/LazyVim/starter ~/.config/nvim
-  rmz -f ~/.config/nvim/.git
-
-  cp -r "$LATEST_LCT_VERSION_DIR/lazyvim/lazyvim.json" "$CONFIG_DIR/nvim/lazyvim.json"
-  cp -r "$LATEST_LCT_VERSION_DIR/lazyvim/lua" "$CONFIG_DIR/nvim/lua"
-fi
-
 echo "✅ Bootstrap complete"
 echo "Feel free to add  the following to your zshrc file"
 echo 'eval "$(lct setup)"'
