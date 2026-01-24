@@ -40,6 +40,9 @@ done
 echo "✅ Configs successfully copied"
 
 ############# plugin installations #############
+total_plugins=${#PLUGINS[@]}
+loaded=0
+
 for key in "${!PLUGINS[@]}"; do
   version="${PLUGINS[$key]}"
   plugin=${key}
