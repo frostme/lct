@@ -1,6 +1,6 @@
 name: lct
 help: Local configuration tool
-version: 0.3.0
+version: 0.4.0
 
 commands:
   - import: src/commands/lib/lib.yml
@@ -10,6 +10,7 @@ commands:
     alias: b
     help: Bootstrap your local configuration
     examples:
+      - lct bootstrap
       - lct bootstrap -c 26.01.20
     flags:
       - long: --config
@@ -17,15 +18,21 @@ commands:
         arg: config
         help: Config version to bootstrap
         completions:
-          - $(ls -d $HOME/code/personal/local/config_versions/*/ | xargs -n 1 basename | tr '\n' ' ' 2> /dev/null)
+          - $(ls $HOME/.local/share/lct/config_versions/ 2>/dev/null | grep -E '^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.tar\.xz$' | sed 's/\.tar\.xz$//' | tr '\n' ' ')
   - name: completions
     help: |-
       Generate bash completions
       Usage: eval "\$(lct completions)"
   - name: config
-    help: Open your lct config file in your $EDITOR
+    help: Open your config files in your $EDITOR
+    completions:
+      - $(ls $HOME/.config/ 2> /dev/null | tr '\n' ' ')
     examples:
       - lct config
+      - lct config alacritty
+    args:
+      - name: lib_name
+        help: Name of the config library to open
   - name: setup
     help: Setup lct in your shell
     examples:
