@@ -1,4 +1,5 @@
 CONFIG_VERSION=${args[--config]:-""}
+FORCE=${args[--force]:-0}
 TMP_DIR=$(mktemp -d)
 
 trap 'rm -rf "$TMP_DIR"' EXIT
@@ -14,6 +15,20 @@ echo "Starting Bootstrap Process"
 echo "Decompressing latest configuration version: $LATEST_LCT_VERSION"
 tar -xJf "$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION.tar.xz" -C "$TMP_DIR"
 echo "✅ Decompression complete"
+
+if [ -f "$LCT_BREW_FILE" ] && [ $FORCE == 0 ]; then
+  echo "Using existing Brewfile at $LCT_BREW_FILE"
+else
+  echo "No Brewfile found, using the one from the latest config version"
+  cp "$LATEST_LCT_VERSION_DIR/Brewfile" "$LCT_BREW_FILE"
+fi
+
+if [ -f "$LCT_CONFIG_FILE" ] && [ $FORCE == 0 ]; then
+  echo "Using existing config.yaml at $LCT_CONFIG_FILE"
+else
+  echo "No config.yaml found, using the one from the latest config version"
+  cp "$LATEST_LCT_VERSION_DIR/config.yaml" "$LCT_CONFIG_FILE"
+fi
 
 echo "Installing homebrew dependencies"
 brew bundle --file "$LCT_BREW_FILE"

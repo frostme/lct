@@ -3,7 +3,7 @@ this_version=$(date +%Y.%m.%d)
 
 FORCE=${args[--force]:-0}
 VERSION_DIR="$LCT_VERSIONS_DIR/$this_version"
-LCT_FILES=("$LCT_BREW_FILE")
+LCT_FILES=("$LCT_BREW_FILE" "$LCT_CONFIG_FILE")
 
 if [ "$this_version" == "$latest_version" ]; then
   if [[ $FORCE -eq 1 ]]; then

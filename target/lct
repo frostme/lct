@@ -1269,6 +1269,7 @@ lct_bootstrap_command() {
 
   # src/commands/bootstrap.sh
   CONFIG_VERSION=${args[--config]:-""}
+  FORCE=${args[--force]:-0}
   TMP_DIR=$(mktemp -d)
 
   trap 'rm -rf "$TMP_DIR"' EXIT
@@ -1284,6 +1285,20 @@ lct_bootstrap_command() {
   echo "Decompressing latest configuration version: $LATEST_LCT_VERSION"
   tar -xJf "$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION.tar.xz" -C "$TMP_DIR"
   echo "✅ Decompression complete"
+
+  if [ -f "$LCT_BREW_FILE" ] && [ $FORCE == 0 ]; then
+    echo "Using existing Brewfile at $LCT_BREW_FILE"
+  else
+    echo "No Brewfile found, using the one from the latest config version"
+    cp "$LATEST_LCT_VERSION_DIR/Brewfile" "$LCT_BREW_FILE"
+  fi
+
+  if [ -f "$LCT_CONFIG_FILE" ] && [ $FORCE == 0 ]; then
+    echo "Using existing config.yaml at $LCT_CONFIG_FILE"
+  else
+    echo "No config.yaml found, using the one from the latest config version"
+    cp "$LATEST_LCT_VERSION_DIR/config.yaml" "$LCT_CONFIG_FILE"
+  fi
 
   echo "Installing homebrew dependencies"
   brew bundle --file "$LCT_BREW_FILE"
@@ -1325,10 +1340,6 @@ lct_bootstrap_command() {
       tar -xJf "$TMP_DIR/registry/plugins/$plugin-$version.tar.xz" -C "$LCT_PLUGINS_DIR/"
     fi
     eval "$LCT_PLUGINS_DIR/$plugin-$version"
-    loaded=$((loaded + 1))
-    percent=$((loaded / total_plugins))
-    percentage=$((percent * 100))
-    eval "progressbar \"$percentage%\""
   done
   # ##################################################
 
@@ -1379,7 +1390,7 @@ lct_gather_command() {
 
   FORCE=${args[--force]:-0}
   VERSION_DIR="$LCT_VERSIONS_DIR/$this_version"
-  LCT_FILES=("$LCT_BREW_FILE")
+  LCT_FILES=("$LCT_BREW_FILE" "$LCT_CONFIG_FILE")
 
   if [ "$this_version" == "$latest_version" ]; then
     if [[ $FORCE -eq 1 ]]; then
