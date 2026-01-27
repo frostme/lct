@@ -15,6 +15,10 @@ lct bootstrap [OPTIONS]
 ## Examples
 
 ```bash
+lct bootstrap
+```
+
+```bash
 lct bootstrap -c 26.01.20
 ```
 
