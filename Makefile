@@ -1,3 +1,7 @@
+setup:
+	brew install bash git gh
+	gem install bashly
+
 build: 
 	bashly generate --upgrade
 
@@ -14,7 +18,7 @@ release: build validate docs
 	./release.sh
 
 install:
-	cp target/build/lct /usr/local/bin/lct
+	./install.sh
 
 uninstall:
 	rm -f /usr/local/bin/lct

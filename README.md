@@ -11,4 +11,9 @@
 
 ## Contributing
 
-- make build
+Needed Libraries
+
+- `make setup` to get necessary libraries
+- `make build` to generate local version in target/lct
+- `make install` to install local version
+- `make release` to generate new release
