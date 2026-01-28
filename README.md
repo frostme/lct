@@ -13,7 +13,7 @@
 
 Needed Libraries
 
-- `make setup` to get necessary libraries
-- `make build` to generate local version in target/lct
+- run `setup.sh` to get necessary libraries
+- `just build` to generate local version in target/lct
 - `make install` to install local version
-- `make release` to generate new release
+- `just release` to generate new release

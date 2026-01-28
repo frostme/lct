@@ -1,0 +1,38 @@
+set export
+alias b := build
+alias v := validate
+alias w := watch
+alias bu := bump
+
+
+build:
+  @bashly g -u
+
+validate:
+  @bashly v
+
+watch:
+  @bashly g -w
+
+install:
+  cp target/build/lct /usr/local/bin/lct
+
+render_docs:
+  @bashly r :markdown_github docs
+
+docs: render_docs
+  @git add docs
+  @git commit -m "Update documentation"
+  @git push origin main
+
+release: build validate docs
+  @./tasks/release.sh
+
+[arg('type', pattern='major|minor|patch')]
+bump type:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  current_version=$(yq '.version' ./src/bashly.yml)
+  new_version=$(semver -i "$type" $current_version)
+  echo "Bumping ${current_version} -> ${new_version}"
+  yq -i ".version=\"${new_version}\"" ./src/bashly.yml
