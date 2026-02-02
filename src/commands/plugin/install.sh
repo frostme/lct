@@ -1,5 +1,54 @@
-echo "# This file is located at 'src/commands/plugin/install.sh'."
-echo "# It contains the implementation for the 'lct plugin install' command."
-echo "# The code you write here will be wrapped by a function named 'lct_plugin_install_command()'."
-echo "# Feel free to edit this file; your changes will persist when regenerating."
-inspect_args
+# Directory to store plugins
+: "${LCT_PLUGINS_DIR:?LCT_PLUGINS_DIR is required}"
+
+# Parse plugins from configuration
+if [[ ! -f "${LCT_CONFIG_FILE}" ]]; then
+  echo "❌ ERROR: config.yaml file not found at ${LCT_CONFIG_FILE}" >&2
+  exit 1
+fi
+
+if [[ ${#PLUGINS[@]} -eq 0 ]]; then
+  echo "No plugins specified in config.yaml, nothing to install." >&2
+  exit 0
+fi
+
+echo "Starting plugin installation..."
+
+for idx in "${!PLUGINS[@]}"; do
+  plugin="${PLUGINS[$idx]}"
+  # Determine owner, repo, and name (if exists)
+  owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
+  repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
+  name="$(echo "$plugin" | awk -F '.' '{print $2}')"
+
+  repo_url="https://github.com/$owner/$repo.git"
+  plugin_cache_dest="$LCT_PLUGINS_CACHE_DIR/$owner/repo"
+  plugin_dest="$LCT_PLUGINS_DIR/$owner-$repo${name:+-$name}"
+
+  if [[ -d $plugin_dest ]]; then
+    echo "- Loaded plugin $plugin"
+  else
+    # Clone repo if not already cloned into cache
+    if [[ ! -d "$plugin_cache_dest" ]]; then
+      git clone "$repo_url" "$plugin_cache_dest" >/dev/null 2>&1 || {
+        echo "❌ ERROR: Unable to clone repository $repo_url" >&2
+        exit 1
+      }
+    fi
+
+    if [[ -n "$name" ]]; then
+      plugin_cache_dest="$plugin_cache_dest/plugins/$name"
+    fi
+
+    if [[ -d $plugin_cache_dest ]]; then
+      cp -r "$plugin_cache_dest" "$plugin_dest"
+
+      echo "- Installed plugin $plugin"
+    else
+      echo "❌ WARNING: Plugin directory $name not found in $repo_url plugin repository" >&2
+    fi
+  fi
+
+done
+
+echo "✅ Plugin installation complete"

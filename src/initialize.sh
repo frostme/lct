@@ -59,7 +59,8 @@ detect_directories() {
   LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
   LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
   LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
-  LCT_PLUGINS_DIR="${LCT_CACHE_DIR}/plugins"
+  LCT_PLUGINS_CACHE_DIR="${LCT_CACHE_DIR}/plugins"
+  LCT_PLUGINS_DIR="${LCT_SHARE_DIR}/plugins"
 }
 
 setup_directories() {
@@ -75,10 +76,10 @@ setup_directories() {
   [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init "$LCT_VERSIONS_DIR"
   [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
   [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
+  [[ -d "${LCT_PLUGINS_CACHE_DIR}" ]] || mkdir -p "${LCT_PLUGINS_CACHE_DIR}"
 }
 
 load_configuration() {
-  # TODO: change to a central registry
   # Load LCT configuration
   if [[ -f "${LCT_CONFIG_FILE}" ]]; then
     REMOTE_CONFIG_REPO=$(yq '.remote' ${LCT_CONFIG_FILE})
@@ -86,9 +87,8 @@ load_configuration() {
     DOTFILES=($(yq -o=csv '.dotfiles[]' ${LCT_CONFIG_FILE}))
     declare -gA OTHERFILES
     eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
-    declare -gA PLUGINS
-    eval "PLUGINS=($(yq -r '.plugins | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
-    REGISTRY=$(yq '.registry // "git@github.com:frostme/local-plugins.git"' ${LCT_CONFIG_FILE})
+    declare -ga PLUGINS
+    readarray -t PLUGINS < <(yq -r '.plugins | .[]' "${LCT_CONFIG_FILE}")
   fi
 }
 
