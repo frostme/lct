@@ -1,6 +1,12 @@
 name: lct
 help: Local configuration tool
 version: 0.5.0
+dependencies:
+  - bash
+  - tar
+  - xz
+  - yq
+  - git
 commands:
   - import: src/commands/lib/lib.yml
   - import: src/commands/env/env.yml
