@@ -58,19 +58,15 @@ echo "✅ Configs successfully copied"
 total_plugins=${#PLUGINS[@]}
 loaded=0
 
-for key in "${!PLUGINS[@]}"; do
-  version="${PLUGINS[$key]}"
-  plugin=${key}
-  if [ -f "$LCT_PLUGINS_DIR/$plugin-$version" ]; then
-    echo "✅ $plugin already installed"
-  else
-    echo "installing $plugin"
-    [[ -d $TMP_DIR/registry ]] || git clone -q $REGISTRY $TMP_DIR/registry
+plugin_installation
 
-    # TODO: change to downloading from a central repo
-    tar -xJf "$TMP_DIR/registry/plugins/$plugin-$version.tar.xz" -C "$LCT_PLUGINS_DIR/"
-  fi
-  eval "$LCT_PLUGINS_DIR/$plugin-$version"
+for idx in "${!PLUGINS[@]}"; do
+  plugin=${PLUGINS[$idx]}
+  owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
+  repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
+  name="$(echo "$plugin" | awk -F '.' '{print $2}')"
+  plugin_dir="$LCT_PLUGINS_DIR/$owner-$repo${name:+-$name}"
+  eval "${plugin_dir}/main.sh"
 done
 # ##################################################
 

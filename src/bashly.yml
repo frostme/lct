@@ -1,6 +1,11 @@
 name: lct
 help: Local configuration tool
 version: 0.5.0
+dependencies:
+  - curl
+  - git
+  - pv
+  - yq
 commands:
   - import: src/commands/lib/lib.yml
   - import: src/commands/env/env.yml
@@ -45,3 +50,23 @@ commands:
       - long: --force
         short: -f
         help: overwrite existing version if conflicting
+  - name: prune
+    help: Prune config and plugins files
+    examples:
+      - lct prune
+      - lct prune --plugins
+      - lct prune --plugins --unused --dry
+      - lct prune -pud
+    flags:
+      - long: --plugins
+        short: -p
+        help: Prune unused plugins
+      - long: --unused
+        short: -u
+        help: Prune unused config files
+      - long: --cache
+        short: -c
+        help: Prune cache files
+      - long: --dry
+        short: -d
+        help: Show all files that would be pruned
