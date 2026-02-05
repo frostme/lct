@@ -58,20 +58,9 @@ echo "✅ Configs successfully copied"
 total_plugins=${#PLUGINS[@]}
 loaded=0
 
-for key in "${!PLUGINS[@]}"; do
-  version="${PLUGINS[$key]}"
-  plugin=${key}
-  if [ -f "$LCT_PLUGINS_DIR/$plugin-$version" ]; then
-    echo "✅ $plugin already installed"
-  else
-    echo "installing $plugin"
-    [[ -d $TMP_DIR/registry ]] || git clone -q $REGISTRY $TMP_DIR/registry
+plugin_installation
+load_plugins
 
-    # TODO: change to downloading from a central repo
-    tar -xJf "$TMP_DIR/registry/plugins/$plugin-$version.tar.xz" -C "$LCT_PLUGINS_DIR/"
-  fi
-  eval "$LCT_PLUGINS_DIR/$plugin-$version"
-done
 # ##################################################
 
 echo "✅ Bootstrap complete"

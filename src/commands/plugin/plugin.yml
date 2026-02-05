@@ -1,11 +1,14 @@
 name: plugin
+alias: p
 help: Develop and manage lct plugins
 examples:
-  - lct plugin create myplugin
+  - lct plugin install
+  - lct p i owner/plugin
 commands:
   - name: init
     help: Initiate plugin for the current directory
   - name: install
+    alias: i
     help: Install an lct plugin from the registry
     args:
       - name: plugin
@@ -18,3 +21,5 @@ commands:
         required: true
   - name: list
     help: List all installed lct plugins
+  - name: load
+    help: Load insalled lct plugins

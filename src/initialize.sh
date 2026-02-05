@@ -1,27 +1,31 @@
-# Function to handle errors
-error_handler() {
-  local exit_code=$? # Capture the exit code of the failed command
-  echo "❌ ERROR: Command failed with exit code $exit_code on line $LINENO" >&2
-  echo "❌ Failing command: $BASH_COMMAND" >&2
-  echo "❌ Local bootstrap failed"
-  exit $exit_code # Exit the script with the original error code
-}
+enable_stacktrace
+enable_auto_colors
 
-# Expects:
-#   REMOTE_CONFIG_REPO   e.g. https://github.com/org/repo.git  (or git@github.com:org/repo.git)
-#   LCT_VERSIONS_DIR     path to an existing git working tree
+# -----------------------------
+# Function: set_origin_remote
+# Description:
+#   - Configures the origin remote of the git repository in LCT_VERSIONS_DIR to match REMOTE_CONFIG_REPO.
+# Preconditions:
+#   - REMOTE_CONFIG_REPO: Git URL (e.g., https://github.com/org/repo.git or git@github.com:org/repo.git).
+#   - LCT_VERSIONS_DIR: Path to a git working tree.
+# -----------------------------
 set_origin_remote() {
+  # Validate required environment variables
   : "${REMOTE_CONFIG_REPO:?REMOTE_CONFIG_REPO is required}"
   : "${LCT_VERSIONS_DIR:?LCT_VERSIONS_DIR is required}"
 
+  # Check if LCT_VERSIONS_DIR is a valid git repository
   if [[ ! -d "$LCT_VERSIONS_DIR/.git" ]]; then
-    echo "Not a git repo: $LCT_VERSIONS_DIR" >&2
+    echo "Error: Not a git repo: $LCT_VERSIONS_DIR" >&2
     return 1
   fi
 
   local current
+
+  # Get current remote URL, if it exists
   current="$(git -C "$LCT_VERSIONS_DIR" remote get-url origin 2>/dev/null || true)"
 
+  # Update or set the remote as needed
   if [[ -z "$current" ]]; then
     git -C "$LCT_VERSIONS_DIR" remote add origin "$REMOTE_CONFIG_REPO" &>/dev/null
   elif [[ "$current" != "$REMOTE_CONFIG_REPO" ]]; then
@@ -108,7 +112,6 @@ load_env() {
   fi
 }
 
-trap 'error_handler' ERR
 setup_directories
 load_configuration
 load_env
