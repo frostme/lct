@@ -69,3 +69,14 @@ plugin_paths_for_entry() {
     printf '%s/%s/%s\n' "$root" "$owner" "$repo"
   fi
 }
+
+load_plugins() {
+  for idx in "${!PLUGINS[@]}"; do
+    plugin=${PLUGINS[$idx]}
+    owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
+    repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
+    name="$(echo "$plugin" | awk -F '.' '{print $2}')"
+    plugin_dir="$LCT_PLUGINS_DIR/$owner-$repo${name:+-$name}"
+    eval "${plugin_dir}/main.sh"
+  done
+}

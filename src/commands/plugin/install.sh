@@ -1,1 +1,2 @@
 plugin_installation
+load_plugins
