@@ -2,9 +2,12 @@ name: lct
 help: Local configuration tool
 version: 0.5.0
 dependencies:
+  - bash
   - curl
   - git
   - pv
+  - tar
+  - xz
   - yq
 commands:
   - import: src/commands/lib/lib.yml
