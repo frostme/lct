@@ -87,6 +87,40 @@ setup_directories() {
   [[ -d "${LCT_PLUGINS_CACHE_DIR}" ]] || mkdir -p "${LCT_PLUGINS_CACHE_DIR}"
 }
 
+load_plugin_configs() {
+  for plugin in "${PLUGINS[@]}"; do
+    owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
+    repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
+    name="$(echo "$plugin" | awk -F '.' '{print $2}')"
+    plugin_dir="$LCT_PLUGINS_DIR/$owner-$repo${name:+-$name}"
+    plugin_cache_dir="$LCT_PLUGINS_CACHE_DIR/$owner/$repo"
+    [[ -n "$name" ]] && plugin_cache_dir="$plugin_cache_dir/plugins/$name"
+
+    plugin_config="$plugin_dir/config.yaml"
+    [[ -f "$plugin_config" ]] || plugin_config="$plugin_cache_dir/config.yaml"
+    [[ -f "$plugin_config" ]] || continue
+
+    mapfile -t plugin_configs < <(yq -r '.configs // [] | .[]' "$plugin_config")
+    mapfile -t plugin_dotfiles < <(yq -r '.dotfiles // [] | .[]' "$plugin_config")
+    while IFS=$'\t' read -r key value; do
+      [[ -z "$key" ]] && continue
+      [[ -n "${OTHERFILES[$key]+x}" ]] && continue
+      OTHERFILES["$key"]="$value"
+    done < <(yq -r '.other // {} | to_entries[] | "\(.key)\t\(.value)"' "$plugin_config")
+
+    CONFIGS+=("${plugin_configs[@]}")
+    DOTFILES+=("${plugin_dotfiles[@]}")
+  done
+
+  if ((${#CONFIGS[@]})); then
+    mapfile -t CONFIGS < <(printf '%s\n' "${CONFIGS[@]}" | awk 'NF && !seen[$0]++')
+  fi
+
+  if ((${#DOTFILES[@]})); then
+    mapfile -t DOTFILES < <(printf '%s\n' "${DOTFILES[@]}" | awk 'NF && !seen[$0]++')
+  fi
+}
+
 load_configuration() {
   # Load LCT configuration
   if [[ -f "${LCT_CONFIG_FILE}" ]]; then
@@ -97,6 +131,7 @@ load_configuration() {
     eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
     declare -ga PLUGINS
     readarray -t PLUGINS < <(yq -r '.plugins | .[]' "${LCT_CONFIG_FILE}")
+    load_plugin_configs
   fi
 }
 
