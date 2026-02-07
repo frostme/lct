@@ -8,6 +8,11 @@ if ! command -v bashly >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v shunit2 >/dev/null 2>&1; then
+  echo "shunit2 is required to run tests. Run ./setup.sh to install it." >&2
+  exit 1
+fi
+
 cd "$repo_root"
 
 bashly validate
@@ -18,6 +23,6 @@ if [ ! -x target/build/lct ]; then
   exit 1
 fi
 
-target/build/lct --help >/dev/null
+LCT_BIN=target/build/lct SHUNIT_COLOR=none tests/smoke_test.sh >/dev/null
 
 echo "Smoke tests passed."

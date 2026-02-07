@@ -13,8 +13,8 @@
 
 Needed Libraries
 
-- run `setup.sh` to get necessary libraries
+- run `setup.sh` to get necessary libraries (bashly, shunit2, etc)
 - `just build` to generate local version in target/lct
-- `just test` to run the smoke tests
+- `just test` to run the smoke tests (uses shunit2)
 - `make install` to install local version
 - `just release <major|minor|patch>` to generate new release
