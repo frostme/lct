@@ -9,7 +9,7 @@ release_dir="target/release"
 changelog_file="CHANGELOG.md"
 version="$(yq '.version' src/bashly.yml)"
 tag="v${version}"
-release_title="lct ${version}"
+release_title="${tag}"
 
 if [[ ! -f "$build_path" ]]; then
   echo "Release build not found at ${build_path}. Run 'just build' before releasing." >&2
@@ -40,8 +40,7 @@ trap 'rm -f "$notes_file"' EXIT
   echo "$commits"
   if [[ -n "$changelog_url" ]]; then
     echo
-    echo "## Full Changelog"
-    echo "- ${changelog_url}"
+    echo "**Full Changelog**: ${changelog_url}"
   fi
 } >"$notes_file"
 
@@ -63,8 +62,7 @@ fi
   echo "$commits"
   if [[ -n "$changelog_url" ]]; then
     echo
-    echo "### Full Changelog"
-    echo "- ${changelog_url}"
+    echo "**Full Changelog**: ${changelog_url}"
   fi
   if [[ -n "$existing_body" ]]; then
     echo
