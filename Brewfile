@@ -1,0 +1,9 @@
+brew  "bash"
+brew "coreutils" 
+brew "git"
+brew "gh"
+brew "gum"
+brew "just" 
+brew "semver" 
+brew "yq"
+

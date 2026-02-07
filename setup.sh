@@ -1,2 +1,2 @@
-brew install bash coreutils git gh just semver yq
+brew bundle
 gem install bashly
