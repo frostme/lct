@@ -35,7 +35,11 @@ append_unique() {
   local field="$1"
   local value="$2"
 
-  FIELD_VALUE="$value" yq -i ".${field} += [env.FIELD_VALUE] | .${field} |= unique" "$LCT_CONFIG_FILE"
+  if [[ -z "$value" ]]; then
+    return
+  fi
+
+  FIELD_VALUE="$value" yq -i ".${field} += [env(FIELD_VALUE)] | .${field} |= unique" "$LCT_CONFIG_FILE"
 }
 
 prompt_remote_repo() {
@@ -58,7 +62,7 @@ prompt_remote_repo() {
   fi
 
   if [[ -n "$remote_value" ]]; then
-    REMOTE_VALUE="$remote_value" yq -i '.remote = env.REMOTE_VALUE' "$LCT_CONFIG_FILE"
+    REMOTE_VALUE="$remote_value" yq -i '.remote = env(REMOTE_VALUE)' "$LCT_CONFIG_FILE"
   else
     yq -i '.remote = null' "$LCT_CONFIG_FILE"
   fi
@@ -70,8 +74,8 @@ prompt_dotfiles() {
 
   local suggestions=()
   case "$shell_name" in
-    zsh) suggestions+=(".zshrc") ;;
-    bash) suggestions+=(".bashrc") ;;
+  zsh) suggestions+=(".zshrc") ;;
+  bash) suggestions+=(".bashrc") ;;
   esac
 
   if [[ ${#suggestions[@]} -eq 0 ]]; then
@@ -80,7 +84,7 @@ prompt_dotfiles() {
 
   local suggestion_list
   suggestion_list=$(printf '%s ' "${suggestions[@]}" | sed 's/[[:space:]]*$//')
-  if gum_confirm_prompt "Add baseline dotfiles (${suggestion_list})?" ; then
+  if gum_confirm_prompt "Add baseline dotfiles (${suggestion_list})?"; then
     mapfile -t selected_dotfiles < <(gum_choose_multi "${suggestions[@]}")
     if [[ ${#selected_dotfiles[@]} -eq 0 ]]; then
       selected_dotfiles=("${suggestions[@]}")
@@ -97,10 +101,10 @@ prompt_plugins() {
 
   local suggestions=()
   case "$shell_name" in
-    zsh)
-      suggestions+=("zsh-users/zsh-autosuggestions")
-      suggestions+=("zsh-users/zsh-syntax-highlighting")
-      ;;
+  zsh)
+    suggestions+=("zsh-users/zsh-autosuggestions")
+    suggestions+=("zsh-users/zsh-syntax-highlighting")
+    ;;
   esac
 
   if [[ ${#suggestions[@]} -eq 0 ]]; then
@@ -116,7 +120,7 @@ prompt_plugins() {
   else
     local suggestion_list
     suggestion_list=$(printf '%s ' "${suggestions[@]}" | sed 's/[[:space:]]*$//')
-    if ! gum_confirm_prompt "Add baseline plugins (${suggestion_list})?" ; then
+    if ! gum_confirm_prompt "Add baseline plugins (${suggestion_list})?"; then
       return
     fi
   fi
@@ -147,7 +151,7 @@ run_init_flow() {
   if gum_available; then
     gum_join_vertical \
       "$(gum style --foreground 121 '✅ Initialization complete')" \
-      "$(gum format --type yaml <"$LCT_CONFIG_FILE")"
+      "$(gum format --type code <"$LCT_CONFIG_FILE")"
   else
     echo "✅ Initialization complete"
   fi
