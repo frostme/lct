@@ -17,16 +17,8 @@ watch:
 install:
   cp target/build/lct /usr/local/bin/lct
 
-render_docs:
+docs:
   @bashly r :markdown_github docs
-
-docs: render_docs
-  @git add docs
-  @git commit -m "Update documentation"
-  @git push origin main
-
-release: build validate docs
-  @./tasks/release.sh
 
 [arg('type', pattern='major|minor|patch')]
 bump type:
