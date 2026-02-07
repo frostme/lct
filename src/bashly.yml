@@ -13,6 +13,7 @@ commands:
   - import: src/commands/lib/lib.yml
   - import: src/commands/env/env.yml
   - import: src/commands/plugin/plugin.yml
+  - import: src/commands/alias/alias.yml
   - name: init
     help: Initialize lct configuration
     examples:

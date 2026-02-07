@@ -14,6 +14,7 @@ lct COMMAND
 
 ## Commands
 
+- [alias](lct%20alias.md) - Manage lct aliases
 - [lib](lct%20lib.md) - Manage lct libraries
 - [env](lct%20env.md) - Manage local environment variables
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
@@ -23,4 +24,3 @@ lct COMMAND
 - [config](lct%20config.md) - Open your config files in your $EDITOR
 - [setup](lct%20setup.md) - Setup lct in your shell
 - [gather](lct%20gather.md) - Gather local configuration files
-
