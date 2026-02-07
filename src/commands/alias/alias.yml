@@ -16,9 +16,9 @@ commands:
         required: true
   - name: remove
     help: unset and remove ALIAS alias
+    completions:
+      - $(yq 'keys | join(" ")' $LCT_ALIAS_FILE 2>/dev/null)
     args:
       - name: alias
         help: Name of the alias to remove
         required: true
-        completions:
-          - $(yq 'keys | join(" ")' $LCT_ALIAS_FILE 2>/dev/null)
