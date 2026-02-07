@@ -1,3 +1,6 @@
+#!/bin/bash
+set -Eeuo pipefail
+
 if command -v mise &>/dev/null; then
   echo "mise is already installed"
 else
@@ -5,11 +8,12 @@ else
   cargo binstall mise
 fi
 
-if command -v brew &>/dev/null; then
-  echo "Homebrew is already installed"
-else
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-brew bundle
+mise trust
 mise install
+
+if command -v shunit2 &>/dev/null; then
+  echo "shunit2 is already installed"
+else
+  curl -L https://github.com/kward/shunit2/releases/download/2.1.8/shunit2 -o /usr/local/bin/shunit2
+  chmod +x /usr/local/bin/shunit2
+fi
