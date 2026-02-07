@@ -38,7 +38,12 @@ From the repo README snippet:
 - Run `setup.sh` for needed libraries
 - `just build` generates a local version in `target/lct`
 - `make install` installs the local version
+- `just docs` regenerates usage documentation in `docs/`
 - `just release` creates a new release :contentReference[oaicite:3]{index=3}
+
+CLI structure note:
+
+- LCT is built with [Bashly](https://bashly.dev/), which defines the CLI structure and help text. Use the Bashly source-of-truth definitions (e.g., in `src/`) and then regenerate output via `just build` (for the executable) and `just docs` (for usage docs) rather than editing generated artifacts by hand.
 
 ## 2) How to work (agent workflow)
 
@@ -69,6 +74,7 @@ Run the standard build/install flow for any meaningful change:
 
 - `./setup.sh` (if dependencies changed)
 - `just build`
+- `just docs` (if CLI help/usage text changes)
 - `make install`
 - Smoke test the CLI locally (see section 8)
 
