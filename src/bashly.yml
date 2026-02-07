@@ -5,6 +5,7 @@ dependencies:
   - bash
   - curl
   - git
+  - gum
   - pv
   - tar
   - xz

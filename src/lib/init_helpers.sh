@@ -44,11 +44,15 @@ prompt_remote_repo() {
 
   local prompt="Remote repository to store lct configurations"
   if [[ -n "$current_remote" ]]; then
-    prompt+=" [$current_remote]"
+    prompt+=" [$current_remote] (leave blank to keep)"
   fi
-  prompt+=": "
+  prompt+=":"
 
-  read -r -p "$prompt" remote_value
+  if gum_available; then
+    remote_value=$(gum input --placeholder "$prompt" --value "$current_remote")
+  else
+    read -r -p "$prompt " remote_value
+  fi
   if [[ -z "$remote_value" ]]; then
     remote_value="$current_remote"
   fi
@@ -76,9 +80,12 @@ prompt_dotfiles() {
 
   local suggestion_list
   suggestion_list=$(printf '%s ' "${suggestions[@]}" | sed 's/[[:space:]]*$//')
-  read -r -p "Add baseline dotfiles (${suggestion_list})? [y/N]: " add_dotfiles
-  if [[ "$add_dotfiles" =~ ^[Yy]$ ]]; then
-    for dotfile in "${suggestions[@]}"; do
+  if gum_confirm_prompt "Add baseline dotfiles (${suggestion_list})?" ; then
+    mapfile -t selected_dotfiles < <(gum_choose_multi "${suggestions[@]}")
+    if [[ ${#selected_dotfiles[@]} -eq 0 ]]; then
+      selected_dotfiles=("${suggestions[@]}")
+    fi
+    for dotfile in "${selected_dotfiles[@]}"; do
       append_unique "dotfiles" "$dotfile"
     done
   fi
@@ -97,7 +104,11 @@ prompt_plugins() {
   esac
 
   if [[ ${#suggestions[@]} -eq 0 ]]; then
-    read -r -p "Add any baseline plugins? (owner/repo[.name], comma separated, blank to skip): " plugin_input
+    if gum_available; then
+      plugin_input=$(gum input --placeholder "Add any baseline plugins? (owner/repo[.name], comma separated)")
+    else
+      read -r -p "Add any baseline plugins? (owner/repo[.name], comma separated, blank to skip): " plugin_input
+    fi
     if [[ -z "$plugin_input" ]]; then
       return
     fi
@@ -105,13 +116,17 @@ prompt_plugins() {
   else
     local suggestion_list
     suggestion_list=$(printf '%s ' "${suggestions[@]}" | sed 's/[[:space:]]*$//')
-    read -r -p "Add baseline plugins (${suggestion_list})? [y/N]: " add_plugins
-    if [[ ! "$add_plugins" =~ ^[Yy]$ ]]; then
+    if ! gum_confirm_prompt "Add baseline plugins (${suggestion_list})?" ; then
       return
     fi
   fi
 
-  for plugin in "${suggestions[@]}"; do
+  mapfile -t selected_plugins < <(printf '%s\n' "${suggestions[@]}" | gum_filter_multi)
+  if [[ ${#selected_plugins[@]} -eq 0 ]]; then
+    selected_plugins=("${suggestions[@]}")
+  fi
+
+  for plugin in "${selected_plugins[@]}"; do
     # trim whitespace
     plugin="${plugin#"${plugin%%[![:space:]]*}"}"
     plugin="${plugin%"${plugin##*[![:space:]]}"}"
@@ -121,6 +136,7 @@ prompt_plugins() {
 }
 
 run_init_flow() {
+  gum_title "LCT initialization"
   ensure_init_paths
   ensure_versions_file
   ensure_config_defaults
@@ -128,7 +144,13 @@ run_init_flow() {
   prompt_dotfiles
   prompt_plugins
   date >"$LCT_INIT_FILE"
-  echo "✅ Initialization complete"
+  if gum_available; then
+    gum_join_vertical \
+      "$(gum style --foreground 121 '✅ Initialization complete')" \
+      "$(gum format --type yaml <"$LCT_CONFIG_FILE")"
+  else
+    echo "✅ Initialization complete"
+  fi
 }
 
 run_init_if_needed() {

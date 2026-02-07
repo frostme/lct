@@ -12,10 +12,9 @@ fi
 
 LATEST_LCT_VERSION_DIR="$TMP_DIR/$LATEST_LCT_VERSION"
 
-echo "Starting Bootstrap Process"
+gum_title "Starting Bootstrap Process"
 
-echo "Decompressing latest configuration version: $LATEST_LCT_VERSION"
-tar -xJf "$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION.tar.xz" -C "$TMP_DIR"
+gum_spinner "Decompressing $LATEST_LCT_VERSION" tar -xJf "$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION.tar.xz" -C "$TMP_DIR"
 echo "✅ Decompression complete"
 
 if [ -f "$LCT_BREW_FILE" ] && [ $FORCE == 0 ]; then
@@ -32,8 +31,7 @@ else
   cp "$LATEST_LCT_VERSION_DIR/config.yaml" "$LCT_CONFIG_FILE"
 fi
 
-echo "Installing homebrew dependencies"
-brew bundle --file "$LCT_BREW_FILE"
+gum_spinner "Installing homebrew dependencies" brew bundle --file "$LCT_BREW_FILE"
 echo "✅ homebrew dependencies succesfully installed"
 
 if [ -d "$SOFTWARE_DIR" ]; then
@@ -66,5 +64,11 @@ load_plugins
 # ##################################################
 
 echo "✅ Bootstrap complete"
-echo "Feel free to add  the following to your zshrc file"
-echo 'eval "$(lct setup)"'
+if gum_available; then
+  gum_join_vertical \
+    "$(gum style --foreground 212 'Add the following to your shell to complete setup:')" \
+    "$(gum style --foreground 121 'eval \"$(lct setup)\"')"
+else
+  echo "Feel free to add  the following to your zshrc file"
+  echo 'eval "$(lct setup)"'
+fi

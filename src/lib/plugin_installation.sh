@@ -13,7 +13,7 @@ plugin_installation() {
     exit 0
   fi
 
-  echo "Starting plugin installation..."
+  gum_title "Starting plugin installation..."
 
   for idx in "${!PLUGINS[@]}"; do
     plugin="${PLUGINS[$idx]}"
@@ -31,10 +31,11 @@ plugin_installation() {
     else
       # Clone repo if not already cloned into cache
       if [[ ! -d "$plugin_cache_dest" ]]; then
-        git clone "$repo_url" "$plugin_cache_dest" >/dev/null 2>&1 || {
-          echo "❌ ERROR: Unable to clone repository $repo_url" >&2
-          exit 1
-        }
+        gum_spinner "Cloning $repo" git clone "$repo_url" "$plugin_cache_dest" >/dev/null 2>&1 ||
+          {
+            echo "❌ ERROR: Unable to clone repository $repo_url" >&2
+            exit 1
+          }
       fi
 
       if [[ -n "$name" ]]; then
@@ -52,5 +53,9 @@ plugin_installation() {
 
   done
 
-  echo "✅ Plugin installation complete"
+  if gum_available; then
+    gum style --foreground 121 "✅ Plugin installation complete"
+  else
+    echo "✅ Plugin installation complete"
+  fi
 }
