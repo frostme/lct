@@ -16,4 +16,4 @@ Needed Libraries
 - run `setup.sh` to get necessary libraries
 - `just build` to generate local version in target/lct
 - `make install` to install local version
-- `just release` to generate new release
+- `just release <major|minor|patch>` to generate new release
