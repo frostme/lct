@@ -1,5 +1,3 @@
-echo $"autoload -Uz +X bashcompinit && bashcompinit"
-printf '\n\n'
 send_environment
 printf '\n\n'
 send_aliases

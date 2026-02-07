@@ -15,6 +15,8 @@ commands:
         help: Name of the plugin to install
   - name: remove
     help: Remove an installed lct plugin
+    completions:
+      - $(yq '.plugins | .[]' $LCT_CONFIG_FILE 2>/dev/null)
     args:
       - name: plugin
         help: Name of the plugin to remove
