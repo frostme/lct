@@ -25,7 +25,12 @@ docs: render_docs
   @git commit -m "Update documentation"
   @git push origin main
 
-release: build validate docs
+[arg('type', pattern='major|minor|patch')]
+release type:
+  @just bump {{type}}
+  @just build
+  @just validate
+  @just docs
   @./tasks/release.sh
 
 [arg('type', pattern='major|minor|patch')]
