@@ -63,6 +63,8 @@ detect_directories() {
   LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
   LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
   LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
+  LCT_ALIAS_FILE="${LCT_SHARE_DIR}/alias.yaml"
+  LCT_INIT_FILE="${LCT_SHARE_DIR}/.init_done"
   LCT_PLUGINS_CACHE_DIR="${LCT_CACHE_DIR}/plugins"
   LCT_PLUGINS_DIR="${LCT_SHARE_DIR}/plugins"
 }
@@ -76,9 +78,11 @@ setup_directories() {
   [[ -d "${LCT_VERSIONS_DIR}" ]] || mkdir -p "${LCT_VERSIONS_DIR}"
   [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
+  [[ -f "${LCT_ALIAS_FILE}" ]] || touch "${LCT_ALIAS_FILE}"
   [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
   [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init "$LCT_VERSIONS_DIR"
   [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
+  [[ -d "${LCT_CACHE_DIR}" ]] || mkdir -p "${LCT_CACHE_DIR}"
   [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
   [[ -d "${LCT_PLUGINS_CACHE_DIR}" ]] || mkdir -p "${LCT_PLUGINS_CACHE_DIR}"
 }

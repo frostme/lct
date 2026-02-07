@@ -4,6 +4,8 @@ TMP_DIR=$(mktemp -d)
 
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+run_init_if_needed
+
 if [[ ! -z $CONFIG_VERSION ]]; then
   LATEST_LCT_VERSION="$CONFIG_VERSION"
 fi
