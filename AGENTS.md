@@ -69,6 +69,7 @@ Run the standard build/install flow for any meaningful change:
 
 - `./setup.sh` (if dependencies changed)
 - `just build`
+- `just test`
 - `make install`
 - Smoke test the CLI locally (see section 8)
 
@@ -169,6 +170,8 @@ Any behavior visible to users must be documented:
 - changed defaults
 - new required dependencies
 - new config keys
+
+When changing behavior, extend `tasks/test.sh` so `just test` exercises the new paths.
 
 Docs should include:
 
