@@ -14,7 +14,7 @@ if [ "$this_version" == "$latest_version" ]; then
   fi
 fi
 
-echo "Gathering configs for new version: $this_version"
+gum_title "Gathering configs for new version: $this_version"
 mkdir -p "$VERSION_DIR"
 mkdir -p "$VERSION_DIR/config"
 mkdir -p "$VERSION_DIR/dotfiles"
@@ -56,8 +56,7 @@ done
 
 echo "✅ Other files successfully gathered"
 
-echo "Compressing gathered configuration"
-tar -cJf "$LCT_VERSIONS_DIR/$this_version.tar.xz" -C "$LCT_VERSIONS_DIR" "$this_version"
+gum_spinner "Compressing gathered configuration" tar -cJf "$LCT_VERSIONS_DIR/$this_version.tar.xz" -C "$LCT_VERSIONS_DIR" "$this_version"
 rm -rf "$VERSION_DIR"
 echo "✅ Successfully compressed configuration"
 
@@ -67,4 +66,10 @@ yq -i ".latest = \"$this_version\"" "$LCT_VERSIONS_FILE"
 git -C "$LCT_VERSIONS_DIR" add .
 git -C "$LCT_VERSIONS_DIR" commit -m "Gather configs for version $this_version" || echo "No changes to commit"
 git -C "$LCT_VERSIONS_DIR" push origin main || echo "No remote repository configured, skipping push"
-echo "✅ Config gather for version $this_version completed successfully"
+if gum_available; then
+  gum_join_vertical \
+    "$(gum style --foreground 121 "✅ Config gather for version $this_version completed successfully")" \
+    "$(gum style --foreground 244 "Archive saved to $LCT_VERSIONS_DIR/$this_version.tar.xz")"
+else
+  echo "✅ Config gather for version $this_version completed successfully"
+fi

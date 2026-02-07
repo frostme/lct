@@ -19,4 +19,12 @@ for path in "${candidates[@]}"; do
   fi
 done
 
+if gum_available; then
+  picked_path=$(gum_pick_file "$CONFIG_DIR" --file)
+  if [[ -n "$picked_path" ]]; then
+    eval "$EDITOR \"$picked_path\""
+    exit 0
+  fi
+fi
+
 echo "No config file found for $lib_name in $CONFIG_DIR"

@@ -67,10 +67,18 @@ done
 # Wait for all background jobs
 wait
 
-for i in "${!TYPES[@]}"; do
-  type="${TYPES[$i]}"
-  if [[ -s "$tmpdir/$type.txt" ]]; then
-    _h2 "${TITLES[$i]}"
-    cat "$tmpdir/$type.txt" | _indent | _cols
-  fi
-done
+output=$(
+  for i in "${!TYPES[@]}"; do
+    type="${TYPES[$i]}"
+    if [[ -s "$tmpdir/$type.txt" ]]; then
+      _h2 "${TITLES[$i]}"
+      cat "$tmpdir/$type.txt" | _indent | _cols
+    fi
+  done
+)
+
+if gum_available; then
+  printf '%s\n' "$output" | gum_pager_view
+else
+  printf '%s\n' "$output"
+fi
