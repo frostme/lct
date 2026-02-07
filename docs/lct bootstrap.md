@@ -22,10 +22,11 @@ lct bootstrap
 lct bootstrap -c 26.01.20
 ```
 
+If initialization has not been run yet, this command will trigger `lct init` with default answers before bootstrapping.
+
 ## Options
 
 #### *--config, -c CONFIG*
 
 Config version to bootstrap
-
 

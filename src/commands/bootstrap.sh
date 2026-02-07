@@ -4,6 +4,13 @@ TMP_DIR=$(mktemp -d)
 
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+if [[ ! -f "$LCT_INIT_STAMP" ]]; then
+  echo "No initialization detected, running 'lct init --yes'"
+  "$0" init --yes
+  load_configuration
+  load_env
+fi
+
 if [[ ! -z $CONFIG_VERSION ]]; then
   LATEST_LCT_VERSION="$CONFIG_VERSION"
 fi

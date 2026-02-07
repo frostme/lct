@@ -13,6 +13,15 @@ commands:
   - import: src/commands/lib/lib.yml
   - import: src/commands/env/env.yml
   - import: src/commands/plugin/plugin.yml
+  - name: init
+    help: Initialize lct configuration files
+    examples:
+      - lct init
+      - lct init --yes
+    flags:
+      - long: --yes
+        short: -y
+        help: Run initialization with default answers
   - name: bootstrap
     alias: b
     help: Bootstrap your local configuration
