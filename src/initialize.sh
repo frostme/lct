@@ -124,13 +124,16 @@ load_plugin_configs() {
 load_configuration() {
   # Load LCT configuration
   if [[ -f "${LCT_CONFIG_FILE}" ]]; then
-    REMOTE_CONFIG_REPO=$(yq '.remote' ${LCT_CONFIG_FILE})
-    CONFIGS=($(yq -o=csv '.configs[]' ${LCT_CONFIG_FILE}))
-    DOTFILES=($(yq -o=csv '.dotfiles[]' ${LCT_CONFIG_FILE}))
+    REMOTE_CONFIG_REPO=$(yq -r '.remote // ""' "${LCT_CONFIG_FILE}")
+    mapfile -t CONFIGS < <(yq -r '.configs // [] | .[]' "${LCT_CONFIG_FILE}")
+    mapfile -t DOTFILES < <(yq -r '.dotfiles // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -gA OTHERFILES
-    eval "OTHERFILES=($(yq -r '.other | to_entries | .[] | "[\(.key)]=\"\(.value)\""' ${LCT_CONFIG_FILE} | paste -sd' ' -))"
+    while IFS=$'\t' read -r key value; do
+      [[ -z "$key" ]] && continue
+      OTHERFILES["$key"]="$value"
+    done < <(yq -r '.other // {} | to_entries[] | "\(.key)\t\(.value)"' "${LCT_CONFIG_FILE}")
     declare -ga PLUGINS
-    readarray -t PLUGINS < <(yq -r '.plugins | .[]' "${LCT_CONFIG_FILE}")
+    mapfile -t PLUGINS < <(yq -r '.plugins // [] | .[]' "${LCT_CONFIG_FILE}")
     load_plugin_configs
   fi
 }
@@ -146,7 +149,7 @@ load_env() {
     LATEST_LCT_VERSION_DIR="$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION"
   fi
 
-  if [ $REMOTE_CONFIG_REPO != "null" ]; then
+  if [[ -n "$REMOTE_CONFIG_REPO" && "$REMOTE_CONFIG_REPO" != "null" ]]; then
     set_origin_remote
   fi
 }
