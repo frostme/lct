@@ -6,4 +6,4 @@ brew "gum"
 brew "just" 
 brew "semver" 
 brew "yq"
-
+brew "shunit2"

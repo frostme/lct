@@ -11,6 +11,9 @@ build:
 validate:
   @bashly v
 
+test:
+  @./tasks/test.sh
+
 watch:
   @bashly g -w
 
