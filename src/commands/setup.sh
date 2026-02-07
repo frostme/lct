@@ -4,6 +4,6 @@ send_environment
 printf '\n\n'
 send_completions
 printf '\n\n'
-zoxide init zsh
+send_plugin_completions
 printf '\n\n'
-zellij setup --generate-auto-start zsh
+send_plugin_setups
