@@ -6,6 +6,7 @@ alias bu := bump
 
 
 build:
+  mkdir -p target/build
   @bashly g -u
 
 validate:
