@@ -26,6 +26,9 @@ install:
 docs:
   @bashly r :markdown_github docs
 
+pages:
+  @bashly r pages/templates pages/out
+
 [arg('type', pattern='major|minor|patch')]
 release type:
   @just bump {{type}}

@@ -3,7 +3,6 @@
 ## Installation
 
 - `curl -fsSL https://frostme.github.io/lct/install.sh | bash`
-- Or `git clone` then `make install`
 
 ## Usage
 
@@ -11,11 +10,9 @@
 
 ## Contributing
 
-Needed Libraries
-
-- run `setup.sh` to get necessary libraries (bashly, shunit2, etc)
+- run `setup.sh` to get necessary libraries
 - gum (for interactive CLI presentation)
-- `just build` to generate local version in target/lct
-- `just test` to run the smoke tests (uses shunit2)
-- `make install` to install local version
+- `just build` to generate local version in target/build/lct
+- `just test` to run the smoke tests (uses bash_unit)
+- `just install` to install local version (target/build/lct) to /usr/local/bin
 - `just release <major|minor|patch>` to generate new release
