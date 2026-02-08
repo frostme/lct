@@ -1,0 +1,20 @@
+name: Tests
+on:
+  pull_request:
+  push: { branches main }
+
+jobs:
+  test:
+    name: Run Smoke Tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: bash ./setup.sh
+
+      - name: Run Smoke Tests
+        run: just test
