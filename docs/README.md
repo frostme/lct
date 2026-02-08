@@ -14,31 +14,7 @@ lct COMMAND
 
 ## Dependencies
 
-#### *bash*
-
-
-
-#### *curl*
-
-
-
-#### *git*
-
-
-
 #### *gum*
-
-
-
-#### *pv*
-
-
-
-#### *tar*
-
-
-
-#### *xz*
 
 
 

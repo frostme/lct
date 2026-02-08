@@ -51,4 +51,12 @@ test_configs_commands() {
   assertEquals "configs list should be empty after removal" "No configs configured." "$output"
 }
 
+test_prune_cache_dry_run_lists_cache_dirs() {
+  mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
+
+  local output
+  output=$("$LCT_BIN" prune --cache --dry)
+  assertContains "prune --cache should list cached plugin dirs" "$output" "$tmpdir/.cache/lct/plugins/acme/tool"
+}
+
 . "$(command -v shunit2)"
