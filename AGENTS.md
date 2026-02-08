@@ -27,17 +27,17 @@ When in doubt: add docs, add tests (if present), and keep the change minimal.
 Top-level structure includes (non-exhaustive):
 
 - `src/` — core CLI source (Bash). Likely includes Bashly-generated structure or source-of-truth CLI definitions.
-- `tasks/` — task scripts / helpers (build/release/maintenance).
+- `scripts/` — task scripts / helpers (build/release/maintenance).
 - `docs/` — user-facing documentation.
 - `settings.yml` — project configuration (treat as source-of-truth config).
-- `setup.sh` — installs dev dependencies / bootstraps environment.
-- `justfile` and `Makefile` — developer workflows (build, release, install, etc.). :contentReference[oaicite:2]{index=2}
+- `scripts/setup.sh` — installs dev dependencies / bootstraps environment.
+- `justfile` — developer workflows (build, release, install, etc.). :contentReference[oaicite:2]{index=2}
 
 From the repo README snippet:
 
-- Run `setup.sh` for needed libraries
-- `just build` generates a local version in `target/lct`
-- `make install` installs the local version
+- Run `./scripts/setup.sh` for needed libraries
+- `just build` generates a local version in `target/build/lct`
+- `just install` installs the local version
 - `just release` creates a new release :contentReference[oaicite:3]{index=3}
 
 ## 2) How to work (agent workflow)
@@ -67,10 +67,10 @@ If something is ambiguous:
 
 Run the standard build/install flow for any meaningful change:
 
-- `./setup.sh` (if dependencies changed)
+- `./scripts/setup.sh` (if dependencies changed)
 - `just build`
 - `just test`
-- `make install`
+- `just install`
 - Smoke test the CLI locally (see section 8)
 
 If formatting/linting tools exist, run them.
@@ -86,7 +86,7 @@ If tests exist, run them. If not, add at least a smoke-test doc snippet.
 
 ### 3.1 Portability targets
 
-Assume macOS is a primary target environment.
+Assume macOS is a primary target environment, however this should support linux environments as well.
 
 - Avoid GNU-only flags unless you guard them or document requirements.
 - Prefer POSIX-ish utilities where possible.
@@ -153,8 +153,8 @@ If introducing new config keys:
 
 Use the existing task runners:
 
-- Prefer `just` targets and `make install` over bespoke one-off commands. :contentReference[oaicite:4]{index=4}
-- If adding a workflow, add it to `justfile` or `tasks/` rather than sprinkling ad-hoc scripts.
+- Prefer `just` targets over bespoke one-off commands. :contentReference[oaicite:4]{index=4}
+- If adding a workflow, add it to `justfile` or `scripts/` rather than sprinkling ad-hoc scripts.
 
 Release hygiene:
 
@@ -171,9 +171,9 @@ Any behavior visible to users must be documented:
 - new required dependencies
 - new config keys
 
-These are generated using bashlys documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `just docs` as defined in the justfile.
+These are generated using bashlys documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `just docs` as defined in the justfile, as well as github-pages pretty documentatin with `just pages`
 
-When changing behavior, extend `tasks/test.sh` so `just test` exercises the new paths.
+When changing behavior, extend `scripts/test.sh` so `just test` exercises the new paths.
 
 ## 8) Smoke testing checklist (agent must do)
 
@@ -212,6 +212,7 @@ When asked to implement a feature/fix, respond with:
 
 - Implement minimal diff
 - Update docs alongside code using `just docs`
+- Update github-pages docs with `just pages` if applicable
 
 ### Verify
 

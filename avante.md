@@ -44,7 +44,10 @@ When asked to make changes:
 Prefer existing workflows:
 
 - `just build`
-- `make install`
+- `just install` (for local testing)
+- `just test`
+- `just docs`
+- `just pages`
 - Local CLI smoke testing
 
 ## If unsure

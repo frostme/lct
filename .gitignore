@@ -3,3 +3,4 @@ local-plugins
 target/*
 avante.local.md
 .DS_Store
+pages
