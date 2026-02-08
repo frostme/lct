@@ -171,13 +171,9 @@ Any behavior visible to users must be documented:
 - new required dependencies
 - new config keys
 
+These are generated using bashlys documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `just docs` as defined in the justfile.
+
 When changing behavior, extend `tasks/test.sh` so `just test` exercises the new paths.
-
-Docs should include:
-
-- “what it does”
-- “why it exists”
-- minimal examples that can be copy/pasted
 
 ## 8) Smoke testing checklist (agent must do)
 
@@ -215,7 +211,7 @@ When asked to implement a feature/fix, respond with:
 ### Patch
 
 - Implement minimal diff
-- Update docs alongside code
+- Update docs alongside code using `just docs`
 
 ### Verify
 
