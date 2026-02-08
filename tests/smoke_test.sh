@@ -23,7 +23,6 @@ teardown_suite() {
 }
 
 test_help_exits_zero() {
-  "$LCT_BIN" --help
   "$LCT_BIN" --help >/dev/null 2>&1
   command_exit_code=$?
   assert_equals 0 $command_exit_code "lct --help should exit 0"
