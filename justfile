@@ -13,6 +13,9 @@ validate:
   @bashly v
 
 test:
+  @bashly v
+  @[[ -d target/build ]] || mkdir -p target/build
+  @bashly g -u -q
   @./tasks/test.sh
 
 watch:

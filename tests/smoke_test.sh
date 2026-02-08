@@ -52,21 +52,10 @@ test_configs_commands() {
 }
 
 test_prune_cache_dry_run_lists_cache_dirs() {
-  local tmpdir
-  tmpdir="$(mktemp -d)"
-  local env_vars=(
-    HOME="$tmpdir"
-    CONFIG_DIR="$tmpdir/.config"
-    SHARE_DIR="$tmpdir/.local/share"
-    STATE_DIR="$tmpdir/.local/state"
-    CACHE_DIR="$tmpdir/.cache"
-  )
-
-  mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state"
   mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
 
   local output
-  output=$("${env_vars[@]}" "$LCT_BIN" prune --cache --dry)
+  output=$("$LCT_BIN" prune --cache --dry)
   assertContains "prune --cache should list cached plugin dirs" "$output" "$tmpdir/.cache/lct/plugins/acme/tool"
 }
 
