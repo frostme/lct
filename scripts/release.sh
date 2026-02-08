@@ -7,16 +7,20 @@ cd "$ROOT_DIR"
 build_path="target/build/lct"
 release_dir="target/release"
 changelog_file="CHANGELOG.md"
+release_notes_file="${release_dir}/release-notes.md"
 version="$(yq '.version' src/bashly.yml)"
 tag="v${version}"
-release_title="${tag}"
 
 if [[ ! -f "$build_path" ]]; then
   echo "Release build not found at ${build_path}. Run 'just build' before releasing." >&2
   exit 1
 fi
 
-last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+  last_tag="$(git describe --tags --abbrev=0 "${tag}^" 2>/dev/null || true)"
+else
+  last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+fi
 
 if [[ -n "$last_tag" ]]; then
   commits="$(git log --no-merges --pretty=format:'- %s' "${last_tag}..HEAD")"
@@ -33,8 +37,7 @@ if [[ -n "$last_tag" ]]; then
   changelog_url="https://github.com/frostme/lct/compare/${last_tag}...${tag}"
 fi
 
-notes_file="$(mktemp)"
-trap 'rm -f "$notes_file"' EXIT
+mkdir -p "$release_dir"
 {
   echo "## What's Changed"
   echo "$commits"
@@ -42,7 +45,7 @@ trap 'rm -f "$notes_file"' EXIT
     echo
     echo "**Full Changelog**: ${changelog_url}"
   fi
-} >"$notes_file"
+} >"$release_notes_file"
 
 existing_body=""
 if [[ -f "$changelog_file" ]]; then
@@ -70,7 +73,6 @@ fi
   fi
 } >"$changelog_file"
 
-mkdir -p "$release_dir"
 zip_asset="${release_dir}/${version}.zip"
 tar_asset="${release_dir}/${version}.tar.gz"
 rm -f "$zip_asset" "$tar_asset"
@@ -78,9 +80,12 @@ rm -f "$zip_asset" "$tar_asset"
 zip -j "$zip_asset" "$build_path"
 tar -czf "$tar_asset" -C "$(dirname "$build_path")" "$(basename "$build_path")"
 
-gh release create "$tag" "$zip_asset" "$tar_asset" --title "$release_title" --notes-file "$notes_file"
-
-echo "Release ${tag} created."
+echo "Release ${tag} assets prepared."
+echo "Release notes: ${release_notes_file}"
 echo "Assets:"
 echo "  - ${zip_asset}"
 echo "  - ${tar_asset}"
+echo
+echo "Publish by pushing the tag and letting the GitHub Action create the release:"
+echo "  git tag ${tag}"
+echo "  git push origin ${tag}"

@@ -15,4 +15,4 @@
 - `just build` to generate local version in target/build/lct
 - `just test` to run the smoke tests (uses bash_unit)
 - `just install` to install local version (target/build/lct) to /usr/local/bin
-- `just release <major|minor|patch>` to generate new release
+- `just release <major|minor|patch>` to prepare release artifacts, then push the new tag to trigger the GitHub Action release
