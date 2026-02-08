@@ -15,7 +15,7 @@ validate:
 
 test: validate ensure_dir
   @bashly g -u -q
-  ls -lsa
+  ls -lsa target/build
   @./tasks/test.sh
 
 watch:
