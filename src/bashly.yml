@@ -33,7 +33,7 @@ commands:
       Generate bash completions
       Usage: eval "\$(lct completions)"
   - name: config
-    help: Open your config files in your $EDITOR
+    help: Open your config files in your ${EDITOR:-editor}
     completions:
       - $(ls $HOME/.config/ 2> /dev/null | tr '\n' ' ')
     examples:
