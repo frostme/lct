@@ -27,3 +27,4 @@ jobs:
 
       - name: Run Smoke Tests
         run: just test
+        shell: bash

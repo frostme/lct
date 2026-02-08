@@ -21,7 +21,7 @@ watch:
   @bashly g -w
 
 install:
-  cp target/build/lct /usr/local/bin/lct
+  @cp target/build/lct /usr/local/bin/lct
 
 docs:
   @bashly r :markdown_github docs
