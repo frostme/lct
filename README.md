@@ -2,8 +2,8 @@
 
 ## Installation
 
-- `git clone`
-- `make install`
+- `curl -fsSL https://frostme.github.io/lct/install.sh | bash`
+- Or `git clone` then `make install`
 
 ## Usage
 
