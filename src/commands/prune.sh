@@ -84,13 +84,15 @@ else
   if [[ ${#directories_to_prune[@]} -eq 0 ]]; then
     echo "No directories to prune."
   else
-    printf '%s\n' "${directories_to_prune[@]}" |
-      sort -r |
-      while IFS= read -r dir; do
-        rm -rf -- "$dir"
-        printf '.\n'
-      done |
-      pv -l -s "${#directories_to_prune[@]}" >/dev/null
+    prune_directories() {
+      printf '%s\n' "${directories_to_prune[@]}" |
+        sort -r |
+        while IFS= read -r dir; do
+          rm -rf -- "$dir"
+        done
+    }
+
+    gum_spinner "Pruning directories" prune_directories
     echo "Pruning complete."
   fi
 fi
