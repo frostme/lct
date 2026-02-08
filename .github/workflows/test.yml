@@ -1,0 +1,29 @@
+name: Tests
+on:
+  pull_request:
+  push: { branches main }
+
+jobs:
+  test:
+    name: Run Smoke Tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        uses: jdx/mise-action@v3
+
+      - name: Install shunit2
+        run: |
+          TOOL_URL="https://raw.githubusercontent.com/bash-unit/bash_unit/master/install.sh"
+          INSTALL_PATH="/usr/local/bin/bash_unit"
+
+          sudo curl -sSL "$TOOL_URL" | bash
+          sudo mv ./bash_unit "$INSTALL_PATH"
+
+      - name: Run Smoke Tests
+        run: just test
+        shell: bash

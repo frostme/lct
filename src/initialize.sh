@@ -80,7 +80,7 @@ setup_directories() {
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
   [[ -f "${LCT_ALIAS_FILE}" ]] || touch "${LCT_ALIAS_FILE}"
   [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
-  [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init "$LCT_VERSIONS_DIR"
+  [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init -q -b main "$LCT_VERSIONS_DIR"
   [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
   [[ -d "${LCT_CACHE_DIR}" ]] || mkdir -p "${LCT_CACHE_DIR}"
   [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
