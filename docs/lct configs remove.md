@@ -1,18 +1,18 @@
-# lct alias remove
+# lct configs remove
 
-unset and remove ALIAS alias
+remove CONFIG from configs list
 
 ## Usage
 
 ```bash
-lct alias remove ALIAS
+lct configs remove CONFIG
 ```
 
 ## Arguments
 
-#### *ALIAS*
+#### *CONFIG*
 
-Name of the alias to remove
+Config to remove
 
 | Attributes      | &nbsp;
 |-----------------|-------------

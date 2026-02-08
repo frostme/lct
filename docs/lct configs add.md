@@ -1,18 +1,18 @@
-# lct alias remove
+# lct configs add
 
-unset and remove ALIAS alias
+add CONFIG to configs list
 
 ## Usage
 
 ```bash
-lct alias remove ALIAS
+lct configs add CONFIG
 ```
 
 ## Arguments
 
-#### *ALIAS*
+#### *CONFIG*
 
-Name of the alias to remove
+Config directory (relative to $HOME/.config)
 
 | Attributes      | &nbsp;
 |-----------------|-------------

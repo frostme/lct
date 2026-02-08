@@ -1,18 +1,18 @@
-# lct alias remove
+# lct dotfiles add
 
-unset and remove ALIAS alias
+add FILE to dotfiles list
 
 ## Usage
 
 ```bash
-lct alias remove ALIAS
+lct dotfiles add FILE
 ```
 
 ## Arguments
 
-#### *ALIAS*
+#### *FILE*
 
-Name of the alias to remove
+Dotfile path (relative to $HOME)
 
 | Attributes      | &nbsp;
 |-----------------|-------------

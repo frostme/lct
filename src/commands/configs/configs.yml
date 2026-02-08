@@ -1,0 +1,25 @@
+name: configs
+help: Manage configs list
+examples:
+  - lct configs add nvim
+  - lct configs remove nvim
+  - lct configs list
+commands:
+  - name: add
+    help: add CONFIG to configs list
+    completions:
+      - $(ls "$HOME/.config" 2>/dev/null | while IFS= read -r entry; do if [[ -d "$HOME/.config/$entry" ]]; then printf '%s ' "$entry"; fi; done)
+    args:
+      - name: config
+        help: Config directory (relative to $HOME/.config)
+        required: true
+  - name: remove
+    help: remove CONFIG from configs list
+    completions:
+      - $(yq '.configs | .[]' $LCT_CONFIG_FILE 2>/dev/null)
+    args:
+      - name: config
+        help: Config to remove
+        required: true
+  - name: list
+    help: list configured configs

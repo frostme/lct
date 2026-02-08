@@ -1,0 +1,25 @@
+name: dotfiles
+help: Manage dotfiles list
+examples:
+  - lct dotfiles add .zshrc
+  - lct dotfiles remove .zshrc
+  - lct dotfiles list
+commands:
+  - name: add
+    help: add FILE to dotfiles list
+    completions:
+      - $(ls -a "$HOME" 2>/dev/null | grep -v '^\.\.?$' | tr '\n' ' ')
+    args:
+      - name: file
+        help: Dotfile path (relative to $HOME)
+        required: true
+  - name: remove
+    help: remove FILE from dotfiles list
+    completions:
+      - $(yq '.dotfiles | .[]' $LCT_CONFIG_FILE 2>/dev/null)
+    args:
+      - name: file
+        help: Dotfile to remove
+        required: true
+  - name: list
+    help: list configured dotfiles

@@ -2,10 +2,14 @@
 
 Install an lct plugin from the registry
 
+| Attributes       | &nbsp;
+|------------------|-------------
+| Alias:           | i
+
 ## Usage
 
 ```bash
-lct plugin install PLUGIN
+lct plugin install [PLUGIN]
 ```
 
 ## Arguments
@@ -13,9 +17,5 @@ lct plugin install PLUGIN
 #### *PLUGIN*
 
 Name of the plugin to install
-
-| Attributes      | &nbsp;
-|-----------------|-------------
-| Required:       | ✓ Yes
 
 

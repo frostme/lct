@@ -1,18 +1,18 @@
-# lct alias remove
+# lct dotfiles remove
 
-unset and remove ALIAS alias
+remove FILE from dotfiles list
 
 ## Usage
 
 ```bash
-lct alias remove ALIAS
+lct dotfiles remove FILE
 ```
 
 ## Arguments
 
-#### *ALIAS*
+#### *FILE*
 
-Name of the alias to remove
+Dotfile to remove
 
 | Attributes      | &nbsp;
 |-----------------|-------------
