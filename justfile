@@ -15,7 +15,7 @@ validate:
 
 test: validate ensure_dir
   @bashly g -u -q
-  target/build/lct --help
+  target/build/lct --help >/dev/null 2>&1
   @./tasks/test.sh
 
 watch:
