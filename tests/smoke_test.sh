@@ -3,7 +3,7 @@
 LCT_BIN="${LCT_BIN:-target/build/lct}"
 tmpdir=""
 
-oneTimeSetUp() {
+setup_suite() {
   if [ ! -x "$LCT_BIN" ]; then
     echo "lct binary missing at $LCT_BIN"
     exit 1
@@ -18,13 +18,14 @@ oneTimeSetUp() {
   export CACHE_DIR="$tmpdir/.cache"
 }
 
-oneTimeTearDown() {
+teardown_suite() {
   rm -rf "$tmpdir"
 }
 
 test_help_exits_zero() {
   "$LCT_BIN" --help >/dev/null 2>&1
-  assertEquals "lct --help should exit 0" 0 $?
+  command_exit_code=$?
+  assert_equals 0 $command_exit_code "lct --help should exit 0"
 }
 
 test_dotfiles_commands() {
@@ -32,11 +33,11 @@ test_dotfiles_commands() {
 
   local output
   output=$("$LCT_BIN" dotfiles list)
-  assertEquals "dotfiles list should include the added entry" ".zshrc" "$output"
+  assert_equals ".zshrc" "$output" "dotfiles list should include the added entry"
 
   "$LCT_BIN" dotfiles remove "$tmpdir/.zshrc"
   output=$("$LCT_BIN" dotfiles list)
-  assertEquals "dotfiles list should be empty after removal" "No dotfiles configured." "$output"
+  assert_equals "No dotfiles configured." "$output" "dotfiles list should be empty after removal"
 }
 
 test_configs_commands() {
@@ -44,11 +45,11 @@ test_configs_commands() {
 
   local output
   output=$("$LCT_BIN" configs list)
-  assertEquals "configs list should include the added entry" "alacritty" "$output"
+  assert_equals "alacritty" "$output" "configs list should include the added entry"
 
   "$LCT_BIN" configs remove "$tmpdir/.config/alacritty"
   output=$("$LCT_BIN" configs list)
-  assertEquals "configs list should be empty after removal" "No configs configured." "$output"
+  assert_equals "No configs configured." "$output" "configs list should be empty after removal"
 }
 
 test_prune_cache_dry_run_lists_cache_dirs() {
@@ -56,7 +57,5 @@ test_prune_cache_dry_run_lists_cache_dirs() {
 
   local output
   output=$("$LCT_BIN" prune --cache --dry)
-  assertContains "prune --cache should list cached plugin dirs" "$output" "$tmpdir/.cache/lct/plugins/acme/tool"
+  assert_matches "$tmpdir/.cache/lct/plugins/acme/tool" "$output" "prune --cache should list cached plugin dirs"
 }
-
-. "$(command -v shunit2)"

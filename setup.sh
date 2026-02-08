@@ -11,9 +11,12 @@ fi
 mise trust
 mise install
 
-if command -v shunit2 &>/dev/null; then
-  echo "shunit2 is already installed"
+if command -v bash_unit &>/dev/null; then
+  echo "bash_unit is already installed"
 else
-  curl -sSL https://raw.githubusercontent.com/kward/shunit2/v2.1.8/shunit2 -o /usr/local/bin/shunit2
-  chmod +x /usr/local/bin/shunit2
+  TOOL_URL="https://raw.githubusercontent.com/bash-unit/bash_unit/master/install.sh"
+  INSTALL_PATH="/usr/local/bin/bash_unit"
+
+  curl -sSL "$TOOL_URL" | bash
+  mv ./bash_unit "$INSTALL_PATH"
 fi

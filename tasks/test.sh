@@ -4,6 +4,6 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
-LCT_BIN=target/build/lct SHUNIT_COLOR=auto tests/smoke_test.sh >/dev/null
+LCT_BIN="${repo_root}/target/build/lct" FORCE_COLOR=true bash_unit tests/*_test.sh
 
 echo "Smoke tests passed."

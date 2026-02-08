@@ -18,12 +18,11 @@ jobs:
 
       - name: Install shunit2
         run: |
-          TOOL_URL="https://raw.githubusercontent.com/kward/shunit2/v2.1.8/shunit2"
-          INSTALL_PATH="/usr/local/bin/shunit2"
+          TOOL_URL="https://raw.githubusercontent.com/bash-unit/bash_unit/master/install.sh"
+          INSTALL_PATH="/usr/local/bin/bash_unit"
 
-          sudo curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
-
-          sudo chmod +x "$INSTALL_PATH"
+          sudo curl -sSL "$TOOL_URL" | bash
+          sudo mv ./bash_unit "$INSTALL_PATH"
 
       - name: Run Smoke Tests
         run: just test
