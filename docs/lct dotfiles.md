@@ -5,7 +5,7 @@ Manage dotfiles list
 ## Usage
 
 ```bash
-lct dotfiles [COMMAND]
+lct dotfiles COMMAND
 ```
 
 ## Examples
@@ -27,3 +27,5 @@ lct dotfiles remove ~/.zshrc
 - [add](lct%20dotfiles%20add.md) - Add FILE to dotfiles list
 - [remove](lct%20dotfiles%20remove.md) - Remove FILE from dotfiles list
 - [list](lct%20dotfiles%20list.md) - List configured dotfiles
+
+

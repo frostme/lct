@@ -2,8 +2,6 @@
 
 Bootstrap your local configuration
 
-Uses config, dotfiles, and other entries declared in installed plugins’ `config.yaml` files when applying gathered artifacts.
-
 | Attributes       | &nbsp;
 |------------------|-------------
 | Alias:           | b
@@ -29,4 +27,5 @@ lct bootstrap -c 26.01.20
 #### *--config, -c CONFIG*
 
 Config version to bootstrap
+
 

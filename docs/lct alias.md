@@ -5,7 +5,7 @@ Manage lct aliases
 ## Usage
 
 ```bash
-lct alias [COMMAND]
+lct alias COMMAND
 ```
 
 ## Examples
@@ -26,3 +26,5 @@ lct alias remove ll
 
 - [add](lct%20alias%20add.md) - add ALIAS alias
 - [remove](lct%20alias%20remove.md) - unset and remove ALIAS alias
+
+

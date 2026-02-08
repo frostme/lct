@@ -2,8 +2,6 @@
 
 Gather local configuration files
 
-Includes configs, dotfiles, and other entries declared in installed plugins’ `config.yaml` files.
-
 | Attributes       | &nbsp;
 |------------------|-------------
 | Alias:           | g
@@ -25,4 +23,5 @@ lct gather
 #### *--force, -f*
 
 overwrite existing version if conflicting
+
 
