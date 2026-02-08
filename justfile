@@ -5,7 +5,7 @@ alias w := watch
 alias bu := bump
 
 @ensure_dir:
-  [[ -d target ]] || mkdir -p target
+  [ -d target ] || mkdir -p target
 
 build: ensure_dir
   @bashly g -u
