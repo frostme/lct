@@ -14,7 +14,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Dependencies
-        run: bash ./setup.sh
+        uses: jdx/mise-action@v3
+
+      - name: Install shunit2
+        run: |
+          TOOL_URL="https://github.com/kward/shunit2/releases/download/2.1.8/shunit2"
+          INSTALL_PATH="/usr/local/bin/shunit2"
+
+          sudo curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
+
+          sudo chmod +x "$INSTALL_PATH"
 
       - name: Run Smoke Tests
         run: just test
