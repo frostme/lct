@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        uses: jdx/mise-action@v3
+
+      - name: Build
+        run: just build
+
+      - name: Prepare release artifacts
+        run: ./scripts/release.sh
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: target/release/release-notes.md
+          files: |
+            target/release/*.zip
+            target/release/*.tar.gz
