@@ -15,15 +15,14 @@ fi
 
 cd "$repo_root"
 
-mkdir -p target/build
-bashly validate
-bashly generate --upgrade
+bashly v
+bashly g -u -q
 
 if [ ! -x target/build/lct ]; then
   echo "Generated CLI missing at target/build/lct" >&2
   exit 1
 fi
 
-LCT_BIN=target/build/lct SHUNIT_COLOR=none tests/smoke_test.sh >/dev/null
+LCT_BIN=target/build/lct SHUNIT_COLOR=auto tests/smoke_test.sh >/dev/null
 
 echo "Smoke tests passed."
