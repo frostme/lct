@@ -15,7 +15,7 @@ validate:
 
 test: validate ensure_dir
   @bashly g -u -q
-  @./tasks/test.sh
+  @./scripts/test.sh
 
 watch:
   @bashly g -w
@@ -26,13 +26,18 @@ install:
 docs:
   @bashly r :markdown_github docs
 
+pages:
+  @bashly r templates pages
+  @cp scripts/install.sh pages/install.sh
+
 [arg('type', pattern='major|minor|patch')]
 release type:
   @just bump {{type}}
   @just build
   @just validate
   @just docs
-  @./tasks/release.sh
+  @just pages
+  @./scripts/release.sh
 
 [arg('type', pattern='major|minor|patch')]
 bump type:

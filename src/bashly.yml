@@ -4,6 +4,38 @@ version: 0.5.0
 dependencies:
   - gum
   - yq
+x_pages:
+  title: LCT
+  tagline: Local configuration tool
+  overview: |-
+    LCT helps you capture, share, and restore local configuration in a repeatable
+    way. Use it to bootstrap machines, gather dotfiles, and manage config
+    libraries with a stable CLI you can script against.
+  quickstart:
+    - label: Install
+      command: curl -fsSL https://frostme.github.io/lct/install.sh | bash
+      description: Installs the latest release and puts `lct` on your PATH.
+    - label: Bootstrap your config
+      command: lct bootstrap
+      description: Apply your saved config and plugins on a new machine.
+    - label: Gather configs
+      command: lct gather
+      description: Capture and version local configs for reuse.
+  highlights:
+    - title: Predictable CLI output
+      description: Designed for automation-friendly, repeatable workflows.
+    - title: Pluggable configuration
+      description: Organize config libraries and plugin collections cleanly.
+    - title: Safe defaults
+      description: Lean on dry-runs and explicit prompts before destructive actions.
+  footer: Want more? Visit the README for the full workflow and support links.
+  repo_url: https://github.com/frostme/lct
+  accent_color: "#4f46e5"
+  links:
+    - label: README
+      url: https://github.com/frostme/lct
+    - label: Install Script
+      url: https://frostme.github.io/lct/install.sh
 commands:
   - import: src/commands/lib/lib.yml
   - import: src/commands/env/env.yml
