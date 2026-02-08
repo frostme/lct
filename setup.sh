@@ -14,6 +14,6 @@ mise install
 if command -v shunit2 &>/dev/null; then
   echo "shunit2 is already installed"
 else
-  curl -L https://github.com/kward/shunit2/releases/download/2.1.8/shunit2 -o /usr/local/bin/shunit2
+  curl -sSL https://raw.githubusercontent.com/kward/shunit2/v2.1.8/shunit2 -o /usr/local/bin/shunit2
   chmod +x /usr/local/bin/shunit2
 fi
