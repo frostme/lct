@@ -19,7 +19,7 @@ if root_command? && x_pages
     x_pages['quickstart'].each do |step|
       > ### {{ step['label'] }}
       >
-      > ```bash
+      > ```
       > {{ step['command'] }}
       > ```
       >
@@ -44,7 +44,7 @@ end
 
 > ## Usage
 >
-> ```bash
+> ```
 > {{ usage_string.for_markdown }}
 > ```
 >
@@ -55,7 +55,7 @@ if examples
   > ## Examples
   >
   examples.each do |example|
-    > ```bash
+    > ```
     > {{ example }}
     > ```
     >
