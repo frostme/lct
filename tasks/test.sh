@@ -15,6 +15,7 @@ fi
 
 cd "$repo_root"
 
+mkdir -p target/build
 bashly validate
 bashly generate --upgrade
 

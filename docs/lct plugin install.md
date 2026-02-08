@@ -1,6 +1,6 @@
 # lct plugin install
 
-Install an lct plugin from the registry
+Install an lct plugin from the registry (cached and refreshed automatically)
 
 | Attributes       | &nbsp;
 |------------------|-------------

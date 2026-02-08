@@ -9,7 +9,7 @@ commands:
     help: Initiate plugin for the current directory
   - name: install
     alias: i
-    help: Install an lct plugin from the registry
+    help: Install an lct plugin from the registry (cached and refreshed automatically)
     args:
       - name: plugin
         help: Name of the plugin to install

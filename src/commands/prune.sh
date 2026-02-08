@@ -49,8 +49,8 @@ if [[ $prune_plugins -eq 1 ]]; then
       [[ "$pair_slug" == "$slug" ]] || continue
 
       local cache_path inst_path
-      cache_path="$(plugin_paths_for_entry "$LCT_CACHE_PLUGINS_DIR" "$entry")"
-      inst_path="$(plugin_paths_for_entry "$LCT_INSTALLED_PLUGINS_DIR" "$entry")"
+      cache_path="$(plugin_paths_for_entry "$LCT_PLUGINS_CACHE_DIR" "$entry")"
+      inst_path="$(plugin_paths_for_entry "$LCT_PLUGINS_DIR" "$entry")"
 
       directories_to_prune+=("$cache_path" "$inst_path")
     done < <(printf '%s\n' "${current_pairs[@]}")
