@@ -4,17 +4,16 @@ alias v := validate
 alias w := watch
 alias bu := bump
 
+@ensure_dir:
+  [[ -d target ]] || mkdir -p target
 
-build:
-  [[ -d target/build ]] || mkdir -p target/build
+build: ensure_dir
   @bashly g -u
 
 validate:
   @bashly v
 
-test:
-  @bashly v
-  @[[ -d target/build ]] || mkdir -p target/build
+test: validate ensure_dir
   @bashly g -u -q
   @./tasks/test.sh
 
