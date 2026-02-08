@@ -18,6 +18,8 @@ lct COMMAND
 - [lib](lct%20lib.md) - Manage lct libraries
 - [env](lct%20env.md) - Manage local environment variables
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
+- [dotfiles](lct%20dotfiles.md) - Manage dotfiles list
+- [configs](lct%20configs.md) - Manage configs list
 - [init](lct%20init.md) - Initialize lct configuration
 - [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
 - [completions](lct%20completions.md) - Generate bash completions
