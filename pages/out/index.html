@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>lct · LCT</title>
+    <meta name="description" content="Local configuration tool">
+    <link rel="stylesheet" href="assets/style.css">
+    <style>:root { --accent: #4f46e5; }</style>
+  </head>
+  <body>
+    <div class="page">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo">LCT</div>
+          <div class="tagline">Local configuration tool</div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section-title">CLI Reference</div>
+          <ul><li><a class="nav-link " href="lct-lib.html">lib</a><ul><li><a class="nav-link " href="lct-lib-install.html">install</a></li><li><a class="nav-link " href="lct-lib-add.html">add</a></li><li><a class="nav-link " href="lct-lib-remove.html">remove</a></li><li><a class="nav-link " href="lct-lib-dump.html">dump</a></li><li><a class="nav-link " href="lct-lib-list.html">list</a></li></ul></li><li><a class="nav-link " href="lct-env.html">env</a><ul><li><a class="nav-link " href="lct-env-set.html">set</a></li><li><a class="nav-link " href="lct-env-unset.html">unset</a></li><li><a class="nav-link " href="lct-env-list.html">list</a></li><li><a class="nav-link " href="lct-env-reload.html">reload</a></li></ul></li><li><a class="nav-link " href="lct-plugin.html">plugin</a><ul><li><a class="nav-link " href="lct-plugin-init.html">init</a></li><li><a class="nav-link " href="lct-plugin-install.html">install</a></li><li><a class="nav-link " href="lct-plugin-remove.html">remove</a></li><li><a class="nav-link " href="lct-plugin-list.html">list</a></li><li><a class="nav-link " href="lct-plugin-load.html">load</a></li></ul></li><li><a class="nav-link " href="lct-alias.html">alias</a><ul><li><a class="nav-link " href="lct-alias-add.html">add</a></li><li><a class="nav-link " href="lct-alias-remove.html">remove</a></li></ul></li><li><a class="nav-link " href="lct-dotfiles.html">dotfiles</a><ul><li><a class="nav-link " href="lct-dotfiles-add.html">add</a></li><li><a class="nav-link " href="lct-dotfiles-remove.html">remove</a></li><li><a class="nav-link " href="lct-dotfiles-list.html">list</a></li></ul></li><li><a class="nav-link " href="lct-configs.html">configs</a><ul><li><a class="nav-link " href="lct-configs-add.html">add</a></li><li><a class="nav-link " href="lct-configs-remove.html">remove</a></li><li><a class="nav-link " href="lct-configs-list.html">list</a></li></ul></li><li><a class="nav-link " href="lct-init.html">init</a></li><li><a class="nav-link " href="lct-bootstrap.html">bootstrap</a></li><li><a class="nav-link " href="lct-completions.html">completions</a></li><li><a class="nav-link " href="lct-config.html">config</a></li><li><a class="nav-link " href="lct-setup.html">setup</a></li><li><a class="nav-link " href="lct-gather.html">gather</a></li><li><a class="nav-link " href="lct-prune.html">prune</a></li></ul>
+        </nav>
+        
+          <div class="nav-section-title">Links</div>
+          <ul class="nav-links">
+            
+              <li><a href="https://github.com/frostme/lct">README</a></li>
+            
+              <li><a href="https://frostme.github.io/lct/install.sh">Install Script</a></li>
+            
+          </ul>
+        
+      </aside>
+      <main class="content">
+        <header class="topbar">
+          <div class="breadcrumbs"><a href="index.html">lct</a></div>
+          <div class="topbar-actions">
+            
+              <a class="button ghost" href="https://github.com/frostme/lct">GitHub</a>
+            
+            <button class="button theme-toggle" type="button" data-theme-toggle>Toggle theme</button>
+          </div>
+        </header>
+        <article class="doc">
+          <h1 id="lct">lct</h1>
+
+<p>Local configuration tool</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>LCT helps you capture, share, and restore local configuration in a repeatable<br />
+way. Use it to bootstrap machines, gather dotfiles, and manage config<br />
+libraries with a stable CLI you can script against.</p>
+
+<h2 id="quick-start">Quick start</h2>
+
+<h3 id="install">Install</h3>
+
+<p><code>bash
+curl -fsSL https://frostme.github.io/lct/install.sh | bash
+</code></p>
+
+<p>Installs the latest release and puts <code>lct</code> on your PATH.</p>
+
+<h3 id="bootstrap-your-config">Bootstrap your config</h3>
+
+<p><code>bash
+lct bootstrap
+</code></p>
+
+<p>Apply your saved config and plugins on a new machine.</p>
+
+<h3 id="gather-configs">Gather configs</h3>
+
+<p><code>bash
+lct gather
+</code></p>
+
+<p>Capture and version local configs for reuse.</p>
+
+<h2 id="highlights">Highlights</h2>
+
+<ul>
+  <li><strong>Predictable CLI output</strong> — Designed for automation-friendly, repeatable workflows.</li>
+  <li><strong>Pluggable configuration</strong> — Organize config libraries and plugin collections cleanly.</li>
+  <li><strong>Safe defaults</strong> — Lean on dry-runs and explicit prompts before destructive actions.</li>
+</ul>
+
+<h2 id="usage">Usage</h2>
+
+<p><code>bash
+lct COMMAND
+</code></p>
+
+<h2 id="dependencies">Dependencies</h2>
+
+<h4 id="gum"><em>gum</em></h4>
+
+<h4 id="yq"><em>yq</em></h4>
+
+<h2 id="commands">Commands</h2>
+
+<ul>
+  <li><a href="lct-lib.html">lib</a> - Manage lct libraries</li>
+  <li><a href="lct-env.html">env</a> - Manage local environment variables</li>
+  <li><a href="lct-plugin.html">plugin</a> - Develop and manage lct plugins</li>
+  <li><a href="lct-alias.html">alias</a> - Manage lct aliases</li>
+  <li><a href="lct-dotfiles.html">dotfiles</a> - Manage dotfiles list</li>
+  <li><a href="lct-configs.html">configs</a> - Manage configs list</li>
+  <li><a href="lct-init.html">init</a> - Initialize lct configuration</li>
+  <li><a href="lct-bootstrap.html">bootstrap</a> - Bootstrap your local configuration</li>
+  <li><a href="lct-completions.html">completions</a> - Generate bash completions</li>
+  <li><a href="lct-config.html">config</a> - Open your config files in your ${EDITOR:-editor}</li>
+  <li><a href="lct-setup.html">setup</a> - Setup lct in your shell</li>
+  <li><a href="lct-gather.html">gather</a> - Gather local configuration files</li>
+  <li><a href="lct-prune.html">prune</a> - Prune config and plugins files</li>
+</ul>
+
+<hr />
+<p>Want more? Visit the README for the full workflow and support links.</p>
+
+        </article>
+        <footer class="footer">
+          <span>Generated by Bashly · 2026</span>
+          
+            <span>·</span>
+            <a href="https://github.com/frostme/lct">View source</a>
+          
+        </footer>
+      </main>
+    </div>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
