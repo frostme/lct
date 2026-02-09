@@ -4,6 +4,7 @@ tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="../target/build/lct"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
+export EDITOR="nvim"
 export CONFIG_DIR="$tmpdir/.config"
 export SHARE_DIR="$tmpdir/.local/share"
 export STATE_DIR="$tmpdir/.local/state"
