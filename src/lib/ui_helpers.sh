@@ -1,8 +1,5 @@
 gum_available() {
-  command -v gum >/dev/null 2>&1 || return 1
-  local gum_version
-  gum_version="$(gum --version 2>/dev/null || true)"
-  [[ -n "$gum_version" ]]
+  command -v gum >/dev/null 2>&1
 }
 
 gum_title() {
