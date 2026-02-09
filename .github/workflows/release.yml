@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: Install Mise Dependencies
         uses: jdx/mise-action@v3
       - name: Install Other Dependencies
@@ -80,6 +83,7 @@ jobs:
           version="${{ steps.release_meta.outputs.version }}"
           tag="${{ steps.release_meta.outputs.tag }}"
           last_tag="${{ steps.release_meta.outputs.last_tag }}"
+          release_date="$(date -u +%Y-%m-%d)"
 
           if [[ -n "$last_tag" ]]; then
             commits="$(git log --no-merges --pretty=format:'- %s' "${last_tag}..HEAD")"
@@ -105,6 +109,24 @@ jobs:
               echo "**Full Changelog**: ${changelog_url}"
             fi
           } >"$release_notes_file"
+
+          changelog_file="CHANGELOG.md"
+          if [[ -f "$changelog_file" ]]; then
+            tmp_changelog="${changelog_file}.tmp"
+            {
+              head -n 1 "$changelog_file"
+              echo
+              echo "## ${tag} - ${release_date}"
+              echo "$commits"
+              if [[ -n "$changelog_url" ]]; then
+                echo
+                echo "**Full Changelog**: ${changelog_url}"
+              fi
+              echo
+              tail -n +2 "$changelog_file"
+            } >"$tmp_changelog"
+            mv "$tmp_changelog" "$changelog_file"
+          fi
 
           zip_asset="${release_dir}/${version}.zip"
           tar_asset="${release_dir}/${version}.tar.gz"
