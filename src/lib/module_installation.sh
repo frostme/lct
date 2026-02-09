@@ -133,14 +133,32 @@ install_module_repo() {
   module_dest="$LCT_MODULES_DIR/$module_slug"
   meta_file="$module_cache/.lct-cache"
 
+  if [[ -z "$module_slug" ]]; then
+    echo "❌ ERROR: Invalid module reference '${module}'" >&2
+    return 1
+  fi
+
+  mkdir -p "$LCT_MODULES_CACHE_DIR"
+
   if [[ ! -d "$module_cache/.git" ]]; then
     [[ -d "$module_cache" ]] && rm -rf -- "$module_cache"
-    if ! gum_spinner "Cloning ${module}" git clone "$repo_url" "$module_cache" >/dev/null 2>&1; then
+    mkdir -p "$(dirname "$module_cache")"
+    if gum_available; then
+      gum spin --spinner line --title "Cloning ${module}" -- git clone "$repo_url" "$module_cache" >/dev/null 2>&1 || {
+        echo "❌ ERROR: Unable to clone module ${module}" >&2
+        return 1
+      }
+    elif ! git clone "$repo_url" "$module_cache" >/dev/null 2>&1; then
       echo "❌ ERROR: Unable to clone module ${module}" >&2
       return 1
     fi
-  else
+  fi
+
+  if [[ -d "$module_cache/.git" ]]; then
     git -C "$module_cache" fetch --quiet --tags || echo "❌ WARNING: Unable to refresh module ${module}" >&2
+  else
+    echo "❌ ERROR: Missing module cache at ${module_cache}" >&2
+    return 1
   fi
 
   if [[ -n "$version" && "$version" != "latest" ]]; then
