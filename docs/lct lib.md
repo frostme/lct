@@ -14,6 +14,10 @@ lct lib COMMAND
 lct lib add mylib
 ```
 
+```bash
+lct lib add gum --manager brew
+```
+
 ## Commands
 
 - [install](lct%20lib%20install.md) - Install libraries

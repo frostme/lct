@@ -1,6 +1,8 @@
 enable_stacktrace
 enable_auto_colors
 
+LCT_PACKAGE_MANAGER=""
+
 # -----------------------------
 # Function: set_origin_remote
 # Description:
@@ -133,6 +135,8 @@ load_configuration() {
     REMOTE_CONFIG_REPO=$(yq -r '.remote // ""' "${LCT_CONFIG_FILE}")
     mapfile -t CONFIGS < <(yq -r '.configs // [] | .[]' "${LCT_CONFIG_FILE}")
     mapfile -t DOTFILES < <(yq -r '.dotfiles // [] | .[]' "${LCT_CONFIG_FILE}")
+    LCT_PACKAGE_MANAGER=$(yq -r '.packageManager // ""' "${LCT_CONFIG_FILE}")
+    [[ "$LCT_PACKAGE_MANAGER" == "null" ]] && LCT_PACKAGE_MANAGER=""
     declare -gA OTHERFILES
     while IFS=$'\t' read -r key value; do
       [[ -z "$key" ]] && continue
