@@ -32,6 +32,7 @@ Top-level structure includes (non-exhaustive):
 - `settings.yml` — project configuration (treat as source-of-truth config).
 - `scripts/setup.sh` — installs dev dependencies / bootstraps environment.
 - `justfile` — developer workflows (build, release, install, etc.). :contentReference[oaicite:2]{index=2}
+- `test/` — unit tests `
 
 From the repo README snippet:
 
@@ -39,6 +40,7 @@ From the repo README snippet:
 - `just build` generates a local version in `target/build/lct`
 - `just install` installs the local version
 - `just release` creates a new release :contentReference[oaicite:3]{index=3}
+- `just test` runs unit tests
 
 ## 2) How to work (agent workflow)
 
@@ -171,13 +173,11 @@ Any behavior visible to users must be documented:
 - new required dependencies
 - new config keys
 
-These are generated using bashlys documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `just docs` as defined in the justfile, as well as github-pages pretty documentatin with `just pages`
-
-When changing behavior, extend `scripts/test.sh` so `just test` exercises the new paths.
+These are generated using bashly's documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `just docs` as defined in the justfile, as well as github-pages pretty documentation with `just pages`
 
 ## 8) Smoke testing checklist (agent must do)
 
-After changes, run a quick local check:
+After changes, make sure to extend `test/approve` to smoke test the command you added/changed (this uses the approvals.bash framework). Also run a quick local check:
 
 1. `lct --help` renders and includes your command/flag changes
 2. `lct <command> --help` renders and examples make sense

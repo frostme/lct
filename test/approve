@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+tmpdir="$(mktemp -d)"
+tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
+cli="../target/build/lct"
+mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
+export HOME="$tmpdir"
+export EDITOR="nvim"
+export CONFIG_DIR="$tmpdir/.config"
+export SHARE_DIR="$tmpdir/.local/share"
+export STATE_DIR="$tmpdir/.local/state"
+export CACHE_DIR="$tmpdir/.cache"
+
+trap 'rm -rf "$tmpdir"' EXIT
+
+source test/approvals.bash
+
+cd ./test || exit
+
+describe "help text"
+approve "${cli} --help" "help_text"
+
+describe "dotfiles command"
+it "adds a dotfile"
+approve "${cli} dotfiles add \"$tmpdir/.zshrc\"" "dotfiles_add"
+approve "${cli} dotfiles list" "dotfiles_list_after_add"
+it "removes a dotfile"
+approve "${cli} dotfiles remove \"$tmpdir/.zshrc\"" "dotfiles_remove"
+approve "${cli} dotfiles list" "dotfiles_list_after_remove"
+
+describe "configs command"
+it "adds a config directory"
+approve "${cli} configs add \"$tmpdir/.config/alacritty\"" "configs_add"
+approve "${cli} configs list" "configs_list_after_add"
+it "removes a config directory"
+approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
+approve "${cli} configs list" "configs_list_after_remove"
+
+describe "prune command"
+mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
+it "lists cache directories in dry run mode"
+approve "${cli} prune --cache --dry | sed 's/${tmpdir_escaped}/~/g'" "prune_cache_dry_run_lists_cache_dirs"

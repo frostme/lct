@@ -15,7 +15,7 @@ validate:
 
 test: validate ensure_dir
   @bashly g -u -q
-  @./scripts/test.sh
+  @./test/approve
 
 watch:
   @bashly g -w
