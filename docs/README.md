@@ -4,7 +4,7 @@ Local configuration tool
 
 | Attributes       | &nbsp;
 |------------------|-------------
-| Version:         | 0.5.0
+| Version:         | 0.5.1
 
 ## Usage
 
@@ -24,18 +24,18 @@ lct COMMAND
 
 ## Commands
 
-- [lib](lct%20lib.md) - Manage lct libraries
-- [env](lct%20env.md) - Manage local environment variables
-- [plugin](lct%20plugin.md) - Develop and manage lct plugins
+- [init](lct%20init.md) - Initialize lct configuration
+- [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
+- [gather](lct%20gather.md) - Gather local configuration files
 - [alias](lct%20alias.md) - Manage lct aliases
 - [dotfiles](lct%20dotfiles.md) - Manage dotfiles list
 - [configs](lct%20configs.md) - Manage configs list
-- [init](lct%20init.md) - Initialize lct configuration
-- [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
+- [env](lct%20env.md) - Manage local environment variables
+- [plugin](lct%20plugin.md) - Develop and manage lct plugins
+- [lib](lct%20lib.md) - Manage lct libraries
 - [completions](lct%20completions.md) - Generate bash completions
 - [config](lct%20config.md) - Open your config files in your ${EDITOR:-editor}
 - [setup](lct%20setup.md) - Setup lct in your shell
-- [gather](lct%20gather.md) - Gather local configuration files
 - [prune](lct%20prune.md) - Prune config and plugins files
 
 
