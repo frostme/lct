@@ -15,4 +15,4 @@
 - `just build` to generate local version in target/build/lct
 - `just test` to run the smoke tests (uses bash_unit)
 - `just install` to install local version (target/build/lct) to /usr/local/bin
-- `just release <major|minor|patch>` to prepare release artifacts, then push the new tag to trigger the GitHub Action release
+- update `src/bashly.yml` with a new version to trigger the GitHub Action release on merge to `main`
