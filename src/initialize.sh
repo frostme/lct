@@ -153,7 +153,16 @@ load_configuration() {
 load_env() {
   # Load LCT environment variables
   if [[ -f "${LCT_ENV_FILE}" ]]; then
-    eval "$(yq -o=shell '.' ${LCT_ENV_FILE})"
+    while IFS=$'\t' read -r key value; do
+      if [[ -z "$key" && -z "$value" ]]; then
+        continue
+      fi
+      if [[ ! "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+        echo "Error: Invalid environment key in ${LCT_ENV_FILE}: ${key}" >&2
+        return 1
+      fi
+      export "${key}=${value}"
+    done < <(yq -r 'to_entries[] | "\(.key)\t\(.value|tostring)"' "${LCT_ENV_FILE}")
   fi
 
   if [ -z "${LATEST_LCT_VERSION+x}" ]; then

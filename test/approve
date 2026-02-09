@@ -112,6 +112,11 @@ export APPROVALS_DIR="$(pwd)/approvals"
 describe "help text"
 approve "${cli} --help" "help_text"
 
+describe "env command"
+it "sets and lists environment variables"
+approve "${cli} env set SAMPLE_KEY sample-value" "env_set"
+approve "${cli} env list" "env_list"
+
 describe "dotfiles command"
 it "adds a dotfile"
 approve "${cli} dotfiles add \"$tmpdir/.zshrc\"" "dotfiles_add"
