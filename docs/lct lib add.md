@@ -5,7 +5,7 @@ Add a library to lct
 ## Usage
 
 ```bash
-lct lib add LIBRARY
+lct lib add LIBRARY [OPTIONS]
 ```
 
 ## Arguments
@@ -17,5 +17,11 @@ Name of the library to add
 | Attributes      | &nbsp;
 |-----------------|-------------
 | Required:       | ✓ Yes
+
+## Options
+
+#### *--manager, -m MANAGER*
+
+Package manager to use for installation (overrides config/default)
 
 

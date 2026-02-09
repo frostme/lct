@@ -1,0 +1,3 @@
+Using package manager: mise
+mise use --global sample-lib@latest
+mise install sample-lib@latest

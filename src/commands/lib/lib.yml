@@ -2,6 +2,7 @@ name: lib
 help: Manage lct libraries
 examples:
   - lct lib add mylib
+  - lct lib add gum --manager brew
 commands:
   - name: install
     help: Install libraries
@@ -11,12 +12,22 @@ commands:
       - name: library
         help: Name of the library to add
         required: true
+    flags:
+      - long: --manager
+        short: -m
+        arg: manager
+        help: Package manager to use for installation (overrides config/default)
   - name: remove
     help: Remove a library from lct
     args:
       - name: library
         help: Name of the library to remove
         required: true
+    flags:
+      - long: --manager
+        short: -m
+        arg: manager
+        help: Package manager to use for removal (overrides config/default)
   - name: dump
     help: Dump the current lct libraries to your Brewfile
   - name: list
