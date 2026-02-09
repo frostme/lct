@@ -17,6 +17,7 @@ jobs:
           tarBall: true
           zipBall: false
           extract: true
+          out-file-path: semver
       - name: Install bash_unit
         uses: robinraju/release-downloader@v1
         with:
@@ -25,5 +26,11 @@ jobs:
           tarBall: true
           zipBall: false
           extract: true
+          out-file-path: bash_unit
+      - name: Showing some love
+        run: |
+          ls -lsa
+          ls -lsa semver
+          ls -lsa bash_unit
       - name: Build LCT
         run: just build
