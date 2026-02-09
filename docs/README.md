@@ -33,7 +33,7 @@ lct COMMAND
 - [init](lct%20init.md) - Initialize lct configuration
 - [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
 - [completions](lct%20completions.md) - Generate bash completions
-- [config](lct%20config.md) - Open your config files in your $EDITOR
+- [config](lct%20config.md) - Open your config files in your ${EDITOR:-editor}
 - [setup](lct%20setup.md) - Setup lct in your shell
 - [gather](lct%20gather.md) - Gather local configuration files
 - [prune](lct%20prune.md) - Prune config and plugins files

@@ -1,6 +1,6 @@
 # lct config
 
-Open your config files in your $EDITOR
+Open your config files in your ${EDITOR:-editor}
 
 ## Usage
 
