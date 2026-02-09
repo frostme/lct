@@ -31,15 +31,6 @@ pages:
   @cp scripts/install.sh pages/install.sh
 
 [arg('type', pattern='major|minor|patch')]
-release type:
-  @just bump {{type}}
-  @just build
-  @just validate
-  @just docs
-  @just pages
-  @./scripts/release.sh
-
-[arg('type', pattern='major|minor|patch')]
 bump type:
   #!/usr/bin/env bash
   set -euo pipefail
