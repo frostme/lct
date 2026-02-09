@@ -1,15 +1,38 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "src/bashly.yml"
   workflow_dispatch:
+    inputs:
+      releaseType:
+        description: Type of release
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Dependencies
+        uses: jdx/mise-action@v3
+      - name: Build LCT
+        run: just build
+      - name: Build Docs
+        run: just docs
+      - name: Build Pages
+        run: just pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./pages" # The directory containing your static files
   release:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -17,16 +40,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Install Dependencies
         uses: jdx/mise-action@v3
-
       - name: Resolve release metadata
         id: release_meta
         run: |
           set -euo pipefail
+          just bump ${{ github.event.inputs.releaseType}}
           version="$(yq '.version' src/bashly.yml)"
           tag="v${version}"
           last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
@@ -104,3 +124,17 @@ jobs:
           files: |
             target/release/*.zip
             target/release/*.tar.gz
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Release ${{ steps.release_meta.outputs.tag }}
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
