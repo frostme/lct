@@ -50,7 +50,49 @@ done
 
 cat >"$stubdir/gum" <<'EOF'
 #!/usr/bin/env bash
-exit 0
+set -euo pipefail
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  spin)
+    # Execute the command after "--" to mimic gum spinner behavior in tests.
+    while (($#)); do
+      if [[ "$1" == "--" ]]; then
+        shift
+        break
+      fi
+      shift
+    done
+    if (($#)); then
+      "$@"
+    fi
+    ;;
+  style)
+    text="${*: -1}"
+    if printf '%s\n' "$*" | grep -q -- '--border'; then
+      # Minimal boxed output for the specific style used in gum_title.
+      padding_left=1
+      padding_right=1
+      text_length=${#text}
+      inner_width=$((text_length + padding_left + padding_right))
+      top_bottom=""
+      for ((i = 0; i < inner_width; i++)); do
+        top_bottom+="─"
+      done
+      printf '┌%s┐\n' "$top_bottom"
+      printf '│%*s%s%*s│\n' "$padding_left" '' "$text" "$padding_right" ''
+      printf '└%s┘\n' "$top_bottom"
+      printf '%*s\n' "$((inner_width + 2))" ''
+    else
+      printf '%s\n' "$text"
+    fi
+    ;;
+  *)
+    exit 0
+    ;;
+esac
 EOF
 chmod +x "$stubdir/gum"
 
