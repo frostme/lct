@@ -10,6 +10,50 @@ log() {
   echo "[lct install] $*" >&2
 }
 
+sha256_file() {
+  local file="$1"
+
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$file" | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$file" | awk '{print $1}'
+  else
+    log "Missing required command: sha256sum or shasum"
+    exit 1
+  fi
+}
+
+download_release_asset() {
+  local repo="$1"
+  local pattern="$2"
+  local destination="$3"
+  local asset_url
+
+  asset_url="$(github_asset_url "$repo" "$pattern")"
+  curl -fsSL "$asset_url" -o "$destination"
+}
+
+verify_checksum() {
+  local asset_path="$1"
+  local checksums_file="$2"
+  local filename expected actual
+
+  filename="$(basename "$asset_path")"
+  expected="$(grep -E "([[:space:]]|\\*)${filename}$" "$checksums_file" | head -n 1 | awk '{print $1}')"
+
+  if [[ -z "$expected" ]]; then
+    log "Checksum for ${filename} not found in $(basename "$checksums_file")"
+    exit 1
+  fi
+
+  actual="$(sha256_file "$asset_path")"
+
+  if [[ "$expected" != "$actual" ]]; then
+    log "Checksum mismatch for ${filename}"
+    exit 1
+  fi
+}
+
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
     log "Missing required command: $1"
@@ -108,11 +152,13 @@ ensure_writable_install_dir() {
 
 install_lct() {
   log "Downloading latest lct release..."
-  local asset_url tarball
-  asset_url="$(github_asset_url "$REPO" "\\.tar\\.gz")"
+  local tarball checksums
   tarball="${TMP_ROOT}/lct.tar.gz"
+  checksums="${TMP_ROOT}/lct-checksums.txt"
 
-  curl -fsSL "$asset_url" -o "$tarball"
+  download_release_asset "$REPO" "\\.tar\\.gz" "$tarball"
+  download_release_asset "$REPO" "checksums\\.txt" "$checksums"
+  verify_checksum "$tarball" "$checksums"
   tar -xzf "$tarball" -C "$TMP_ROOT"
 
   local lct_binary="${TMP_ROOT}/lct"
@@ -136,12 +182,14 @@ install_gum() {
   fi
 
   log "Installing gum dependency..."
-  local pattern asset_url tarball gum_binary
+  local pattern tarball gum_binary checksums
   pattern="gum_.*_${GUM_OS}_${GUM_ARCH}\\.tar\\.gz"
-  asset_url="$(github_asset_url "charmbracelet/gum" "$pattern")"
   tarball="${TMP_ROOT}/gum.tar.gz"
+  checksums="${TMP_ROOT}/gum-checksums.txt"
 
-  curl -fsSL "$asset_url" -o "$tarball"
+  download_release_asset "charmbracelet/gum" "$pattern" "$tarball"
+  download_release_asset "charmbracelet/gum" "checksums\\.txt" "$checksums"
+  verify_checksum "$tarball" "$checksums"
   tar -xzf "$tarball" -C "$TMP_ROOT"
   gum_binary="$(find "$TMP_ROOT" -type f -name 'gum' | head -n 1)"
 
@@ -161,12 +209,14 @@ install_yq() {
   fi
 
   log "Installing yq dependency..."
-  local pattern asset_url yq_binary
+  local pattern yq_binary checksums
   pattern="yq_${OS}_${ARCH}"
-  asset_url="$(github_asset_url "mikefarah/yq" "$pattern")"
   yq_binary="${TMP_ROOT}/yq"
+  checksums="${TMP_ROOT}/yq-checksums.txt"
 
-  curl -fsSL "$asset_url" -o "$yq_binary"
+  download_release_asset "mikefarah/yq" "$pattern" "$yq_binary"
+  download_release_asset "mikefarah/yq" "checksums\\.txt" "$checksums"
+  verify_checksum "$yq_binary" "$checksums"
   install_binary "$yq_binary" "${INSTALL_DIR}/yq"
   log "Installed yq to ${INSTALL_DIR}/yq"
 }
