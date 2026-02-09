@@ -9,6 +9,7 @@ export CONFIG_DIR="$tmpdir/.config"
 export SHARE_DIR="$tmpdir/.local/share"
 export STATE_DIR="$tmpdir/.local/state"
 export CACHE_DIR="$tmpdir/.cache"
+export LCT_GITHUB_BASE="file://${tmpdir}/mock-github"
 
 trap 'rm -rf "$tmpdir"' EXIT
 
@@ -34,6 +35,24 @@ approve "${cli} configs list" "configs_list_after_add"
 it "removes a config directory"
 approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
 approve "${cli} configs list" "configs_list_after_remove"
+
+describe "install command"
+mock_repo_root="$tmpdir/mock-github/example/demo"
+mkdir -p "$mock_repo_root"
+git -C "$mock_repo_root" init -q
+git -C "$mock_repo_root" config user.email "test@example.com"
+git -C "$mock_repo_root" config user.name "Test User"
+cat >"$mock_repo_root/demo" <<'EOF'
+#!/usr/bin/env bash
+echo "demo module"
+EOF
+chmod +x "$mock_repo_root/demo"
+git -C "$mock_repo_root" add demo
+git -C "$mock_repo_root" commit -q -m "initial"
+git -C "$mock_repo_root" tag v1.0.0
+approve "${cli} install example/demo" "install_module"
+approve "${cli} install example/demo" "install_module_idempotent"
+approve "${cli} install" "install_without_modules"
 
 describe "prune command"
 mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"

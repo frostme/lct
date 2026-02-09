@@ -61,6 +61,8 @@ loaded=0
 plugin_installation
 load_plugins
 
+module_installation
+
 # ##################################################
 
 echo "✅ Bootstrap complete"
