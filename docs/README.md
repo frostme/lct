@@ -27,7 +27,7 @@ lct COMMAND
 - [init](lct%20init.md) - Initialize lct configuration
 - [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
 - [gather](lct%20gather.md) - Gather local configuration files
-- [install](lct%20install.md) - Install bash script releases from GitHub
+- [install](lct%20install.md) - Install bash script releases from GitHub or LCTFile
 - [alias](lct%20alias.md) - Manage lct aliases
 - [dotfiles](lct%20dotfiles.md) - Manage dotfiles list
 - [configs](lct%20configs.md) - Manage configs list

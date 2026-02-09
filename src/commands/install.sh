@@ -1,4 +1,23 @@
 module=${args[module]:-}
+lctfile_path="$PWD/LCTFile"
+
+if [[ -z "$module" && -f "$lctfile_path" ]]; then
+  mapfile -t MODULES < <(
+    sed -e 's/#.*$//' "$lctfile_path" | awk 'NF'
+  )
+
+  if [[ ${#MODULES[@]} -eq 0 ]]; then
+    echo "❌ ERROR: No modules listed in ${lctfile_path}" >&2
+    exit 1
+  fi
+
+  LCT_MODULES_DIR="$PWD/lct_modules"
+  LCT_MODULES_BIN_DIR="$LCT_MODULES_DIR/bin"
+  LCT_MODULES_CACHE_DIR="$PWD/.lct_cache/modules"
+
+  module_installation
+  exit $?
+fi
 
 ensure_config_defaults
 

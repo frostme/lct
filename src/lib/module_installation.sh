@@ -1,3 +1,33 @@
+module_parse_entry() {
+  local spec="$1"
+  local _name_var="$2"
+  local _version_var="$3"
+
+  local name version
+  name="$spec"
+  version=""
+
+  if [[ "$spec" == *"="* ]]; then
+    name="${spec%%=*}"
+    version="${spec#*=}"
+  fi
+
+  # trim whitespace
+  name="${name#"${name%%[![:space:]]*}"}"
+  name="${name%"${name##*[![:space:]]}"}"
+  version="${version#"${version%%[![:space:]]*}"}"
+  version="${version%"${version##*[![:space:]]}"}"
+
+  # strip surrounding quotes for version
+  version="${version%\"}"
+  version="${version#\"}"
+  version="${version%\'}"
+  version="${version#\'}"
+
+  printf -v "$_name_var" '%s' "$name"
+  printf -v "$_version_var" '%s' "$version"
+}
+
 module_repo_url() {
   local ref="$1"
 
@@ -30,6 +60,9 @@ module_repo_url() {
 module_repo_name() {
   local ref="$1"
   ref="${ref#file://}"
+  if [[ "$ref" == *"="* ]]; then
+    ref="${ref%%=*}"
+  fi
   ref="${ref%/}"
   ref="$(basename "$ref")"
   ref="${ref%.git}"
@@ -86,13 +119,16 @@ module_find_main_script() {
 
 install_module_repo() {
   local module="$1"
-  local repo_url module_slug module_cache module_dest meta_file
-  repo_url=$(module_repo_url "$module") || {
-    echo "❌ ERROR: Invalid module reference '${module}'. Expected owner/repo or path." >&2
+  local version="$2"
+  local repo_url module_slug module_cache module_dest meta_file module_name
+  module_name="$module"
+
+  repo_url=$(module_repo_url "$module_name") || {
+    echo "❌ ERROR: Invalid module reference '${module_name}'. Expected owner/repo or path." >&2
     return 1
   }
 
-  module_slug=$(module_key_slug "$module")
+  module_slug=$(module_key_slug "$module_name")
   module_cache="$LCT_MODULES_CACHE_DIR/$module_slug"
   module_dest="$LCT_MODULES_DIR/$module_slug"
   meta_file="$module_cache/.lct-cache"
@@ -107,13 +143,20 @@ install_module_repo() {
     git -C "$module_cache" fetch --quiet --tags || echo "❌ WARNING: Unable to refresh module ${module}" >&2
   fi
 
-  latest_ref="$(git -C "$module_cache" tag --sort=-v:refname | head -n1)"
-  if [[ -n "$latest_ref" ]]; then
-    git -C "$module_cache" checkout --quiet "$latest_ref" 2>/dev/null || true
+  if [[ -n "$version" && "$version" != "latest" ]]; then
+    if ! git -C "$module_cache" checkout --quiet "$version" 2>/dev/null; then
+      echo "❌ ERROR: Unable to find version '${version}' for ${module_name}" >&2
+      return 1
+    fi
   else
-    remote_ref="$(git -C "$module_cache" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
-    [[ -z "$remote_ref" ]] && remote_ref="HEAD"
-    git -C "$module_cache" checkout --quiet "$remote_ref" 2>/dev/null || true
+    latest_ref="$(git -C "$module_cache" tag --sort=-v:refname | head -n1)"
+    if [[ -n "$latest_ref" ]]; then
+      git -C "$module_cache" checkout --quiet "$latest_ref" 2>/dev/null || true
+    else
+      remote_ref="$(git -C "$module_cache" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+      [[ -z "$remote_ref" ]] && remote_ref="HEAD"
+      git -C "$module_cache" checkout --quiet "$remote_ref" 2>/dev/null || true
+    fi
   fi
 
   cache_commit="$(git -C "$module_cache" rev-parse HEAD 2>/dev/null || true)"
@@ -135,13 +178,13 @@ install_module_repo() {
     )
     rm -rf "$module_dest/.git"
     cache_metadata_write "$meta_file" "$repo_url" "$cache_commit" "$cache_commit" ""
-    echo "- Installed module ${module}"
+    echo "- Installed module ${module_name}${version:+ @${version}}"
   else
     cache_metadata_write "$meta_file" "$repo_url" "$cache_commit" "$installed_commit" ""
-    [[ -d "$module_dest" ]] && echo "- Loaded module ${module}"
+    [[ -d "$module_dest" ]] && echo "- Loaded module ${module_name}${version:+ @${version}}"
   fi
 
-  main_script=$(module_find_main_script "$module_dest" "$(module_repo_name "$module")")
+  main_script=$(module_find_main_script "$module_dest" "$(module_repo_name "$module_name")")
   if [[ -n "$main_script" ]]; then
     chmod +x "$main_script"
     ln -sf "$main_script" "$LCT_MODULES_BIN_DIR/$(basename "$main_script")"
@@ -167,7 +210,9 @@ module_installation() {
 
   local failures=0
   for module in "${MODULES[@]}"; do
-    install_module_repo "$module" || failures=1
+    local parsed_name parsed_version
+    module_parse_entry "$module" parsed_name parsed_version
+    install_module_repo "$parsed_name" "$parsed_version" || failures=1
   done
 
   if gum_available; then

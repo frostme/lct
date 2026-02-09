@@ -2,6 +2,7 @@
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="../target/build/lct"
+cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
 export EDITOR="nvim"
@@ -16,6 +17,7 @@ trap 'rm -rf "$tmpdir"' EXIT
 source test/approvals.bash
 
 cd ./test || exit
+export APPROVALS_DIR="$(pwd)/approvals"
 
 describe "help text"
 approve "${cli} --help" "help_text"
@@ -50,9 +52,27 @@ chmod +x "$mock_repo_root/demo"
 git -C "$mock_repo_root" add demo
 git -C "$mock_repo_root" commit -q -m "initial"
 git -C "$mock_repo_root" tag v1.0.0
+cat >"$mock_repo_root/demo" <<'EOF'
+#!/usr/bin/env bash
+echo "demo module v1.1"
+EOF
+git -C "$mock_repo_root" add demo
+git -C "$mock_repo_root" commit -q -m "second"
+git -C "$mock_repo_root" tag v1.1.0
 approve "${cli} install example/demo" "install_module"
 approve "${cli} install example/demo" "install_module_idempotent"
 approve "${cli} install" "install_without_modules"
+describe "install via LCTFile"
+project_dir="$tmpdir/project"
+mkdir -p "$project_dir"
+cat >"$project_dir/LCTFile" <<'EOF'
+example/demo = 'v1.0.0'
+example/demo
+EOF
+pushd "$project_dir" >/dev/null
+approve "${cli} install" "install_from_lctfile"
+approve "${cli} install" "install_from_lctfile_idempotent"
+popd >/dev/null
 
 describe "prune command"
 mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
