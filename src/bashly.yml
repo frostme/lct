@@ -63,6 +63,14 @@ commands:
       - long: --force
         short: -f
         help: overwrite existing version if conflicting
+  - name: install
+    help: Install bash script releases from GitHub or LCTFile
+    examples:
+      - lct install DannyBen/approvals.bash
+      - lct install
+    args:
+      - name: module
+        help: GitHub owner/repo of the module to install
   - import: src/commands/alias/alias.yml
   - import: src/commands/dotfiles/dotfiles.yml
   - import: src/commands/configs/configs.yml

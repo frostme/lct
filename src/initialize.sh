@@ -69,6 +69,9 @@ detect_directories() {
   LCT_INIT_FILE="${LCT_SHARE_DIR}/.init_done"
   LCT_PLUGINS_CACHE_DIR="${LCT_CACHE_DIR}/plugins"
   LCT_PLUGINS_DIR="${LCT_SHARE_DIR}/plugins"
+  LCT_MODULES_CACHE_DIR="${LCT_CACHE_DIR}/modules"
+  LCT_MODULES_DIR="${LCT_SHARE_DIR}/modules"
+  LCT_MODULES_BIN_DIR="${LCT_MODULES_DIR}/bin"
 }
 
 setup_directories() {
@@ -87,6 +90,9 @@ setup_directories() {
   [[ -d "${LCT_CACHE_DIR}" ]] || mkdir -p "${LCT_CACHE_DIR}"
   [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
   [[ -d "${LCT_PLUGINS_CACHE_DIR}" ]] || mkdir -p "${LCT_PLUGINS_CACHE_DIR}"
+  [[ -d "${LCT_MODULES_DIR}" ]] || mkdir -p "${LCT_MODULES_DIR}"
+  [[ -d "${LCT_MODULES_BIN_DIR}" ]] || mkdir -p "${LCT_MODULES_BIN_DIR}"
+  [[ -d "${LCT_MODULES_CACHE_DIR}" ]] || mkdir -p "${LCT_MODULES_CACHE_DIR}"
 }
 
 load_plugin_configs() {
@@ -138,6 +144,8 @@ load_configuration() {
     done < <(yq -r '.other // {} | to_entries[] | "\(.key)\t\(.value)"' "${LCT_CONFIG_FILE}")
     declare -ga PLUGINS
     mapfile -t PLUGINS < <(yq -r '.plugins // [] | .[]' "${LCT_CONFIG_FILE}")
+    declare -ga MODULES
+    mapfile -t MODULES < <(yq -r '.modules // [] | .[]' "${LCT_CONFIG_FILE}")
     load_plugin_configs
   fi
 }

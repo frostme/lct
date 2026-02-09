@@ -2,6 +2,7 @@
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="../target/build/lct"
+cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
 export EDITOR="nvim"
@@ -9,6 +10,7 @@ export CONFIG_DIR="$tmpdir/.config"
 export SHARE_DIR="$tmpdir/.local/share"
 export STATE_DIR="$tmpdir/.local/state"
 export CACHE_DIR="$tmpdir/.cache"
+export LCT_GITHUB_BASE="file://${tmpdir}/mock-github"
 
 stubdir="$tmpdir/bin"
 mkdir -p "$stubdir"
@@ -48,7 +50,49 @@ done
 
 cat >"$stubdir/gum" <<'EOF'
 #!/usr/bin/env bash
-exit 0
+set -euo pipefail
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  spin)
+    # Execute the command after "--" to mimic gum spinner behavior in tests.
+    while (($#)); do
+      if [[ "$1" == "--" ]]; then
+        shift
+        break
+      fi
+      shift
+    done
+    if (($#)); then
+      "$@"
+    fi
+    ;;
+  style)
+    text="${*: -1}"
+    if printf '%s\n' "$*" | grep -q -- '--border'; then
+      # Minimal boxed output for the specific style used in gum_title.
+      padding_left=1
+      padding_right=1
+      text_length=${#text}
+      inner_width=$((text_length + padding_left + padding_right))
+      top_bottom=""
+      for ((i = 0; i < inner_width; i++)); do
+        top_bottom+="─"
+      done
+      printf '┌%s┐\n' "$top_bottom"
+      printf '│%*s%s%*s│\n' "$padding_left" '' "$text" "$padding_right" ''
+      printf '└%s┘\n' "$top_bottom"
+      printf '%*s\n' "$((inner_width + 2))" ''
+    else
+      printf '%s\n' "$text"
+    fi
+    ;;
+  *)
+    exit 0
+    ;;
+esac
 EOF
 chmod +x "$stubdir/gum"
 
@@ -63,6 +107,7 @@ trap 'rm -rf "$tmpdir"' EXIT
 source test/approvals.bash
 
 cd ./test || exit
+export APPROVALS_DIR="$(pwd)/approvals"
 
 describe "help text"
 approve "${cli} --help" "help_text"
@@ -83,6 +128,41 @@ it "removes a config directory"
 approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
 approve "${cli} configs list" "configs_list_after_remove"
 
+describe "install command"
+mock_repo_root="$tmpdir/mock-github/example/demo"
+mkdir -p "$mock_repo_root"
+git -C "$mock_repo_root" init -q
+git -C "$mock_repo_root" config user.email "test@example.com"
+git -C "$mock_repo_root" config user.name "Test User"
+cat >"$mock_repo_root/demo" <<'EOF'
+#!/usr/bin/env bash
+echo "demo module"
+EOF
+chmod +x "$mock_repo_root/demo"
+git -C "$mock_repo_root" add demo
+git -C "$mock_repo_root" commit -q -m "initial"
+git -C "$mock_repo_root" tag v1.0.0
+cat >"$mock_repo_root/demo" <<'EOF'
+#!/usr/bin/env bash
+echo "demo module v1.1"
+EOF
+git -C "$mock_repo_root" add demo
+git -C "$mock_repo_root" commit -q -m "second"
+git -C "$mock_repo_root" tag v1.1.0
+approve "${cli} install example/demo" "install_module"
+approve "${cli} install example/demo" "install_module_idempotent"
+approve "${cli} install" "install_without_modules"
+describe "install via LCTFile"
+project_dir="$tmpdir/project"
+mkdir -p "$project_dir"
+cat >"$project_dir/LCTFile" <<'EOF'
+example/demo = 'v1.0.0'
+example/demo
+EOF
+pushd "$project_dir" >/dev/null
+approve "${cli} install" "install_from_lctfile"
+approve "${cli} install" "install_from_lctfile_idempotent"
+popd >/dev/null
 describe "lib command"
 config_path="$tmpdir/.config/lct/config.yaml"
 
