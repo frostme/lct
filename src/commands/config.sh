@@ -11,10 +11,17 @@ for ext in $exts; do
   candidates+=("$CONFIG_DIR/$lib_name.$ext") # Sometimes config is at ~/.config/libname.ext
 done
 
+if [[ -n ${EDITOR:-} ]]; then
+  read -r -a editor_cmd <<<"$EDITOR"
+fi
+if (( ${#editor_cmd[@]:-0} == 0 )); then
+  editor_cmd=("vi")
+fi
+
 # Find the first existing config file
 for path in "${candidates[@]}"; do
   if [ -f "$path" ]; then
-    eval "$EDITOR \"$path\""
+    "${editor_cmd[@]}" "$path"
     exit 0
   fi
 done
@@ -22,7 +29,7 @@ done
 if gum_available; then
   picked_path=$(gum_pick_file "$CONFIG_DIR" --file)
   if [[ -n "$picked_path" ]]; then
-    eval "$EDITOR \"$picked_path\""
+    "${editor_cmd[@]}" "$picked_path"
     exit 0
   fi
 fi
