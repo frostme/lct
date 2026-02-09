@@ -6,18 +6,18 @@ Usage:
   lct --version | -v
 
 Commands:
-  lib           Manage lct libraries
-  env           Manage local environment variables
-  plugin        Develop and manage lct plugins
+  init          Initialize lct configuration
+  bootstrap     Bootstrap your local configuration
+  gather        Gather local configuration files
   alias         Manage lct aliases
   dotfiles      Manage dotfiles list
   configs       Manage configs list
-  init          Initialize lct configuration
-  bootstrap     Bootstrap your local configuration
+  env           Manage local environment variables
+  plugin        Develop and manage lct plugins
+  lib           Manage lct libraries
   completions   Generate bash completions
   config        Open your config files in your nvim
   setup         Setup lct in your shell
-  gather        Gather local configuration files
   prune         Prune config and plugins files
 
 Options:

@@ -37,12 +37,6 @@ x_pages:
     - label: Install Script
       url: https://frostme.github.io/lct/install.sh
 commands:
-  - import: src/commands/lib/lib.yml
-  - import: src/commands/env/env.yml
-  - import: src/commands/plugin/plugin.yml
-  - import: src/commands/alias/alias.yml
-  - import: src/commands/dotfiles/dotfiles.yml
-  - import: src/commands/configs/configs.yml
   - name: init
     help: Initialize lct configuration
     examples:
@@ -60,6 +54,21 @@ commands:
         help: Config version to bootstrap
         completions:
           - $(ls $HOME/.local/share/lct/config_versions/ 2>/dev/null | grep -E '^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.tar\.xz$' | sed 's/\.tar\.xz$//' | tr '\n' ' ')
+  - name: gather
+    alias: g
+    help: Gather local configuration files
+    examples:
+      - lct gather
+    flags:
+      - long: --force
+        short: -f
+        help: overwrite existing version if conflicting
+  - import: src/commands/alias/alias.yml
+  - import: src/commands/dotfiles/dotfiles.yml
+  - import: src/commands/configs/configs.yml
+  - import: src/commands/env/env.yml
+  - import: src/commands/plugin/plugin.yml
+  - import: src/commands/lib/lib.yml
   - name: completions
     help: |-
       Generate bash completions
@@ -78,15 +87,6 @@ commands:
     help: Setup lct in your shell
     examples:
       - eval "$(lct setup)"
-  - name: gather
-    alias: g
-    help: Gather local configuration files
-    examples:
-      - lct gather
-    flags:
-      - long: --force
-        short: -f
-        help: overwrite existing version if conflicting
   - name: prune
     help: Prune config and plugins files
     examples:
