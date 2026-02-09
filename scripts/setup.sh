@@ -20,13 +20,3 @@ else
   curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
   chmod +x "$INSTALL_PATH"
 fi
-
-if command -v bash_unit &>/dev/null; then
-  echo "bash_unit is already installed"
-else
-  TOOL_URL="https://raw.githubusercontent.com/bash-unit/bash_unit/master/install.sh"
-  INSTALL_PATH="/usr/local/bin/bash_unit"
-
-  curl -sSL "$TOOL_URL" | bash
-  mv ./bash_unit "$INSTALL_PATH"
-fi

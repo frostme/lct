@@ -1,0 +1,3 @@
+Dry Run: The following directories would be pruned:
+- ~/.cache/lct/plugins/acme
+- ~/.cache/lct/plugins/acme/tool
