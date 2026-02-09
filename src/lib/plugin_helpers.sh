@@ -71,12 +71,32 @@ plugin_paths_for_entry() {
 }
 
 load_plugins() {
-  for idx in "${!PLUGINS[@]}"; do
-    plugin=${PLUGINS[$idx]}
-    owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
-    repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
-    name="$(echo "$plugin" | awk -F '.' '{print $2}')"
+  local plugin owner repo name plugin_dir main_script
+
+  for plugin in "${PLUGINS[@]}"; do
+    if [[ ! "$plugin" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+      echo "❌ ERROR: Invalid plugin identifier '${plugin}'. Expected only [A-Za-z0-9._-] characters with / separators." >&2
+      return 1
+    fi
+
+    owner="${plugin%%/*}"
+    repo="${plugin#*/}"
+    name=""
+
+    if [[ "$repo" == *.* ]]; then
+      name="${repo#*.}"
+      repo="${repo%%.*}"
+    fi
+
     plugin_dir="$LCT_PLUGINS_DIR/$owner-$repo${name:+-$name}"
-    eval "${plugin_dir}/main.sh"
+    main_script="$plugin_dir/main.sh"
+
+    if [[ -f "$main_script" ]]; then
+      # shellcheck disable=SC1090
+      source "$main_script"
+    else
+      echo "❌ ERROR: Plugin entrypoint not found at ${main_script}" >&2
+      return 1
+    fi
   done
 }
