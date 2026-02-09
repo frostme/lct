@@ -1,0 +1,3 @@
+Using package manager: brew
+brew install inline-lib
+brew bundle add inline-lib --file=~/.local/share/lct/Brewfile

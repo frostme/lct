@@ -10,6 +10,54 @@ export SHARE_DIR="$tmpdir/.local/share"
 export STATE_DIR="$tmpdir/.local/state"
 export CACHE_DIR="$tmpdir/.cache"
 
+stubdir="$tmpdir/bin"
+mkdir -p "$stubdir"
+export PATH="$stubdir:/home/runner/go/bin:$PATH"
+
+cat >"$stubdir/brew" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_BREW:-}" == "1" ]]; then
+  echo "brew failed" >&2
+  exit 1
+fi
+cmd="$1"
+shift || true
+printf "brew %s %s\n" "$cmd" "$*"
+EOF
+chmod +x "$stubdir/brew"
+
+cat >"$stubdir/mise" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_MISE:-}" == "1" ]]; then
+  echo "mise failed" >&2
+  exit 1
+fi
+cmd="$1"
+shift || true
+printf "mise %s %s\n" "$cmd" "$*"
+EOF
+chmod +x "$stubdir/mise"
+
+for tool in apt-get dnf yum zypper pacman paru yay nix-env flox winget scoop pkg; do
+  cat >"$stubdir/$tool" <<'EOF'
+#!/usr/bin/env bash
+echo "$(basename "$0") $*"
+EOF
+  chmod +x "$stubdir/$tool"
+done
+
+cat >"$stubdir/gum" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod +x "$stubdir/gum"
+
+cat >"$stubdir/asdf" <<'EOF'
+#!/usr/bin/env bash
+echo "asdf $*"
+EOF
+chmod +x "$stubdir/asdf"
+
 trap 'rm -rf "$tmpdir"' EXIT
 
 source test/approvals.bash
@@ -34,6 +82,33 @@ approve "${cli} configs list" "configs_list_after_add"
 it "removes a config directory"
 approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
 approve "${cli} configs list" "configs_list_after_remove"
+
+describe "lib command"
+config_path="$tmpdir/.config/lct/config.yaml"
+
+cat >"$config_path" <<'EOF'
+packageManager: mise
+EOF
+
+it "uses package manager from config when none provided"
+approve "${cli} lib add sample-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_from_config"
+
+it "prefers inline manager over config"
+approve "${cli} lib add inline-lib --manager brew | sed 's/${tmpdir_escaped}/~/g'" "lib_add_inline_manager"
+
+cat >"$config_path" <<'EOF'
+packageManager:
+EOF
+
+it "uses default manager when none provided"
+LCT_DEFAULT_PACKAGE_MANAGER=apt approve "${cli} lib add default-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_default_manager"
+
+cat >"$config_path" <<'EOF'
+packageManager: missingmgr
+EOF
+
+it "falls back when configured manager is unavailable"
+approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_fallback_to_default"
 
 describe "prune command"
 mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
