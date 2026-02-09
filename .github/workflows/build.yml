@@ -1,0 +1,30 @@
+name: Build
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Mise Dependencies
+        uses: jdx/mise-action@v3
+      - name: Install semver
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: "fsaintjacques/semver-tool"
+          latest: true
+          tarBall: true
+          zipBall: false
+          extract: true
+      - name: Install bash_unit
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: "bash-unit/bash_unit"
+          latest: true
+          tarBall: true
+          zipBall: false
+          extract: true
+      - name: Build LCT
+        run: just build
