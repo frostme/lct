@@ -14,12 +14,32 @@ on:
           - major
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-  docs:
+  release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Mise Dependencies
+        uses: jdx/mise-action@v3
+      - name: Install Other Dependencies
+        run: |
+          TOOL_URL="https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver"
+          INSTALL_PATH="/usr/local/bin/semver"
+
+          curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
+          chmod +x "$INSTALL_PATH"
+
+          TOOL_URL="https://raw.githubusercontent.com/bash-unit/bash_unit/master/install.sh"
+          INSTALL_PATH="/usr/local/bin/bash_unit"
+
+          curl -sSL "$TOOL_URL" | bash
+          mv ./bash_unit "$INSTALL_PATH"
+      - name: Build LCT
+        run: just build
       - name: Build Docs
         run: just docs
       - name: Build Pages
@@ -28,13 +48,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./pages" # The directory containing your static files
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
       - name: Resolve release metadata
         id: release_meta
         run: |
@@ -113,17 +126,18 @@ jobs:
           files: |
             target/release/*.zip
             target/release/*.tar.gz
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Release ${{ steps.release_meta.outputs.tag }}
   deploy:
-    needs: [build, docs, release]
+    needs: release
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: Release ${{ steps.release_meta.outputs.tag }}
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
