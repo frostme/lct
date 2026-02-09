@@ -17,6 +17,20 @@ commands:
         short: -m
         arg: manager
         help: Package manager to use for installation (overrides config/default)
+        completions:
+          - brew
+          - apt
+          - dnf
+          - pacman
+          - aur
+          - nix
+          - asdf
+          - flox
+          - winget
+          - scoop
+          - yum
+          - zypper
+          - pkg
   - name: remove
     help: Remove a library from lct
     args:
@@ -28,6 +42,20 @@ commands:
         short: -m
         arg: manager
         help: Package manager to use for removal (overrides config/default)
+        completions:
+          - brew
+          - apt
+          - dnf
+          - pacman
+          - aur
+          - nix
+          - asdf
+          - flox
+          - winget
+          - scoop
+          - yum
+          - zypper
+          - pkg
   - name: dump
     help: Dump the current lct libraries to your Brewfile
   - name: list

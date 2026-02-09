@@ -12,7 +12,7 @@ export CACHE_DIR="$tmpdir/.cache"
 
 stubdir="$tmpdir/bin"
 mkdir -p "$stubdir"
-export PATH="$stubdir:$PATH"
+export PATH="$stubdir:/home/runner/go/bin:$PATH"
 
 cat >"$stubdir/brew" <<'EOF'
 #!/usr/bin/env bash
@@ -37,6 +37,26 @@ shift || true
 printf "mise %s %s\n" "$cmd" "$*"
 EOF
 chmod +x "$stubdir/mise"
+
+for tool in apt-get dnf yum zypper pacman paru yay nix-env flox winget scoop pkg; do
+  cat >"$stubdir/$tool" <<'EOF'
+#!/usr/bin/env bash
+echo "$(basename "$0") $*"
+EOF
+  chmod +x "$stubdir/$tool"
+done
+
+cat >"$stubdir/gum" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod +x "$stubdir/gum"
+
+cat >"$stubdir/asdf" <<'EOF'
+#!/usr/bin/env bash
+echo "asdf $*"
+EOF
+chmod +x "$stubdir/asdf"
 
 trap 'rm -rf "$tmpdir"' EXIT
 
@@ -75,6 +95,13 @@ approve "${cli} lib add sample-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_fro
 
 it "prefers inline manager over config"
 approve "${cli} lib add inline-lib --manager brew | sed 's/${tmpdir_escaped}/~/g'" "lib_add_inline_manager"
+
+cat >"$config_path" <<'EOF'
+packageManager:
+EOF
+
+it "uses default manager when none provided"
+LCT_DEFAULT_PACKAGE_MANAGER=apt approve "${cli} lib add default-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_default_manager"
 
 cat >"$config_path" <<'EOF'
 packageManager: missingmgr

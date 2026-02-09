@@ -1,4 +1,3 @@
 Package manager 'missingmgr' not available, trying next option.
-Using package manager: mise
-mise use --global fallback-lib@latest
-mise install fallback-lib@latest
+Using package manager: apt
+apt-get install -y fallback-lib
