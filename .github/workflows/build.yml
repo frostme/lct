@@ -9,28 +9,26 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Mise Dependencies
         uses: jdx/mise-action@v3
-      - name: Install semver
-        uses: robinraju/release-downloader@v1
-        with:
-          repository: "fsaintjacques/semver-tool"
-          latest: true
-          tarBall: true
-          zipBall: false
-          extract: true
-          out-file-path: semver
-      - name: Install bash_unit
-        uses: robinraju/release-downloader@v1
-        with:
-          repository: "bash-unit/bash_unit"
-          latest: true
-          tarBall: true
-          zipBall: false
-          extract: true
-          out-file-path: bash_unit
-      - name: Showing some love
+      - name: Install Other Dependencies
         run: |
-          ls -lsa
-          ls -lsa semver
-          ls -lsa bash_unit
+          if command -v semver &>/dev/null; then
+            echo "semver is already installed"
+          else
+            TOOL_URL="https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver"
+            INSTALL_PATH="/usr/local/bin/semver"
+
+            curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
+            chmod +x "$INSTALL_PATH"
+          fi
+
+          if command -v bash_unit &>/dev/null; then
+            echo "bash_unit is already installed"
+          else
+            TOOL_URL="https://raw.githubusercontent.com/bash-unit/bash_unit/master/install.sh"
+            INSTALL_PATH="/usr/local/bin/bash_unit"
+
+            curl -sSL "$TOOL_URL" | bash
+            mv ./bash_unit "$INSTALL_PATH"
+          fi
       - name: Build LCT
         run: just build
