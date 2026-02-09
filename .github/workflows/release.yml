@@ -15,14 +15,11 @@ on:
 
 jobs:
   build:
+    uses: ./.github/workflows/build.yml
+  docs:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Dependencies
-        uses: jdx/mise-action@v3
-      - name: Build LCT
-        run: just build
       - name: Build Docs
         run: just docs
       - name: Build Pages
@@ -38,10 +35,6 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Dependencies
-        uses: jdx/mise-action@v3
       - name: Resolve release metadata
         id: release_meta
         run: |
@@ -67,10 +60,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "${{ steps.release_meta.outputs.tag }}"
           git push origin "${{ steps.release_meta.outputs.tag }}"
-
-      - name: Build
-        if: steps.release_meta.outputs.tag_exists != 'true'
-        run: just build
 
       - name: Prepare release artifacts
         if: steps.release_meta.outputs.tag_exists != 'true'
@@ -124,17 +113,17 @@ jobs:
           files: |
             target/release/*.zip
             target/release/*.tar.gz
-      - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: Release ${{ steps.release_meta.outputs.tag }}
   deploy:
-    needs: build
+    needs: [build, docs, release]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Release ${{ steps.release_meta.outputs.tag }}
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
