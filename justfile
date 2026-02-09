@@ -35,6 +35,6 @@ bump type:
   #!/usr/bin/env bash
   set -euo pipefail
   current_version=$(yq '.version' ./src/bashly.yml)
-  new_version=$(semver -i "$type" $current_version)
+  new_version=$(semver bump ${type} $current_version)
   echo "Bumping ${current_version} -> ${new_version}"
   yq -i ".version=\"${new_version}\"" ./src/bashly.yml
