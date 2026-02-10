@@ -1,6 +1,6 @@
 ensure_init_paths() {
   mkdir -p "$LCT_CONFIG_DIR" "$LCT_SHARE_DIR" "$LCT_VERSIONS_DIR" "$LCT_CACHE_DIR" "$LCT_PLUGINS_CACHE_DIR" "$LCT_MODULES_DIR" "$LCT_MODULES_BIN_DIR" "$LCT_MODULES_CACHE_DIR"
-  touch "$LCT_BREW_FILE" "$LCT_ENV_FILE" "$LCT_ALIAS_FILE" "$LCT_VERSIONS_FILE" "$LCT_CONFIG_FILE"
+  touch "$LCT_BREW_FILE" "$LCT_ENV_FILE" "$LCT_ALIAS_FILE" "$LCT_CONFIG_FILE"
 }
 
 ensure_config_defaults() {
@@ -22,14 +22,6 @@ EOF
       .plugins = (.plugins // []) |
       .modules = (.modules // [])
     ' "$LCT_CONFIG_FILE"
-  fi
-}
-
-ensure_versions_file() {
-  if [[ ! -s "$LCT_VERSIONS_FILE" ]]; then
-    printf 'latest: ""\n' >"$LCT_VERSIONS_FILE"
-  else
-    yq -i '.latest = (.latest // "")' "$LCT_VERSIONS_FILE"
   fi
 }
 
@@ -144,7 +136,6 @@ prompt_plugins() {
 run_init_flow() {
   gum_title "LCT initialization"
   ensure_init_paths
-  ensure_versions_file
   ensure_config_defaults
   prompt_remote_repo
   prompt_dotfiles

@@ -200,6 +200,28 @@ mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
 it "lists cache directories in dry run mode"
 approve "${cli} prune --cache --dry | sed 's/${tmpdir_escaped}/~/g'" "prune_cache_dry_run_lists_cache_dirs"
 
+
+
+describe "gather command"
+mkdir -p "$tmpdir/.config/nvim" "$tmpdir/.config/lazygit" "$tmpdir/.local/share" "$tmpdir/work"
+touch "$tmpdir/.config/nvim/init.lua"
+touch "$tmpdir/.config/lazygit/config.yml"
+touch "$tmpdir/.zshrc"
+touch "$tmpdir/work/custom.conf"
+cat >"$tmpdir/.config/lct/config.yaml" <<'EOF'
+remote: null
+configs:
+  - nvim
+  - lazygit
+dotfiles:
+  - .zshrc
+other:
+  work/custom.conf: work/custom.conf
+plugins: []
+modules: []
+EOF
+it "gathers configured files into a version archive"
+approve "GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com ${cli} gather --force | sed -E 's/[0-9]{4}\.[0-9]{2}\.[0-9]{2}/<DATE>/g; s/${tmpdir_escaped}/~/g; s/[0-9]+ file(s)? changed.*/<GIT_COMMIT_SUMMARY>/g; s/[a-f0-9]{7}\.\.[a-f0-9]{7}/<GIT_RANGE>/g; s/\[main \(root-commit\) [a-f0-9]{7}\]/[main (root-commit) <GIT_HASH>]/g' | sed '/^ create mode /d'" "gather_force"
 describe "env command"
 it "sets an environment variable"
 approve "${cli} env set API_KEY 123" "env_set"
