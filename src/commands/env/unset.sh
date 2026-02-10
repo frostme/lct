@@ -15,6 +15,7 @@ unescape_sh_value() {
   printf '%s' "$value"
 }
 
+# Use env() for yq v4 compatibility (yq no longer supports --arg).
 yq -i --arg key "$env_key" 'del(.[$key])' "$LCT_ENV_FILE"
 unset -v "$env_key"
 while IFS= read -r line; do

@@ -16,6 +16,7 @@ unescape_sh_value() {
   printf '%s' "$value"
 }
 
+# Use env()/strenv() for yq v4 compatibility (yq no longer supports --arg).
 yq -i --arg key "$env_key" --arg value "$env_value" '.[$key]=$value' "$LCT_ENV_FILE"
 while IFS= read -r line; do
   if [[ $line =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
