@@ -6,32 +6,32 @@ LCT_PACKAGE_MANAGER=""
 # -----------------------------
 # Function: set_origin_remote
 # Description:
-#   - Configures the origin remote of the git repository in LCT_VERSIONS_DIR to match REMOTE_CONFIG_REPO.
+#   - Configures the origin remote of the git repository in LCT_REMOTE_DIR to match REMOTE_CONFIG_REPO.
 # Preconditions:
 #   - REMOTE_CONFIG_REPO: Git URL (e.g., https://github.com/org/repo.git or git@github.com:org/repo.git).
-#   - LCT_VERSIONS_DIR: Path to a git working tree.
+#   - LCT_REMOTE_DIR: Path to a git working tree.
 # -----------------------------
 set_origin_remote() {
   # Validate required environment variables
   : "${REMOTE_CONFIG_REPO:?REMOTE_CONFIG_REPO is required}"
-  : "${LCT_VERSIONS_DIR:?LCT_VERSIONS_DIR is required}"
+  : "${LCT_REMOTE_DIR:?LCT_REMOTE_DIR is required}"
 
-  # Check if LCT_VERSIONS_DIR is a valid git repository
-  if [[ ! -d "$LCT_VERSIONS_DIR/.git" ]]; then
-    echo "Error: Not a git repo: $LCT_VERSIONS_DIR" >&2
+  # Check if LCT_REMOTE_DIR is a valid git repository
+  if [[ ! -d "$LCT_REMOTE_DIR/.git" ]]; then
+    echo "Error: Not a git repo: $LCT_REMOTE_DIR" >&2
     return 1
   fi
 
   local current
 
   # Get current remote URL, if it exists
-  current="$(git -C "$LCT_VERSIONS_DIR" remote get-url origin 2>/dev/null || true)"
+  current="$(git -C "$LCT_REMOTE_DIR" remote get-url origin 2>/dev/null || true)"
 
   # Update or set the remote as needed
   if [[ -z "$current" ]]; then
-    git -C "$LCT_VERSIONS_DIR" remote add origin "$REMOTE_CONFIG_REPO" &>/dev/null
+    git -C "$LCT_REMOTE_DIR" remote add origin "$REMOTE_CONFIG_REPO" &>/dev/null
   elif [[ "$current" != "$REMOTE_CONFIG_REPO" ]]; then
-    git -C "$LCT_VERSIONS_DIR" remote set-url origin "$REMOTE_CONFIG_REPO" &>/dev/null
+    git -C "$LCT_REMOTE_DIR" remote set-url origin "$REMOTE_CONFIG_REPO" &>/dev/null
   fi
 }
 
@@ -62,7 +62,7 @@ detect_directories() {
   LCT_CACHE_DIR="${CACHE_DIR}/lct"
   LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
   LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
-  LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
+  LCT_REMOTE_DIR="${LCT_SHARE_DIR}/remote"
   LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
   LCT_ALIAS_FILE="${LCT_SHARE_DIR}/alias.yaml"
   LCT_INIT_FILE="${LCT_SHARE_DIR}/.init_done"
@@ -79,12 +79,12 @@ setup_directories() {
   [[ -d "${LCT_SOFTWARE_DIR}" ]] || mkdir -p "${LCT_SOFTWARE_DIR}"
   [[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
   [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
-  [[ -d "${LCT_VERSIONS_DIR}" ]] || mkdir -p "${LCT_VERSIONS_DIR}"
+  [[ -d "${LCT_REMOTE_DIR}" ]] || mkdir -p "${LCT_REMOTE_DIR}"
   [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
   [[ -f "${LCT_ALIAS_FILE}" ]] || touch "${LCT_ALIAS_FILE}"
-  [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init -q -b main "$LCT_VERSIONS_DIR"
-  [[ -f "${LCT_VERSIONS_DIR}/lct.yaml" ]] && rm -f "${LCT_VERSIONS_DIR}/lct.yaml"
+  [[ -d "$LCT_REMOTE_DIR/.git" ]] || git init -q -b main "$LCT_REMOTE_DIR"
+  [[ -f "${LCT_REMOTE_DIR}/lct.yaml" ]] && rm -f "${LCT_REMOTE_DIR}/lct.yaml"
   [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
   [[ -d "${LCT_CACHE_DIR}" ]] || mkdir -p "${LCT_CACHE_DIR}"
   [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
@@ -162,11 +162,6 @@ load_env() {
       fi
       export "${key}=${value}"
     done < <(yq -r 'to_entries[] | "\(.key)\t\(.value|tostring)"' "${LCT_ENV_FILE}")
-  fi
-
-  if [ -z "${LATEST_LCT_VERSION+x}" ]; then
-    LATEST_LCT_VERSION=$(ls "$LCT_VERSIONS_DIR" 2>/dev/null | grep -E '^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.tar\.xz$' | sed 's/\.tar\.xz$//' | sort | tail -n1 || true)
-    LATEST_LCT_VERSION_DIR="$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION"
   fi
 
   if [[ -n "$REMOTE_CONFIG_REPO" && "$REMOTE_CONFIG_REPO" != "null" ]]; then

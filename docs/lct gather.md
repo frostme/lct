@@ -22,6 +22,6 @@ lct gather
 
 #### *--force, -f*
 
-overwrite existing version if conflicting
+overwrite existing files in remote repository
 
 

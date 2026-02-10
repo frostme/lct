@@ -8,10 +8,10 @@ and the repository exists.
 │ LCT initialization │
 └────────────────────┘
                       
-┌───────────────────────────────────────────────┐
-│ Gathering configs for new version: <DATE> │
-└───────────────────────────────────────────────┘
-                                                 
+┌──────────────────────────────────────────┐
+│ Gathering configs into remote repository │
+└──────────────────────────────────────────┘
+                                            
 Gathering LCT files
 Copying Brewfile
 Copying config.yaml
@@ -23,8 +23,8 @@ Gathering dotfiles
 Copying .zshrc
 ✅ Dotfiles successfully gathered
 Gathering other files
-Copying ~/work/custom.conf to ~/.local/share/lct/config_versions/<DATE>/other/work/custom.conf
+Copying ~/work/custom.conf to ~/.local/share/lct/remote/other/work/custom.conf
 ✅ Other files successfully gathered
-[main (root-commit) <GIT_HASH>] Gather configs for version <DATE>
+[main (root-commit) <GIT_HASH>] Gather configs 2026-02-10<TIME>
  <GIT_COMMIT_SUMMARY>
 No remote repository configured, skipping push
