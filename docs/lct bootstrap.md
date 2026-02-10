@@ -18,14 +18,10 @@ lct bootstrap [OPTIONS]
 lct bootstrap
 ```
 
-```bash
-lct bootstrap -c 26.01.20
-```
-
 ## Options
 
-#### *--config, -c CONFIG*
+#### *--force, -f*
 
-Config version to bootstrap
+overwrite existing local configuration files
 
 
