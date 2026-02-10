@@ -200,3 +200,6 @@ it "sets an environment variable"
 approve "${cli} env set API_KEY 123" "env_set"
 it "unsets an environment variable"
 approve "${cli} env unset API_KEY" "env_unset"
+it "fails when value argument is missing"
+approve "${cli} env set API_KEY" "env_set_missing_value"
+expect_exit_code 1
