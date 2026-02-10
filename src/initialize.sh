@@ -63,7 +63,6 @@ detect_directories() {
   LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
   LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
   LCT_VERSIONS_DIR="${LCT_SHARE_DIR}/config_versions"
-  LCT_VERSIONS_FILE="${LCT_VERSIONS_DIR}/lct.yaml"
   LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
   LCT_ALIAS_FILE="${LCT_SHARE_DIR}/alias.yaml"
   LCT_INIT_FILE="${LCT_SHARE_DIR}/.init_done"
@@ -84,8 +83,8 @@ setup_directories() {
   [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
   [[ -f "${LCT_ALIAS_FILE}" ]] || touch "${LCT_ALIAS_FILE}"
-  [[ -f "${LCT_VERSIONS_FILE}" ]] || touch "${LCT_VERSIONS_FILE}"
   [[ -d "$LCT_VERSIONS_DIR/.git" ]] || git init -q -b main "$LCT_VERSIONS_DIR"
+  [[ -f "${LCT_VERSIONS_DIR}/lct.yaml" ]] && rm -f "${LCT_VERSIONS_DIR}/lct.yaml"
   [[ -f "${LCT_BREW_FILE}" ]] || touch "${LCT_BREW_FILE}"
   [[ -d "${LCT_CACHE_DIR}" ]] || mkdir -p "${LCT_CACHE_DIR}"
   [[ -d "${LCT_PLUGINS_DIR}" ]] || mkdir -p "${LCT_PLUGINS_DIR}"
@@ -166,7 +165,7 @@ load_env() {
   fi
 
   if [ -z "${LATEST_LCT_VERSION+x}" ]; then
-    LATEST_LCT_VERSION=$(yq '.latest' "$LCT_VERSIONS_FILE")
+    LATEST_LCT_VERSION=$(ls "$LCT_VERSIONS_DIR" 2>/dev/null | grep -E '^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.tar\.xz$' | sed 's/\.tar\.xz$//' | sort | tail -n1 || true)
     LATEST_LCT_VERSION_DIR="$LCT_VERSIONS_DIR/$LATEST_LCT_VERSION"
   fi
 
