@@ -16,7 +16,7 @@ unescape_sh_value() {
   printf '%s' "$value"
 }
 
-yq -i --arg key "$env_key" --arg value "$env_value" '.[$key]=$value' "$LCT_ENV_FILE"
+envKey="$env_key" envValue="$env_value" yq -i '.[strenv(envKey)]=strenv(envValue)' "$LCT_ENV_FILE"
 while IFS= read -r line; do
   if [[ $line =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
     key=${BASH_REMATCH[1]}

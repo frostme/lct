@@ -15,7 +15,7 @@ unescape_sh_value() {
   printf '%s' "$value"
 }
 
-yq -i --arg key "$env_key" 'del(.[$key])' "$LCT_ENV_FILE"
+envKey="$env_key" yq -i 'del(.[strenv(envKey)])' "$LCT_ENV_FILE"
 unset -v "$env_key"
 while IFS= read -r line; do
   if [[ $line =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
