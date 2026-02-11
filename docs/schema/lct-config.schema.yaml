@@ -1,0 +1,98 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.com/lct-config.schema.yaml"
+title: LCT configuration schema
+description: >-
+  Schema for ~/.config/lct/config.yaml consumed by the lct CLI.
+type: object
+additionalProperties: false
+properties:
+  remote:
+    type:
+      - string
+      - "null"
+    description: >-
+      Git remote URL for the gathered configuration repository. Set to null
+      when no remote is configured.
+    examples:
+      - git@github.com:example/dotfiles.git
+      - null
+  configs:
+    type: array
+    description: List of config directories or files managed by lct.
+    items:
+      type: string
+    default: []
+    examples:
+      - - ~/.config/alacritty
+        - ~/.config/nvim
+  dotfiles:
+    type: array
+    description: List of dotfiles managed by lct.
+    items:
+      type: string
+    default: []
+    examples:
+      - - ~/.zshrc
+        - ~/.gitconfig
+  other:
+    type: object
+    description: >-
+      Arbitrary source-to-destination file mappings used by lct gather/bootstrap.
+      Additional keys are allowed.
+    additionalProperties: true
+    default: {}
+    examples:
+      - ~/work/custom.conf: ~/.config/custom/custom.conf
+  plugins:
+    type: array
+    description: List of lct plugins to install or load.
+    items:
+      type: string
+    default: []
+    examples:
+      - - gh/owner/example-plugin
+  modules:
+    type: array
+    description: List of module repositories managed by lct.
+    items:
+      type: string
+    default: []
+    examples:
+      - - github.com/example/lct-module
+  packageManager:
+    type: string
+    description: >-
+      Optional package manager used by install flows (for example, mise).
+    examples:
+      - mise
+required:
+  - remote
+  - configs
+  - dotfiles
+  - other
+  - plugins
+  - modules
+examples:
+  - remote: null
+    configs: []
+    dotfiles: []
+    other: {}
+    plugins: []
+    modules: []
+  - remote: git@github.com:example/dotfiles.git
+    configs:
+      - ~/.config/alacritty
+      - ~/.config/nvim
+    dotfiles:
+      - ~/.zshrc
+      - ~/.gitconfig
+    other:
+      ~/work/custom.conf: ~/.config/custom/custom.conf
+      ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+    plugins:
+      - gh/owner/example-plugin
+      - gh/owner/another-plugin
+    modules:
+      - github.com/example/lct-module
+      - github.com/example/lct-theme
+    packageManager: mise
