@@ -18,13 +18,13 @@ properties:
       - null
   configs:
     type: array
-    description: List of config directories or files managed by lct.
+    description: List of config names managed by lct.
     items:
       type: string
     default: []
     examples:
-      - - ~/.config/alacritty
-        - ~/.config/nvim
+      - - alacritty
+        - nvim
   dotfiles:
     type: array
     description: List of dotfiles managed by lct.
@@ -81,8 +81,8 @@ examples:
     modules: []
   - remote: git@github.com:example/dotfiles.git
     configs:
-      - ~/.config/alacritty
-      - ~/.config/nvim
+      - alacritty
+      - nvim
     dotfiles:
       - ~/.zshrc
       - ~/.gitconfig

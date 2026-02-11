@@ -35,8 +35,8 @@ modules: []
 ```yaml
 remote: git@github.com:example/dotfiles.git
 configs:
-  - ~/.config/alacritty
-  - ~/.config/nvim
+  - alacritty
+  - nvim
 dotfiles:
   - ~/.zshrc
   - ~/.gitconfig
