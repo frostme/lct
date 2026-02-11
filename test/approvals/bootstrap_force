@@ -1,4 +1,10 @@
-No plugins specified in config.yaml, nothing to install.
+❌ ERROR: Plugin entrypoint not found at /var/folders/bq/f6fjr7hd0kqdhxz_glj_k3jm0000gn/T/tmp.QJUiFYtZFx/.local/share/lct/plugins/zsh-users-zsh-autosuggestions/main.sh
+/Users/melliotfrost/code/lct/target/build/lct:2699 in `lct_bootstrap_command`: return 1
+
+Stack trace:
+	from /Users/melliotfrost/code/lct/target/build/lct:2699 in `lct_bootstrap_command`
+	from /Users/melliotfrost/code/lct/target/build/lct:6156 in `run`
+	from /Users/melliotfrost/code/lct/target/build/lct:6198 in `main`
 ┌────────────────────────────┐
 │ Starting Bootstrap Process │
 └────────────────────────────┘
@@ -12,3 +18,10 @@ Applying library configs
 Applying nvim config
 Applying lazygit config
 ✅ Configs successfully copied
+┌─────────────────────────────────┐
+│ Starting plugin installation... │
+└─────────────────────────────────┘
+                                   
+- Installed plugin zsh-users/zsh-autosuggestions
+- Installed plugin zsh-users/zsh-syntax-highlighting
+✅ Plugin installation complete

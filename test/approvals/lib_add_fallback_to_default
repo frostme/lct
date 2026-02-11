@@ -1,3 +1,4 @@
 Package manager 'missingmgr' not available, trying next option.
-Using package manager: apt
-apt-get install -y fallback-lib
+Using package manager: brew
+brew install fallback-lib
+brew bundle add fallback-lib --file=~/.local/share/lct/Brewfile

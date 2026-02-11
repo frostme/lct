@@ -186,7 +186,7 @@ packageManager:
 EOF
 
 it "uses default manager when none provided"
-LCT_DEFAULT_PACKAGE_MANAGER=apt approve "${cli} lib add default-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_default_manager"
+LCT_DEFAULT_PACKAGE_MANAGER=brew approve "${cli} lib add default-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_default_manager"
 
 cat >"$config_path" <<'EOF'
 packageManager: missingmgr
@@ -199,8 +199,6 @@ describe "prune command"
 mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
 it "lists cache directories in dry run mode"
 approve "${cli} prune --cache --dry | sed 's/${tmpdir_escaped}/~/g'" "prune_cache_dry_run_lists_cache_dirs"
-
-
 
 describe "gather command"
 mkdir -p "$tmpdir/.config/nvim" "$tmpdir/.config/lazygit" "$tmpdir/.local/share" "$tmpdir/work"
@@ -221,7 +219,7 @@ plugins: []
 modules: []
 EOF
 it "gathers configured files into the remote repository"
-approve "GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com ${cli} gather --force | sed -E 's/[0-9]{4}\.[0-9]{2}\.[0-9]{2}/<DATE>/g; s/T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/<TIME>/g; s/${tmpdir_escaped}/~/g; s/[0-9]+ file(s)? changed.*/<GIT_COMMIT_SUMMARY>/g; s/[a-f0-9]{7}\.\.[a-f0-9]{7}/<GIT_RANGE>/g; s/\[main \(root-commit\) [a-f0-9]{7}\]/[main (root-commit) <GIT_HASH>]/g' | sed '/^ create mode /d'" "gather_force"
+approve "GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com ${cli} gather --force | sed -E 's/[0-9]{4}\-[0-9]{2}\-[0-9]{2}/<DATE>/g; s/T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/<TIME>/g; s/${tmpdir_escaped}/~/g; s/[0-9]+ file(s)? changed.*/<GIT_COMMIT_SUMMARY>/g; s/[a-f0-9]{7}\.\.[a-f0-9]{7}/<GIT_RANGE>/g; s/\[main \(root-commit\) [a-f0-9]{7}\]/[main (root-commit) <GIT_HASH>]/g' | sed '/^ create mode /d'" "gather_force":
 
 describe "bootstrap command"
 it "shows bootstrap help"
