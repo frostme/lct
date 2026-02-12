@@ -128,10 +128,13 @@ jobs:
 
           zip_asset="${release_dir}/${version}.zip"
           tar_asset="${release_dir}/${version}.tar.gz"
+          checksum_asset="${release_dir}/checksum.txt"
           rm -f "$zip_asset" "$tar_asset"
 
           zip -j "$zip_asset" "$build_path"
           tar -czf "$tar_asset" -C "$(dirname "$build_path")" "$(basename "$build_path")"
+
+          sha256sum "$zip_asset" "$tar_asset" >"$checksum_asset"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -142,8 +145,7 @@ jobs:
           files: |
             target/release/*.zip
             target/release/*.tar.gz
-      - name: Checksums
-        uses: wangzuo/action-release-checksums@v1
+            target/release/checksum.txt
 
       - name: Create Release PR
         id: cpr
