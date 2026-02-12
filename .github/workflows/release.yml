@@ -161,6 +161,9 @@ jobs:
           MERGE_METHOD: squash
   deploy:
     needs: release
+    permissions:
+      id-token: write
+      pages: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
