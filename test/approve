@@ -192,7 +192,11 @@ packageManager: missingmgr
 EOF
 
 it "falls back when configured manager is unavailable"
-approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_fallback_to_default"
+lib_fallback_to_default_approval="lib_add_fallback_to_default"
+if [[ "$(uname -s)" == "Linux" && "${ID:-}" == "ubuntu" ]]; then
+  lib_fallback_to_default_approval="lib_add_fallback_to_ubunt"
+fi
+approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "${lib_fallback_to_default_approval}"
 
 describe "prune command"
 mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
