@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -153,7 +154,7 @@ jobs:
           title: 'Release ${{ steps.release_meta.outputs.tag }}'
           body: |
             This PR prepares the release of version ${{ steps.release_meta.outputs.tag }}.
-          delete-branch: true
+          branch: release/${{ steps.release_meta.outputs.tag }}
       - name: Merge Release PR
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
