@@ -195,11 +195,6 @@ cat >"$config_path" <<'EOF'
 packageManager: missingmgr
 EOF
 
-lib_fallback_to_default_approval="lib_add_fallback_to_default"
-if ! command -v brew; then
-  lib_fallback_to_default_approval="lib_add_fallback_to_ubuntu"
-fi
-
 it "falls back when configured manager is unavailable"
 approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "${lib_fallback_to_default_approval}"
 
