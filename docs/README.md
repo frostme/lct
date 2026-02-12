@@ -12,46 +12,6 @@ Local configuration tool
 lct COMMAND
 ```
 
-## Configuration schema
-
-The user config file at `~/.config/lct/config.yaml` should conform to the LCT config schema:
-
-- [`docs/schema/lct-config.schema.yaml`](schema/lct-config.schema.yaml)
-- [Configuration guide](config-schema.md)
-
-### Minimal valid config
-
-```yaml
-remote: null
-configs: []
-dotfiles: []
-other: {}
-plugins: []
-modules: []
-```
-
-### Full config
-
-```yaml
-remote: git@github.com:example/dotfiles.git
-configs:
-  - alacritty
-  - nvim
-dotfiles:
-  - ~/.zshrc
-  - ~/.gitconfig
-other:
-  ~/work/custom.conf: ~/.config/custom/custom.conf
-  ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
-plugins:
-  - gh/owner/example-plugin
-  - gh/owner/another-plugin
-modules:
-  - github.com/example/lct-module
-  - github.com/example/lct-theme
-packageManager: mise
-```
-
 ## Dependencies
 
 #### *gum*
@@ -79,4 +39,38 @@ packageManager: mise
 - [setup](lct%20setup.md) - Setup lct in your shell
 - [prune](lct%20prune.md) - Prune config and plugins files
 
+## Configuration schema
 
+The user config file at ~/.config/lct/config.yaml should conform to the LCT config schema:
+
+- [docs/schema/lct-config.schema.yaml](schema/lct-config.schema.yaml)
+- [Configuration guide](config-schema.md)
+
+### Minimal valid config
+
+    remote: null
+    configs: []
+    dotfiles: []
+    other: {}
+    plugins: []
+    modules: []
+
+### Full config
+
+    remote: git@github.com:example/dotfiles.git
+    configs:
+      - alacritty
+      - nvim
+    dotfiles:
+      - ~/.zshrc
+      - ~/.gitconfig
+    other:
+      ~/work/custom.conf: ~/.config/custom/custom.conf
+      ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+    plugins:
+      - gh/owner/example-plugin
+      - gh/owner/another-plugin
+    modules:
+      - github.com/example/lct-module
+      - github.com/example/lct-theme
+    packageManager: mise
