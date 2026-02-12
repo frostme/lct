@@ -19,14 +19,7 @@ jobs:
   release:
     needs: test
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      artifact-metadata: write
-      contents: write
-      deployments: write
-      pull-requests: write
-      id-token: write
-      pages: write
+    permissions: write-all
 
     steps:
       - name: Checkout
