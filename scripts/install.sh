@@ -215,7 +215,7 @@ install_yq() {
   checksums="${TMP_ROOT}/yq-checksums.txt"
 
   download_release_asset "mikefarah/yq" "$pattern" "$yq_binary"
-  download_release_asset "mikefarah/yq" "checksums\\.txt" "$checksums"
+  download_release_asset "mikefarah/yq" "checksums" "$checksums"
   verify_checksum "$yq_binary" "$checksums"
   install_binary "$yq_binary" "${INSTALL_DIR}/yq"
   log "Installed yq to ${INSTALL_DIR}/yq"
