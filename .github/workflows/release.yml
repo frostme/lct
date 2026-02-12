@@ -152,6 +152,7 @@ jobs:
           body: |
             This PR prepares the release of version ${{ steps.release_meta.outputs.tag }}.
           branch: release/${{ steps.release_meta.outputs.tag }}
+          labels: release, automerge
       - name: Merge Release PR
         uses: 'pascalgn/automerge-action@v0.16.4'
         env:
