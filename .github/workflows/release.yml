@@ -20,9 +20,12 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     permissions:
+      artifact-metadata: write
       contents: write
+      deployments: write
       pull-requests: write
       id-token: write
+      pages: write
 
     steps:
       - name: Checkout
