@@ -157,10 +157,11 @@ jobs:
             This PR prepares the release of version ${{ steps.release_meta.outputs.tag }}.
           branch: release/${{ steps.release_meta.outputs.tag }}
       - name: Merge Release PR
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
+        uses: 'pascalgn/automerge-action@v0.16.4'
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          PULL_REQUEST: ${{ steps.cpr.outputs.pull-request-number }}
+          MERGE_METHOD: squash
   deploy:
     needs: release
     environment:
