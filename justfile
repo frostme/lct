@@ -23,6 +23,10 @@ watch:
 install:
   @cp target/build/lct /usr/local/bin/lct
 
+dev:
+  @gum spin --title "Installing lct..." -- bashly g -u
+  @cp target/build/lct /usr/local/bin/lct
+
 docs:
   @bashly r :markdown_github docs
 

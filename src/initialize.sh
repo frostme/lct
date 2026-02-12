@@ -152,7 +152,7 @@ load_configuration() {
 load_env() {
   # Load LCT environment variables
   if [[ -f "${LCT_ENV_FILE}" ]]; then
-    while IFS=$'\t' read -r key value; do
+    while IFS='=' read -r key value; do
       if [[ -z "$key" && -z "$value" ]]; then
         continue
       fi
@@ -161,7 +161,7 @@ load_env() {
         return 1
       fi
       export "${key}=${value}"
-    done < <(yq -r 'to_entries[] | "\(.key)\t\(.value|tostring)"' "${LCT_ENV_FILE}")
+    done < <(yq -r 'to_entries[] | "\(.key)=\(.value|tostring)"' "${LCT_ENV_FILE}")
   fi
 
   if [[ -n "$REMOTE_CONFIG_REPO" && "$REMOTE_CONFIG_REPO" != "null" ]]; then
