@@ -142,6 +142,8 @@ jobs:
           files: |
             target/release/*.zip
             target/release/*.tar.gz
+      - name: Checksums
+        uses: wangzuo/action-release-checksums@v1
 
       - name: Create Release PR
         id: cpr
