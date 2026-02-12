@@ -193,8 +193,8 @@ EOF
 
 it "falls back when configured manager is unavailable"
 lib_fallback_to_default_approval="lib_add_fallback_to_default"
-if [[ "$(uname -s)" == "Linux" && "${ID:-}" == "ubuntu" ]]; then
-  lib_fallback_to_default_approval="lib_add_fallback_to_ubunt"
+if ! command -v brew; then
+  lib_fallback_to_default_approval="lib_add_fallback_to_ubuntu"
 fi
 approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "${lib_fallback_to_default_approval}"
 
