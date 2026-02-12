@@ -1,6 +1,6 @@
 name: lct
 help: Local configuration tool
-version: 0.7.7
+version: 0.7.8
 dependencies:
   - gum
   - yq
@@ -66,7 +66,7 @@ x_pages:
       description: Lean on dry-runs and explicit prompts before destructive actions.
   footer: Want more? Visit the README for the full workflow and support links.
   repo_url: https://github.com/frostme/lct
-  accent_color: "#4f46e5"
+  accent_color: '#4f46e5'
   links:
     - label: README
       url: https://github.com/frostme/lct
