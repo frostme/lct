@@ -45,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './pages' # The directory containing your static files
+          path: "./pages" # The directory containing your static files
       - name: Resolve release metadata
         id: release_meta
         run: |
@@ -69,7 +69,7 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         with:
           tag: ${{ steps.release_meta.outputs.tag }}
-          message: 'Release ${{ steps.release_meta.outputs.tag }}'
+          message: "Release ${{ steps.release_meta.outputs.tag }}"
 
       - name: Prepare release artifacts
         if: steps.release_meta.outputs.tag_exists != 'true'
@@ -126,9 +126,9 @@ jobs:
             mv "$tmp_changelog" "$changelog_file"
           fi
 
-          zip_asset="${release_dir}/${version}.zip"
-          tar_asset="${release_dir}/${version}.tar.gz"
-          checksums_asset="${release_dir}/checksums.txt"
+          zip_asset="lct-${version}.zip"
+          tar_asset="lct-${version}.tar.gz"
+          checksums_asset="checksums.txt"
           rm -f "$zip_asset" "$tar_asset"
 
           zip -j "$zip_asset" "$build_path"
@@ -143,24 +143,39 @@ jobs:
           tag_name: ${{ steps.release_meta.outputs.tag }}
           body_path: target/release/release-notes.md
           files: |
-            target/release/*.zip
-            target/release/*.tar.gz
-            target/release/checksums.txt
+            lct-*.zip
+            lct-*.tar.gz
+            checksums.txt
+
+      - name: Move Release Assets
+        run: |
+          release_dir="target/release"
+          version="${{ steps.release_meta.outputs.version }}"
+          zip_asset="lct-${version}.zip"
+          zip_release_asset="${release_dir}/${zip_asset}"
+          tar_asset="lct-${version}.tar.gz"
+          tar_release_asset="${release_dir}/${tar_asset}"
+          checksums_asset="checksums.txt"
+          checksums_release_asset="${release_dir}/${checksums_asset}"
+          mv "$zip_asset" "$zip_release_asset"
+          mv "$tar_asset" "$tar_release_asset"
+          mv "$checksums_asset" "$checksums_release_asset"
 
       - name: Create Release PR
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: 'Release ${{ steps.release_meta.outputs.tag }}'
-          title: 'Release ${{ steps.release_meta.outputs.tag }}'
+          token: "${{ secrets.LCT_RELEASE_TOKEN }}"
+          commit-message: "Release ${{ steps.release_meta.outputs.tag }}"
+          title: "Release ${{ steps.release_meta.outputs.tag }}"
           body: |
             This PR prepares the release of version ${{ steps.release_meta.outputs.tag }}.
           branch: release/${{ steps.release_meta.outputs.tag }}
           labels: release, automerge
       - name: Merge Release PR
-        uses: 'pascalgn/automerge-action@v0.16.4'
+        uses: "pascalgn/automerge-action@v0.16.4"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GITHUB_TOKEN: "${{ secrets.LCT_RELEASE_TOKEN }}"
           PULL_REQUEST: ${{ steps.cpr.outputs.pull-request-number }}
           MERGE_METHOD: squash
   deploy:
