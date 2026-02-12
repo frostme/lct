@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
-cli="../target/build/lct"
 cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
@@ -40,7 +39,7 @@ printf "mise %s %s\n" "$cmd" "$*"
 EOF
 chmod +x "$stubdir/mise"
 
-for tool in apt-get dnf yum zypper pacman paru yay nix-env flox winget scoop pkg; do
+for tool in apt apt-get dnf yum zypper pacman paru yay nix-env flox winget scoop pkg; do
   cat >"$stubdir/$tool" <<'EOF'
 #!/usr/bin/env bash
 echo "$(basename "$0") $*"

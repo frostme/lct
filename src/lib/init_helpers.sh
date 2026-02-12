@@ -89,57 +89,12 @@ prompt_dotfiles() {
   fi
 }
 
-prompt_plugins() {
-  local shell_name
-  shell_name="$(basename "${SHELL:-}")"
-
-  local suggestions=()
-  case "$shell_name" in
-  zsh)
-    suggestions+=("zsh-users/zsh-autosuggestions")
-    suggestions+=("zsh-users/zsh-syntax-highlighting")
-    ;;
-  esac
-
-  if [[ ${#suggestions[@]} -eq 0 ]]; then
-    if gum_available; then
-      plugin_input=$(gum input --placeholder "Add any baseline plugins? (owner/repo[.name], comma separated)")
-    else
-      read -r -p "Add any baseline plugins? (owner/repo[.name], comma separated, blank to skip): " plugin_input
-    fi
-    if [[ -z "$plugin_input" ]]; then
-      return
-    fi
-    IFS=',' read -r -a suggestions <<<"$plugin_input"
-  else
-    local suggestion_list
-    suggestion_list=$(printf '%s ' "${suggestions[@]}" | sed 's/[[:space:]]*$//')
-    if ! gum_confirm_prompt "Add baseline plugins (${suggestion_list})?"; then
-      return
-    fi
-  fi
-
-  mapfile -t selected_plugins < <(printf '%s\n' "${suggestions[@]}" | gum_filter_multi)
-  if [[ ${#selected_plugins[@]} -eq 0 ]]; then
-    selected_plugins=("${suggestions[@]}")
-  fi
-
-  for plugin in "${selected_plugins[@]}"; do
-    # trim whitespace
-    plugin="${plugin#"${plugin%%[![:space:]]*}"}"
-    plugin="${plugin%"${plugin##*[![:space:]]}"}"
-    [[ -z "$plugin" ]] && continue
-    append_unique "plugins" "$plugin"
-  done
-}
-
 run_init_flow() {
   gum_title "LCT initialization"
   ensure_init_paths
   ensure_config_defaults
   prompt_remote_repo
   prompt_dotfiles
-  prompt_plugins
   date >"$LCT_INIT_FILE"
   if gum_available; then
     gum_join_vertical \
