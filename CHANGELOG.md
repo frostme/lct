@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.6 - 2026-02-12
+- Update release.yml (#76)
+- Release v0.7.5 (#75)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.7.5...v0.7.6
+
+
 ## v0.7.5 - 2026-02-12
 - Update bashly.yml (#74)
 - Update release.yml (#73)
