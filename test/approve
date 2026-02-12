@@ -10,6 +10,10 @@ export SHARE_DIR="$tmpdir/.local/share"
 export STATE_DIR="$tmpdir/.local/state"
 export CACHE_DIR="$tmpdir/.cache"
 export LCT_GITHUB_BASE="file://${tmpdir}/mock-github"
+lib_fallback_to_default_approval="lib_add_fallback_to_default"
+if ! command -v brew; then
+  lib_fallback_to_default_approval="lib_add_fallback_to_ubuntu"
+fi
 
 stubdir="$tmpdir/bin"
 mkdir -p "$stubdir"
@@ -192,10 +196,6 @@ packageManager: missingmgr
 EOF
 
 it "falls back when configured manager is unavailable"
-lib_fallback_to_default_approval="lib_add_fallback_to_default"
-if ! command -v brew; then
-  lib_fallback_to_default_approval="lib_add_fallback_to_ubuntu"
-fi
 approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "${lib_fallback_to_default_approval}"
 
 describe "prune command"
