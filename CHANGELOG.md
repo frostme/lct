@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.0 - 2026-02-12
+- Update release.yml (#84)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.7.10...v0.8.0
+
+
 ## v0.7.9 - 2026-02-12
 - Inline generation of release checksum and include as release asset (#81)
 
