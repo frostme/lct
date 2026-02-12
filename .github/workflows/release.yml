@@ -46,7 +46,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./pages" # The directory containing your static files
+          path: './pages' # The directory containing your static files
       - name: Resolve release metadata
         id: release_meta
         run: |
@@ -145,10 +145,20 @@ jobs:
             target/release/*.zip
             target/release/*.tar.gz
 
-      - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v7
+      - name: Create Release PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
         with:
-          commit_message: Release ${{ steps.release_meta.outputs.tag }}
+          commit-message: 'Release ${{ steps.release_meta.outputs.tag }}'
+          title: 'Release ${{ steps.release_meta.outputs.tag }}'
+          body: |
+            This PR prepares the release of version ${{ steps.release_meta.outputs.tag }}.
+          branch: release/${{ steps.release_meta.outputs.tag }}
+      - name: Merge Release PR
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
   deploy:
     needs: release
     environment:

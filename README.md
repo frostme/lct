@@ -1,5 +1,7 @@
 # lct
 
+[![Tests](https://github.com/frostme/lct/actions/workflows/test.yml/badge.svg)](https://github.com/frostme/lct/actions/workflows/test.yml)
+
 ## Installation
 
 - `curl -fsSL https://frostme.github.io/lct/install.sh | bash`
