@@ -128,7 +128,7 @@ jobs:
 
           zip_asset="${release_dir}/${version}.zip"
           tar_asset="${release_dir}/${version}.tar.gz"
-          checksum_asset="${release_dir}/checksum.txt"
+          checksums_asset="${release_dir}/checksums.txt"
           rm -f "$zip_asset" "$tar_asset"
 
           zip -j "$zip_asset" "$build_path"
@@ -145,7 +145,7 @@ jobs:
           files: |
             target/release/*.zip
             target/release/*.tar.gz
-            target/release/checksum.txt
+            target/release/checksums.txt
 
       - name: Create Release PR
         id: cpr
