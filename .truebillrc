@@ -1,2 +1,0 @@
-export DATABASE_URL=postgres://truebill@localhost:25432/truebill_development?sslmode=disable
-export TRANSACTIONS_DATABASE_URL=postgres://truebill@localhost:25432/truebill_transactions?sslmode=disable

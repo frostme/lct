@@ -1,0 +1,30 @@
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+ℹ Running lct init to complete setup...
+┌────────────────────┐
+│ LCT initialization │
+└────────────────────┘
+                      
+┌──────────────────────────────────────────┐
+│ Gathering configs into remote repository │
+└──────────────────────────────────────────┘
+                                            
+Gathering LCT files
+Copying Brewfile
+Copying config.yaml
+Gathering library configs
+Copying nvim config
+Copying lazygit config
+✅ Configs successfully gathered
+Gathering dotfiles
+Copying .zshrc
+✅ Dotfiles successfully gathered
+Gathering other files
+Copying ~/work/custom.conf to ~/.local/share/lct/remote/other/work/custom.conf
+✅ Other files successfully gathered
+[main (root-commit) <GIT_HASH>] Gather configs <DATE><TIME>
+ <GIT_COMMIT_SUMMARY>
+No remote repository configured, skipping push

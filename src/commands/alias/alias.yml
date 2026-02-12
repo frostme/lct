@@ -1,0 +1,24 @@
+name: alias
+help: Manage lct aliases
+examples:
+  - lct alias
+  - lct alias add ll 'ls -la'
+  - lct alias remove ll
+commands:
+  - name: add
+    help: add ALIAS alias
+    args:
+      - name: alias
+        help: Name of the alias to add
+        required: true
+      - name: command
+        help: Command to execute for the alias
+        required: true
+  - name: remove
+    help: unset and remove ALIAS alias
+    completions:
+      - $(yq 'keys | join(" ")' $LCT_ALIAS_FILE 2>/dev/null)
+    args:
+      - name: alias
+        help: Name of the alias to remove
+        required: true

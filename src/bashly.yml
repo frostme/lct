@@ -1,0 +1,149 @@
+name: lct
+help: Local configuration tool
+version: 0.1.1
+dependencies:
+  - gum
+  - yq
+x_markdown_footer: |-
+  ## Configuration schema
+
+  The user config file at ~/.config/lct/config.yaml should conform to the LCT config schema:
+
+  - [docs/schema/lct-config.schema.yaml](schema/lct-config.schema.yaml)
+  - [Configuration guide](config-schema.md)
+
+  ### Minimal valid config
+
+      remote: null
+      configs: []
+      dotfiles: []
+      other: {}
+      plugins: []
+      modules: []
+
+  ### Full config
+
+      remote: git@github.com:example/dotfiles.git
+      configs:
+        - alacritty
+        - nvim
+      dotfiles:
+        - ~/.zshrc
+        - ~/.gitconfig
+      other:
+        ~/work/custom.conf: ~/.config/custom/custom.conf
+        ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+      plugins:
+        - gh/owner/example-plugin
+        - gh/owner/another-plugin
+      modules:
+        - github.com/example/lct-module
+        - github.com/example/lct-theme
+      packageManager: mise
+x_pages:
+  title: LCT
+  tagline: Local configuration tool
+  overview: |-
+    LCT helps you capture, share, and restore local configuration in a repeatable
+    way. Use it to bootstrap machines, gather dotfiles, and manage config
+    libraries with a stable CLI you can script against.
+  quickstart:
+    - label: Install
+      command: curl -fsSL https://frostme.github.io/lct/install.sh | bash
+      description: Installs the latest release and puts `lct` on your PATH.
+    - label: Bootstrap your config
+      command: lct bootstrap
+      description: Apply your saved config and plugins on a new machine.
+    - label: Gather configs
+      command: lct gather
+      description: Capture and version local configs for reuse.
+  highlights:
+    - title: Predictable CLI output
+      description: Designed for automation-friendly, repeatable workflows.
+    - title: Pluggable configuration
+      description: Organize config libraries and plugin collections cleanly.
+    - title: Safe defaults
+      description: Lean on dry-runs and explicit prompts before destructive actions.
+  footer: Want more? Visit the README for the full workflow and support links.
+  repo_url: https://github.com/frostme/lct
+  accent_color: '#4f46e5'
+  links:
+    - label: README
+      url: https://github.com/frostme/lct
+    - label: Install Script
+      url: https://frostme.github.io/lct/install.sh
+commands:
+  - name: init
+    help: Initialize lct configuration
+    examples:
+      - lct init
+  - name: bootstrap
+    alias: b
+    help: Bootstrap your local configuration
+    examples:
+      - lct bootstrap
+    flags:
+      - long: --force
+        short: -f
+        help: overwrite existing local configuration files
+  - name: gather
+    alias: g
+    help: Gather local configuration files
+    examples:
+      - lct gather
+    flags:
+      - long: --force
+        short: -f
+        help: overwrite existing files in remote repository
+  - name: install
+    help: Install bash script releases from GitHub or LCTFile
+    examples:
+      - lct install DannyBen/approvals.bash
+      - lct install
+    args:
+      - name: module
+        help: GitHub owner/repo of the module to install
+  - import: src/commands/alias/alias.yml
+  - import: src/commands/dotfiles/dotfiles.yml
+  - import: src/commands/configs/configs.yml
+  - import: src/commands/env/env.yml
+  - import: src/commands/plugin/plugin.yml
+  - import: src/commands/lib/lib.yml
+  - name: completions
+    help: |-
+      Generate bash completions
+      Usage: eval "\$(lct completions)"
+  - name: config
+    help: Open your config files in your ${EDITOR:-editor}
+    completions:
+      - $(ls $HOME/.config/ 2> /dev/null | tr '\n' ' ')
+    examples:
+      - lct config
+      - lct config alacritty
+    args:
+      - name: lib_name
+        help: Name of the config library to open
+  - name: setup
+    help: Setup lct in your shell
+    examples:
+      - eval "$(lct setup)"
+  - name: prune
+    help: Prune config and plugins files
+    examples:
+      - lct prune
+      - lct prune --plugins
+      - lct prune --plugins --unused --dry
+      - lct prune -pud
+    flags:
+      - long: --plugins
+        short: -p
+        help: Prune unused plugins
+      - long: --unused
+        short: -u
+        help: Prune unused config files
+      - long: --cache
+        short: -c
+        help: Prune cache files
+      - long: --dry
+        short: -d
+        help: Show all files that would be pruned

@@ -1,0 +1,17 @@
+lct bootstrap - Bootstrap your local configuration
+
+Alias: b
+
+Usage:
+  lct bootstrap [OPTIONS]
+  lct bootstrap --help | -h
+
+Options:
+  --force, -f
+    overwrite existing local configuration files
+
+  --help, -h
+    Show this help
+
+Examples:
+  lct bootstrap

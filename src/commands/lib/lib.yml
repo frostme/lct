@@ -1,0 +1,76 @@
+name: lib
+help: Manage lct libraries
+examples:
+  - lct lib add mylib
+  - lct lib add gum --manager brew
+commands:
+  - name: install
+    help: Install libraries
+  - name: add
+    help: Add a library to lct
+    args:
+      - name: library
+        help: Name of the library to add
+        required: true
+    flags:
+      - long: --manager
+        short: -m
+        arg: manager
+        help: Package manager to use for installation (overrides config/default)
+        completions:
+          - brew
+          - apt
+          - dnf
+          - pacman
+          - aur
+          - nix
+          - asdf
+          - flox
+          - winget
+          - scoop
+          - yum
+          - zypper
+          - pkg
+  - name: remove
+    help: Remove a library from lct
+    args:
+      - name: library
+        help: Name of the library to remove
+        required: true
+    flags:
+      - long: --manager
+        short: -m
+        arg: manager
+        help: Package manager to use for removal (overrides config/default)
+        completions:
+          - brew
+          - apt
+          - dnf
+          - pacman
+          - aur
+          - nix
+          - asdf
+          - flox
+          - winget
+          - scoop
+          - yum
+          - zypper
+          - pkg
+  - name: dump
+    help: Dump the current lct libraries to your Brewfile
+  - name: list
+    help: List all lct libraries
+    flags:
+      - long: --type
+        short: -t
+        arg: type
+        help: Filter libraries by type
+        completions:
+          - cargo
+          - cask
+          - flatpak
+          - formula
+          - go
+          - mas
+          - tap
+          - vscode

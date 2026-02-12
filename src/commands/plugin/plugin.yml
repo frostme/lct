@@ -1,0 +1,27 @@
+name: plugin
+alias: p
+help: Develop and manage lct plugins
+examples:
+  - lct plugin install
+  - lct p i owner/plugin
+commands:
+  - name: init
+    help: Initiate plugin for the current directory
+  - name: install
+    alias: i
+    help: Install an lct plugin from the registry (cached and refreshed automatically)
+    args:
+      - name: plugin
+        help: Name of the plugin to install
+  - name: remove
+    help: Remove an installed lct plugin
+    completions:
+      - $(yq '.plugins | .[]' $LCT_CONFIG_FILE 2>/dev/null)
+    args:
+      - name: plugin
+        help: Name of the plugin to remove
+        required: true
+  - name: list
+    help: List all installed lct plugins
+  - name: load
+    help: Load insalled lct plugins

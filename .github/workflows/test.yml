@@ -1,0 +1,29 @@
+name: Tests
+on:
+  workflow_call:
+  pull_request:
+  push: { branches main }
+
+jobs:
+  test:
+    name: Run Smoke Tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Mise Dependencies
+        uses: jdx/mise-action@v3
+      - name: Install Other Dependencies
+        run: |
+          TOOL_URL="https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver"
+          INSTALL_PATH="/usr/local/bin/semver"
+
+          curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
+          chmod +x "$INSTALL_PATH"
+      - name: Build LCT
+        run: just build
+      - name: Run Smoke Tests
+        run: just test
+        shell: bash

@@ -1,0 +1,14 @@
+No plugins specified in config.yaml, nothing to install.
+┌────────────────────────────┐
+│ Starting Bootstrap Process │
+└────────────────────────────┘
+                              
+Using Brewfile from remote repository
+Using config.yaml from remote repository
+brew bundle --file ~/.local/share/lct/Brewfile
+✅ homebrew dependencies succesfully installed
+ ~/software already exists
+Applying library configs
+Applying nvim config
+Applying lazygit config
+✅ Configs successfully copied

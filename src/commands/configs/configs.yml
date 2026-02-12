@@ -1,0 +1,25 @@
+name: configs
+help: Manage configs list
+examples:
+  - lct configs list
+  - lct configs add alacritty
+  - lct configs remove alacritty
+commands:
+  - name: add
+    help: Add CONFIG to configs list
+    completions:
+      - $(ls -1 "$HOME/.config" 2>/dev/null | while IFS= read -r entry; do [ -d "$HOME/.config/$entry" ] && printf '%s\n' "$entry"; done | tr '\n' ' ')
+    args:
+      - name: config
+        help: Config directory to add (basename only)
+        required: true
+  - name: remove
+    help: Remove CONFIG from configs list
+    completions:
+      - $(yq '.configs | .[]' $LCT_CONFIG_FILE 2>/dev/null)
+    args:
+      - name: config
+        help: Config directory to remove
+        required: true
+  - name: list
+    help: List configured configs

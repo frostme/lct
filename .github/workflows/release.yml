@@ -1,0 +1,193 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: Type of release
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install Mise Dependencies
+        uses: jdx/mise-action@v3
+      - name: Install Other Dependencies
+        run: |
+          TOOL_URL="https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver"
+          INSTALL_PATH="/usr/local/bin/semver"
+
+          curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
+          chmod +x "$INSTALL_PATH"
+      - name: Build LCT
+        run: just build
+      - name: Build Docs
+        run: just docs
+      - name: Build Pages
+        run: just pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./pages" # The directory containing your static files
+      - name: Resolve release metadata
+        id: release_meta
+        run: |
+          set -euo pipefail
+          just bump ${{ github.event.inputs.releaseType}}
+          version="$(yq '.version' src/bashly.yml)"
+          tag="v${version}"
+          last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          tag_exists=false
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            tag_exists=true
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "last_tag=${last_tag}" >> "$GITHUB_OUTPUT"
+          echo "tag_exists=${tag_exists}" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag
+        if: steps.release_meta.outputs.tag_exists != 'true'
+        id: tag_create
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: ${{ steps.release_meta.outputs.tag }}
+          message: "Release ${{ steps.release_meta.outputs.tag }}"
+
+      - name: Prepare release artifacts
+        if: steps.release_meta.outputs.tag_exists != 'true'
+        run: |
+          set -euo pipefail
+          build_path="target/build/lct"
+          release_dir="target/release"
+          release_notes_file="${release_dir}/release-notes.md"
+          version="${{ steps.release_meta.outputs.version }}"
+          tag="${{ steps.release_meta.outputs.tag }}"
+          last_tag="${{ steps.release_meta.outputs.last_tag }}"
+          release_date="$(date -u +%Y-%m-%d)"
+
+          if [[ -n "$last_tag" ]]; then
+            commits="$(git log --no-merges --pretty=format:'- %s' "${last_tag}..HEAD")"
+          else
+            commits="$(git log --no-merges --pretty=format:'- %s')"
+          fi
+
+          if [[ -z "$commits" ]]; then
+            commits="- No changes found"
+          fi
+
+          changelog_url=""
+          if [[ -n "$last_tag" ]]; then
+            changelog_url="https://github.com/${{ github.repository }}/compare/${last_tag}...${tag}"
+          fi
+
+          mkdir -p "$release_dir"
+          {
+            echo "## What's Changed"
+            echo "$commits"
+            if [[ -n "$changelog_url" ]]; then
+              echo
+              echo "**Full Changelog**: ${changelog_url}"
+            fi
+          } >"$release_notes_file"
+
+          changelog_file="CHANGELOG.md"
+          if [[ -f "$changelog_file" ]]; then
+            tmp_changelog="${changelog_file}.tmp"
+            {
+              head -n 1 "$changelog_file"
+              echo
+              echo "## ${tag} - ${release_date}"
+              echo "$commits"
+              if [[ -n "$changelog_url" ]]; then
+                echo
+                echo "**Full Changelog**: ${changelog_url}"
+              fi
+              echo
+              tail -n +2 "$changelog_file"
+            } >"$tmp_changelog"
+            mv "$tmp_changelog" "$changelog_file"
+          fi
+
+          zip_asset="lct-${version}.zip"
+          tar_asset="lct-${version}.tar.gz"
+          checksums_asset="checksums.txt"
+          rm -f "$zip_asset" "$tar_asset"
+
+          zip -j "$zip_asset" "$build_path"
+          tar -czf "$tar_asset" -C "$(dirname "$build_path")" "$(basename "$build_path")"
+
+          sha256sum "$zip_asset" "$tar_asset" >"$checksums_asset"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: steps.release_meta.outputs.tag_exists != 'true'
+        with:
+          tag_name: ${{ steps.release_meta.outputs.tag }}
+          body_path: target/release/release-notes.md
+          files: |
+            lct-*.zip
+            lct-*.tar.gz
+            checksums.txt
+
+      - name: Move Release Assets
+        run: |
+          release_dir="target/release"
+          version="${{ steps.release_meta.outputs.version }}"
+          zip_asset="lct-${version}.zip"
+          zip_release_asset="${release_dir}/${zip_asset}"
+          tar_asset="lct-${version}.tar.gz"
+          tar_release_asset="${release_dir}/${tar_asset}"
+          checksums_asset="checksums.txt"
+          checksums_release_asset="${release_dir}/${checksums_asset}"
+          mv "$zip_asset" "$zip_release_asset"
+          mv "$tar_asset" "$tar_release_asset"
+          mv "$checksums_asset" "$checksums_release_asset"
+
+      - name: Create Release PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: "${{ secrets.LCT_RELEASE_TOKEN }}"
+          commit-message: "Release ${{ steps.release_meta.outputs.tag }}"
+          title: "Release ${{ steps.release_meta.outputs.tag }}"
+          body: |
+            This PR prepares the release of version ${{ steps.release_meta.outputs.tag }}.
+          branch: release/${{ steps.release_meta.outputs.tag }}
+          labels: release, automerge
+      - name: Merge Release PR
+        uses: "pascalgn/automerge-action@v0.16.4"
+        env:
+          GITHUB_TOKEN: "${{ secrets.LCT_RELEASE_TOKEN }}"
+          PULL_REQUEST: ${{ steps.cpr.outputs.pull-request-number }}
+          MERGE_METHOD: squash
+  deploy:
+    needs: release
+    permissions:
+      id-token: write
+      pages: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

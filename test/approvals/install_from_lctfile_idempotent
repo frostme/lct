@@ -1,0 +1,9 @@
+┌─────────────────────────────────┐
+│ Starting module installation... │
+└─────────────────────────────────┘
+                                   
+- Installed module example/demo @v1.0.0
+  ↳ Linked demo
+- Installed module example/demo
+  ↳ Linked demo
+✅ Module installation complete

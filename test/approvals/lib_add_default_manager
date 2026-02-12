@@ -1,0 +1,3 @@
+Using package manager: brew
+brew install default-lib
+brew bundle add default-lib --file=~/.local/share/lct/Brewfile

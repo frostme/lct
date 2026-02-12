@@ -1,0 +1,29 @@
+lct - Local configuration tool
+
+Usage:
+  lct COMMAND
+  lct [COMMAND] --help | -h
+  lct --version | -v
+
+Commands:
+  init          Initialize lct configuration
+  bootstrap     Bootstrap your local configuration
+  gather        Gather local configuration files
+  install       Install bash script releases from GitHub or LCTFile
+  alias         Manage lct aliases
+  dotfiles      Manage dotfiles list
+  configs       Manage configs list
+  env           Manage local environment variables
+  plugin        Develop and manage lct plugins
+  lib           Manage lct libraries
+  completions   Generate bash completions
+  config        Open your config files in your nvim
+  setup         Setup lct in your shell
+  prune         Prune config and plugins files
+
+Options:
+  --help, -h
+    Show this help
+
+  --version, -v
+    Show version number

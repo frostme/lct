@@ -1,0 +1,237 @@
+#!/usr/bin/env bash
+tmpdir="$(mktemp -d)"
+tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
+cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
+mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
+export HOME="$tmpdir"
+export EDITOR="nvim"
+export CONFIG_DIR="$tmpdir/.config"
+export SHARE_DIR="$tmpdir/.local/share"
+export STATE_DIR="$tmpdir/.local/state"
+export CACHE_DIR="$tmpdir/.cache"
+export LCT_GITHUB_BASE="file://${tmpdir}/mock-github"
+lib_fallback_to_default_approval="lib_add_fallback_to_default"
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  lib_fallback_to_default_approval="lib_add_fallback_to_default_ubuntu"
+fi
+
+stubdir="$tmpdir/bin"
+mkdir -p "$stubdir"
+export PATH="$stubdir:/home/runner/go/bin:$PATH"
+
+cat >"$stubdir/brew" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_BREW:-}" == "1" ]]; then
+  echo "brew failed" >&2
+  exit 1
+fi
+cmd="$1"
+shift || true
+printf "brew %s %s\n" "$cmd" "$*"
+EOF
+chmod +x "$stubdir/brew"
+
+cat >"$stubdir/mise" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_MISE:-}" == "1" ]]; then
+  echo "mise failed" >&2
+  exit 1
+fi
+cmd="$1"
+shift || true
+printf "mise %s %s\n" "$cmd" "$*"
+EOF
+chmod +x "$stubdir/mise"
+
+for tool in apt apt-get dnf yum zypper pacman paru yay nix-env flox winget scoop pkg; do
+  cat >"$stubdir/$tool" <<'EOF'
+#!/usr/bin/env bash
+echo "$(basename "$0") $*"
+EOF
+  chmod +x "$stubdir/$tool"
+done
+
+cat >"$stubdir/gum" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  spin)
+    # Execute the command after "--" to mimic gum spinner behavior in tests.
+    while (($#)); do
+      if [[ "$1" == "--" ]]; then
+        shift
+        break
+      fi
+      shift
+    done
+    if (($#)); then
+      "$@"
+    fi
+    ;;
+  style)
+    text="${*: -1}"
+    if printf '%s\n' "$*" | grep -q -- '--border'; then
+      # Minimal boxed output for the specific style used in gum_title.
+      padding_left=1
+      padding_right=1
+      text_length=${#text}
+      inner_width=$((text_length + padding_left + padding_right))
+      top_bottom=""
+      for ((i = 0; i < inner_width; i++)); do
+        top_bottom+="─"
+      done
+      printf '┌%s┐\n' "$top_bottom"
+      printf '│%*s%s%*s│\n' "$padding_left" '' "$text" "$padding_right" ''
+      printf '└%s┘\n' "$top_bottom"
+      printf '%*s\n' "$((inner_width + 2))" ''
+    else
+      printf '%s\n' "$text"
+    fi
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+EOF
+chmod +x "$stubdir/gum"
+
+cat >"$stubdir/asdf" <<'EOF'
+#!/usr/bin/env bash
+echo "asdf $*"
+EOF
+chmod +x "$stubdir/asdf"
+
+trap 'rm -rf "$tmpdir"' EXIT
+
+source test/approvals.bash
+
+cd ./test || exit
+export APPROVALS_DIR="$(pwd)/approvals"
+
+describe "help text"
+approve "${cli} --help" "help_text"
+
+describe "env command"
+it "sets and lists environment variables"
+approve "${cli} env set SAMPLE_KEY sample-value" "env_set"
+approve "${cli} env list" "env_list"
+
+describe "dotfiles command"
+it "adds a dotfile"
+approve "${cli} dotfiles add \"$tmpdir/.zshrc\"" "dotfiles_add"
+approve "${cli} dotfiles list" "dotfiles_list_after_add"
+it "removes a dotfile"
+approve "${cli} dotfiles remove \"$tmpdir/.zshrc\"" "dotfiles_remove"
+approve "${cli} dotfiles list" "dotfiles_list_after_remove"
+
+describe "configs command"
+it "adds a config directory"
+approve "${cli} configs add \"$tmpdir/.config/alacritty\"" "configs_add"
+approve "${cli} configs list" "configs_list_after_add"
+it "removes a config directory"
+approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
+approve "${cli} configs list" "configs_list_after_remove"
+
+describe "install command"
+mock_repo_root="$tmpdir/mock-github/example/demo"
+mkdir -p "$mock_repo_root"
+git -C "$mock_repo_root" init -q
+git -C "$mock_repo_root" config user.email "test@example.com"
+git -C "$mock_repo_root" config user.name "Test User"
+cat >"$mock_repo_root/demo" <<'EOF'
+#!/usr/bin/env bash
+echo "demo module"
+EOF
+chmod +x "$mock_repo_root/demo"
+git -C "$mock_repo_root" add demo
+git -C "$mock_repo_root" commit -q -m "initial"
+git -C "$mock_repo_root" tag v1.0.0
+cat >"$mock_repo_root/demo" <<'EOF'
+#!/usr/bin/env bash
+echo "demo module v1.1"
+EOF
+git -C "$mock_repo_root" add demo
+git -C "$mock_repo_root" commit -q -m "second"
+git -C "$mock_repo_root" tag v1.1.0
+approve "${cli} install example/demo" "install_module"
+approve "${cli} install example/demo" "install_module_idempotent"
+approve "${cli} install" "install_without_modules"
+describe "install via LCTFile"
+project_dir="$tmpdir/project"
+mkdir -p "$project_dir"
+cat >"$project_dir/LCTFile" <<'EOF'
+example/demo = 'v1.0.0'
+example/demo
+EOF
+pushd "$project_dir" >/dev/null
+approve "${cli} install" "install_from_lctfile"
+approve "${cli} install" "install_from_lctfile_idempotent"
+popd >/dev/null
+describe "lib command"
+config_path="$tmpdir/.config/lct/config.yaml"
+
+cat >"$config_path" <<'EOF'
+packageManager: mise
+EOF
+
+it "uses package manager from config when none provided"
+approve "${cli} lib add sample-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_from_config"
+
+it "prefers inline manager over config"
+approve "${cli} lib add inline-lib --manager brew | sed 's/${tmpdir_escaped}/~/g'" "lib_add_inline_manager"
+
+cat >"$config_path" <<'EOF'
+packageManager:
+EOF
+
+it "uses default manager when none provided"
+LCT_DEFAULT_PACKAGE_MANAGER=brew approve "${cli} lib add default-lib | sed 's/${tmpdir_escaped}/~/g'" "lib_add_default_manager"
+
+cat >"$config_path" <<'EOF'
+packageManager: missingmgr
+EOF
+
+it "falls back when configured manager is unavailable"
+approve "${cli} lib add fallback-lib | sed 's/${tmpdir_escaped}/~/g'" "${lib_fallback_to_default_approval}"
+
+describe "prune command"
+mkdir -p "$tmpdir/.cache/lct/plugins/acme/tool"
+it "lists cache directories in dry run mode"
+approve "${cli} prune --cache --dry | sed 's/${tmpdir_escaped}/~/g'" "prune_cache_dry_run_lists_cache_dirs"
+
+describe "gather command"
+mkdir -p "$tmpdir/.config/nvim" "$tmpdir/.config/lazygit" "$tmpdir/.local/share" "$tmpdir/work"
+touch "$tmpdir/.config/nvim/init.lua"
+touch "$tmpdir/.config/lazygit/config.yml"
+touch "$tmpdir/.zshrc"
+touch "$tmpdir/work/custom.conf"
+cat >"$tmpdir/.config/lct/config.yaml" <<'EOF'
+remote: null
+configs:
+  - nvim
+  - lazygit
+dotfiles:
+  - .zshrc
+other:
+  work/custom.conf: work/custom.conf
+plugins: []
+modules: []
+EOF
+it "gathers configured files into the remote repository"
+approve "GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com ${cli} gather --force | sed -E 's/[0-9]{4}\-[0-9]{2}\-[0-9]{2}/<DATE>/g; s/T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/<TIME>/g; s/${tmpdir_escaped}/~/g; s/[0-9]+ file(s)? changed.*/<GIT_COMMIT_SUMMARY>/g; s/[a-f0-9]{7}\.\.[a-f0-9]{7}/<GIT_RANGE>/g; s/\[main \(root-commit\) [a-f0-9]{7}\]/[main (root-commit) <GIT_HASH>]/g' | sed '/^ create mode /d'" "gather_force":
+
+describe "bootstrap command"
+it "shows bootstrap help"
+approve "${cli} bootstrap --help" "bootstrap_help"
+it "bootstraps from gathered remote repository"
+approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_force"
+
+describe "env command"
+it "sets an environment variable"
+approve "${cli} env set API_KEY 123" "env_set"
+it "unsets an environment variable"
+approve "${cli} env unset API_KEY" "env_unset"
