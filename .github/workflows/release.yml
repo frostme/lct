@@ -43,7 +43,7 @@ jobs:
       - name: Install Other Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          just install
+          just i
       - name: Cache Dependencies
         uses: actions/cache/save@v5
         with:
@@ -53,7 +53,7 @@ jobs:
         id: release_meta
         run: |
           set -euo pipefail
-          just bump ${{ github.event.inputs.releaseType}}
+          just bu ${{ github.event.inputs.releaseType}}
           version="$(yq '.version' src/bashly.yml)"
           tag="v${version}"
           last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
@@ -66,11 +66,11 @@ jobs:
           echo "last_tag=${last_tag}" >> "$GITHUB_OUTPUT"
           echo "tag_exists=${tag_exists}" >> "$GITHUB_OUTPUT"
       - name: Build LCT
-        run: just build
+        run: just b
       - name: Build Docs
-        run: just docs
+        run: just d
       - name: Build Pages
-        run: just pages
+        run: just p
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
