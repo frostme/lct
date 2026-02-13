@@ -4,7 +4,7 @@ Local configuration tool
 
 | Attributes       | &nbsp;
 |------------------|-------------
-| Version:         | 0.1.1
+| Version:         | 0.1.3
 
 ## Usage
 
