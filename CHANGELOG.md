@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.4 - 2026-02-13
+- smol updates to actions (#93)
+- just lctfile (#92)
+- Release v0.1.3 (#91)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.1.3...v0.1.4
+
+
 ## v0.1.3 - 2026-02-13
 - install update (#90)
 - Release v0.1.2 (#89)
