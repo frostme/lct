@@ -4,6 +4,7 @@ alias bu := bump
 alias d := docs
 alias i := install
 alias p := pages
+alias t := test
 alias v := validate
 alias w := watch
 
