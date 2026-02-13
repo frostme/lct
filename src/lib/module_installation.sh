@@ -212,6 +212,54 @@ install_module_repo() {
   fi
 }
 
+
+remove_module_repo() {
+  local module="$1"
+  local module_slug module_cache module_dest
+
+  module_slug=$(module_key_slug "$module")
+  if [[ -z "$module_slug" ]]; then
+    echo "❌ ERROR: Invalid module reference '${module}'" >&2
+    return 1
+  fi
+
+  module_cache="$LCT_MODULES_CACHE_DIR/$module_slug"
+  module_dest="$LCT_MODULES_DIR/$module_slug"
+
+  if [[ -d "$LCT_MODULES_BIN_DIR" ]]; then
+    while IFS= read -r bin_entry; do
+      [[ -L "$bin_entry" ]] || continue
+      local target
+      target="$(readlink "$bin_entry")"
+      [[ "$target" != /* ]] && target="$(cd "$(dirname "$bin_entry")" && cd "$(dirname "$target")" && pwd)/$(basename "$target")"
+      if [[ "$target" == "$module_dest"/* ]]; then
+        rm -f -- "$bin_entry" || {
+          echo "❌ ERROR: Unable to remove module link ${bin_entry}" >&2
+          return 1
+        }
+      fi
+    done < <(find "$LCT_MODULES_BIN_DIR" -mindepth 1 -maxdepth 1 -type l 2>/dev/null)
+  fi
+
+  if [[ -e "$module_dest" ]]; then
+    rm -rf -- "$module_dest" || {
+      echo "❌ ERROR: Unable to remove installed module ${module}" >&2
+      return 1
+    }
+    echo "- Removed module ${module}"
+  fi
+
+  if [[ -e "$module_cache" ]]; then
+    rm -rf -- "$module_cache" || {
+      echo "❌ ERROR: Unable to prune module cache for ${module}" >&2
+      return 1
+    }
+    echo "- Pruned module cache ${module}"
+  fi
+
+  return 0
+}
+
 module_installation() {
   : "${LCT_MODULES_DIR:?LCT_MODULES_DIR is required}"
   : "${LCT_MODULES_BIN_DIR:?LCT_MODULES_BIN_DIR is required}"

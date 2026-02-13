@@ -9,7 +9,8 @@ Commands:
   init          Initialize lct configuration
   bootstrap     Bootstrap your local configuration
   gather        Gather local configuration files
-  install       Install bash script releases from GitHub or LCTFile
+  install       Install modules from an LCTFile or globally
+  remove        Remove modules from an LCTFile or globally
   alias         Manage lct aliases
   dotfiles      Manage dotfiles list
   configs       Manage configs list
