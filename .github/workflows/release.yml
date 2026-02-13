@@ -36,16 +36,6 @@ jobs:
 
           curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
           chmod +x "$INSTALL_PATH"
-      - name: Build LCT
-        run: just build
-      - name: Build Docs
-        run: just docs
-      - name: Build Pages
-        run: just pages
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "./pages" # The directory containing your static files
       - name: Resolve release metadata
         id: release_meta
         run: |
@@ -62,7 +52,16 @@ jobs:
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
           echo "last_tag=${last_tag}" >> "$GITHUB_OUTPUT"
           echo "tag_exists=${tag_exists}" >> "$GITHUB_OUTPUT"
-
+      - name: Build LCT
+        run: just build
+      - name: Build Docs
+        run: just docs
+      - name: Build Pages
+        run: just pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./pages" # The directory containing your static files
       - name: Create tag
         if: steps.release_meta.outputs.tag_exists != 'true'
         id: tag_create

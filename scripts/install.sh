@@ -74,27 +74,33 @@ detect_platform() {
 
   sys="$(uname -s | tr '[:upper:]' '[:lower:]')"
   case "$sys" in
-    linux) os_name="linux"; gum_os_name="Linux" ;;
-    darwin) os_name="darwin"; gum_os_name="Darwin" ;;
-    *)
-      log "Unsupported OS: $sys"
-      exit 1
-      ;;
+  linux)
+    os_name="linux"
+    gum_os_name="Linux"
+    ;;
+  darwin)
+    os_name="darwin"
+    gum_os_name="Darwin"
+    ;;
+  *)
+    log "Unsupported OS: $sys"
+    exit 1
+    ;;
   esac
 
   case "$(uname -m)" in
-    x86_64|amd64)
-      arch_name="amd64"
-      gum_arch_name="x86_64"
-      ;;
-    arm64|aarch64)
-      arch_name="arm64"
-      gum_arch_name="arm64"
-      ;;
-    *)
-      log "Unsupported architecture: $(uname -m)"
-      exit 1
-      ;;
+  x86_64 | amd64)
+    arch_name="amd64"
+    gum_arch_name="x86_64"
+    ;;
+  arm64 | aarch64)
+    arch_name="arm64"
+    gum_arch_name="arm64"
+    ;;
+  *)
+    log "Unsupported architecture: $(uname -m)"
+    exit 1
+    ;;
   esac
 
   OS="$os_name"
@@ -108,8 +114,8 @@ github_asset_url() {
   local pattern="$2"
   local url
 
-  url="$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" | \
-    grep -Eo "\"browser_download_url\": *\"[^\"]*${pattern}[^\"]*\"" | \
+  url="$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" |
+    grep -Eo "\"browser_download_url\": *\"[^\"]*${pattern}[^\"]*\"" |
     head -n 1 | cut -d'"' -f4)"
 
   if [[ -z "$url" ]]; then
@@ -153,7 +159,9 @@ ensure_writable_install_dir() {
 install_lct() {
   log "Downloading latest lct release..."
   local tarball checksums
-  tarball="${TMP_ROOT}/lct.tar.gz"
+  latest_tag="$(curl --silent "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
+  latest_version="${latest_tag#v}"
+  tarball="${TMP_ROOT}/lct-${latest_version}.tar.gz"
   checksums="${TMP_ROOT}/lct-checksums.txt"
 
   download_release_asset "$REPO" "\\.tar\\.gz" "$tarball"
