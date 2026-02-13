@@ -29,13 +29,26 @@ jobs:
           fetch-tags: true
       - name: Install Mise Dependencies
         uses: jdx/mise-action@v3
-      - name: Install Other Dependencies
+      - name: Get Date
+        id: get-date
         run: |
-          TOOL_URL="https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver"
-          INSTALL_PATH="/usr/local/bin/semver"
-
-          curl -sSL "$TOOL_URL" -o "$INSTALL_PATH"
-          chmod +x "$INSTALL_PATH"
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Restore Cached Dependencies
+        uses: actions/cache/restore@v5
+        id: cache
+        with:
+          path: lct_modules
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('lct_modules/*') }}
+      - name: Install Other Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          just install
+      - name: Cache Dependencies
+        uses: actions/cache/save@v5
+        with:
+          path: lct_modules
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('lct_modules/*') }}
       - name: Resolve release metadata
         id: release_meta
         run: |
