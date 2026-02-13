@@ -1,8 +1,12 @@
 set export
 alias b := build
+alias bu := bump
+alias d := docs
+alias i := install
+alias p := pages
+alias t := test
 alias v := validate
 alias w := watch
-alias bu := bump
 
 @ensure_dir:
   [ -d target/build ] || mkdir -p target/build
@@ -20,8 +24,7 @@ test: validate ensure_dir
 watch:
   @bashly g -w
 
-install: 
-  @bashly g -u -q
+install: build
   target/build/lct install
 
 dev:
