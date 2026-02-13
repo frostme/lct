@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.3 - 2026-02-13
+- install update (#90)
+- Release v0.1.2 (#89)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.1.2...v0.1.3
+
+
 ## v0.1.2 - 2026-02-12
 - Second commit
 - first commit
