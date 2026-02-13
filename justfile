@@ -8,7 +8,7 @@ alias bu := bump
   [ -d target/build ] || mkdir -p target/build
 
 build: ensure_dir
-  @bashly g -u
+  @gum spin --title "Building lct..." -- bashly g -u
 
 validate:
   @bashly v
@@ -20,8 +20,9 @@ test: validate ensure_dir
 watch:
   @bashly g -w
 
-install:
-  @cp target/build/lct /usr/local/bin/lct
+install: 
+  @bashly g -u -q
+  target/build/lct install
 
 dev:
   @gum spin --title "Installing lct..." -- bashly g -u
@@ -39,6 +40,6 @@ bump type:
   #!/usr/bin/env bash
   set -euo pipefail
   current_version=$(yq '.version' ./src/bashly.yml)
-  new_version=$(semver bump ${type} $current_version)
+  new_version=$(./lct_modules/fsaintjacques-semver-tool/src/semver bump ${type} $current_version)
   echo "Bumping ${current_version} -> ${new_version}"
   yq -i ".version=\"${new_version}\"" ./src/bashly.yml

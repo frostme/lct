@@ -4,3 +4,5 @@ target/*
 avante.local.md
 .DS_Store
 pages
+.lct_cache
+lct_modules
