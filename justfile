@@ -27,6 +27,9 @@ watch:
 install: build
   target/build/lct install
 
+setup: build
+  target/build/lct install -g fsaintjacques/semver-tool
+
 dev:
   @gum spin --title "Installing lct..." -- bashly g -u
   @cp target/build/lct /usr/local/bin/lct
