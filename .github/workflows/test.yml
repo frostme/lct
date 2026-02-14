@@ -31,14 +31,14 @@ jobs:
       - name: Install Other Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          just i
+          mise run i
       - name: Cache Dependencies
         uses: actions/cache/save@v5
         with:
           path: lct_modules
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('lct_modules/*') }}
       - name: Build LCT
-        run: just b
+        run: mise run b
       - name: Run Smoke Tests
-        run: just t
+        run: mise run t
         shell: bash

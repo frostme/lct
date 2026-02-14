@@ -10,9 +10,4 @@ fi
 
 mise trust
 mise install
-
-if command -v semver &>/dev/null; then
-  echo "semver is already installed"
-else
-  just setup
-fi
+mise run setup
