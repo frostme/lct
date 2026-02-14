@@ -96,13 +96,30 @@ commands:
         short: -f
         help: overwrite existing files in remote repository
   - name: install
-    help: Install bash script releases from GitHub or LCTFile
+    help: Install modules from an LCTFile or globally
     examples:
       - lct install DannyBen/approvals.bash
+      - lct install -g DannyBen/approvals.bash
       - lct install
+    flags:
+      - long: --global
+        short: -g
+        help: Use global module installation from config.yaml
     args:
       - name: module
         help: GitHub owner/repo of the module to install
+  - name: remove
+    help: Remove modules from an LCTFile or globally
+    examples:
+      - lct remove DannyBen/approvals.bash
+      - lct remove -g DannyBen/approvals.bash
+    flags:
+      - long: --global
+        short: -g
+        help: Use global module removal from config.yaml
+    args:
+      - name: module
+        help: GitHub owner/repo of the module to remove
   - import: src/commands/alias/alias.yml
   - import: src/commands/dotfiles/dotfiles.yml
   - import: src/commands/configs/configs.yml
