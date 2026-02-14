@@ -31,16 +31,16 @@ Top-level structure includes (non-exhaustive):
 - `docs/` — user-facing documentation.
 - `settings.yml` — project configuration (treat as source-of-truth config).
 - `scripts/setup.sh` — installs dev dependencies / bootstraps environment.
-- `justfile` — developer workflows (build, release, install, etc.). :contentReference[oaicite:2]{index=2}
+- `.mise/config.toml` — developer workflows (build, release, install, etc.). :contentReference[oaicite:2]{index=2}
 - `test/` — unit tests `
 
 From the repo README snippet:
 
 - Run `./scripts/setup.sh` for needed libraries
-- `just build` generates a local version in `target/build/lct`
-- `just install` installs the local version
-- `just release` creates a new release :contentReference[oaicite:3]{index=3}
-- `just test` runs unit tests
+- `mise run build` generates a local version in `target/build/lct`
+- `mise run dev` installs the local version
+- `mise run release` creates a new release :contentReference[oaicite:3]{index=3}
+- `mise run test` runs unit tests
 
 ## 2) How to work (agent workflow)
 
@@ -70,9 +70,9 @@ If something is ambiguous:
 Run the standard build/install flow for any meaningful change:
 
 - `./scripts/setup.sh` (if dependencies changed)
-- `just build`
-- `just test`
-- `just install`
+- `mise run build`
+- `mise run test`
+- `mise run dev`
 - Smoke test the CLI locally (see section 8)
 
 If formatting/linting tools exist, run them.
@@ -155,8 +155,8 @@ If introducing new config keys:
 
 Use the existing task runners:
 
-- Prefer `just` targets over bespoke one-off commands. :contentReference[oaicite:4]{index=4}
-- If adding a workflow, add it to `justfile` or `scripts/` rather than sprinkling ad-hoc scripts.
+- Prefer `mise` targets over bespoke one-off commands. :contentReference[oaicite:4]{index=4}
+- If adding a workflow, add it to `.mise/config.toml` or `scripts/` rather than sprinkling ad-hoc scripts.
 
 Release hygiene:
 
@@ -173,7 +173,7 @@ Any behavior visible to users must be documented:
 - new required dependencies
 - new config keys
 
-These are generated using bashly's documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `just docs` as defined in the justfile, as well as github-pages pretty documentation with `just pages`
+These are generated using bashly's documentation features, so update the source-of-truth CLI definitions accordingly, and then to update the docs run `mise run docs` as defined in the `.mise/config.toml`, as well as github-pages pretty documentation with `mise run pages`
 
 ## 8) Smoke testing checklist (agent must do)
 
@@ -211,8 +211,8 @@ When asked to implement a feature/fix, respond with:
 ### Patch
 
 - Implement minimal diff
-- Update docs alongside code using `just docs`
-- Update github-pages docs with `just pages` if applicable
+- Update docs alongside code using `mise run docs`
+- Update github-pages docs with `mise run pages` if applicable
 
 ### Verify
 

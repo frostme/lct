@@ -43,11 +43,11 @@ When asked to make changes:
 
 Prefer existing workflows:
 
-- `just build`
-- `just install` (for local testing)
-- `just test`
-- `just docs`
-- `just pages`
+- `mise run build`
+- `mise run dev` (for local testing)
+- `mise run test`
+- `mise run docs`
+- `mise run pages`
 - Local CLI smoke testing
 
 ## If unsure
