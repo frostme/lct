@@ -96,7 +96,7 @@ commands:
         short: -f
         help: overwrite existing files in remote repository
   - name: install
-    help: Install modules from an LCTFile or globally
+    help: Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
     examples:
       - lct install DannyBen/approvals.bash
       - lct install -g DannyBen/approvals.bash
@@ -107,7 +107,7 @@ commands:
         help: Use global module installation from config.yaml
     args:
       - name: module
-        help: GitHub owner/repo of the module to install
+        help: GitHub owner/repo or repository path of the module to install
   - name: remove
     help: Remove modules from an LCTFile or globally
     examples:

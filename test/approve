@@ -159,6 +159,64 @@ git -C "$mock_repo_root" commit -q -m "second"
 git -C "$mock_repo_root" tag v1.1.0
 approve "${cli} install -g example/demo" "install_module"
 approve "${cli} install -g example/demo" "install_module_idempotent"
+
+semver_repo_root="$tmpdir/mock-github/fsaintjacques/semver-tool"
+mkdir -p "$semver_repo_root/src" "$semver_repo_root/test"
+git -C "$semver_repo_root" init -q
+git -C "$semver_repo_root" config user.email "test@example.com"
+git -C "$semver_repo_root" config user.name "Test User"
+cat >"$semver_repo_root/src/semver" <<'EOF'
+#!/usr/bin/env bash
+echo "semver"
+EOF
+chmod +x "$semver_repo_root/src/semver"
+cat >"$semver_repo_root/test/documentation-test" <<'EOF'
+#!/usr/bin/env bash
+echo "docs test"
+EOF
+chmod +x "$semver_repo_root/test/documentation-test"
+git -C "$semver_repo_root" add src/semver test/documentation-test
+git -C "$semver_repo_root" commit -q -m "initial"
+approve "${cli} install -g fsaintjacques/semver-tool" "install_module_semver"
+
+minifier_repo_root="$tmpdir/mock-github/Zuzzuc/Bash-minifier"
+mkdir -p "$minifier_repo_root/test"
+git -C "$minifier_repo_root" init -q
+git -C "$minifier_repo_root" config user.email "test@example.com"
+git -C "$minifier_repo_root" config user.name "Test User"
+cat >"$minifier_repo_root/Minifier.sh" <<'EOF'
+#!/usr/bin/env bash
+echo "minifier"
+EOF
+chmod +x "$minifier_repo_root/Minifier.sh"
+cat >"$minifier_repo_root/test/test.sh" <<'EOF'
+#!/usr/bin/env bash
+echo "test"
+EOF
+chmod +x "$minifier_repo_root/test/test.sh"
+git -C "$minifier_repo_root" add Minifier.sh test/test.sh
+git -C "$minifier_repo_root" commit -q -m "initial"
+approve "${cli} install -g Zuzzuc/Bash-minifier" "install_module_minifier"
+
+ambiguous_repo_root="$tmpdir/mock-github/example/ambiguous"
+mkdir -p "$ambiguous_repo_root/docs" "$ambiguous_repo_root/test"
+git -C "$ambiguous_repo_root" init -q
+git -C "$ambiguous_repo_root" config user.email "test@example.com"
+git -C "$ambiguous_repo_root" config user.name "Test User"
+cat >"$ambiguous_repo_root/docs/run.sh" <<'EOF'
+#!/usr/bin/env bash
+echo "docs"
+EOF
+chmod +x "$ambiguous_repo_root/docs/run.sh"
+cat >"$ambiguous_repo_root/test/helper.sh" <<'EOF'
+#!/usr/bin/env bash
+echo "test"
+EOF
+chmod +x "$ambiguous_repo_root/test/helper.sh"
+git -C "$ambiguous_repo_root" add docs/run.sh test/helper.sh
+git -C "$ambiguous_repo_root" commit -q -m "initial"
+approve "${cli} install -g example/ambiguous" "install_module_ambiguous"
+
 approve "${cli} install -g" "install_without_modules"
 describe "install via LCTFile"
 project_dir="$tmpdir/project"
