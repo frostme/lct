@@ -1,4 +1,6 @@
+[settings]
 github_attestations = false
+
 [tools]
 bashly = "1.3.6"
 coreutils = "0.6.0"
