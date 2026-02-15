@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.1 - 2026-02-15
+- Update global module operations to maintain shared LCTFile (#102)
+- Release v0.2.0 (#101)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.2.0...v0.2.1
+
+
 ## v0.2.0 - 2026-02-15
 - syntax error (#100)
 - smol updates to actions (#99)
