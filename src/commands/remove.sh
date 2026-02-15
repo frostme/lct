@@ -1,6 +1,7 @@
 module=${args[module]:-}
 remove_global=${args[--global]:-0}
 lctfile_path="$PWD/LCTFile"
+global_lctfile_path=""
 
 module_ref_is_valid() {
   local ref="$1"
@@ -84,6 +85,8 @@ if [[ $remove_global -eq 0 ]]; then
 fi
 
 ensure_config_defaults
+global_lctfile_path="$LCT_SHARE_DIR/LCTFile"
+[[ -f "$global_lctfile_path" ]] || touch "$global_lctfile_path"
 
 remove_module_repo "$module" || {
   echo "❌ ERROR: Module removal failed" >&2
@@ -91,3 +94,4 @@ remove_module_repo "$module" || {
 }
 
 remove_global_module_from_config "$module"
+lctfile_remove_module "$global_lctfile_path" "$module"
