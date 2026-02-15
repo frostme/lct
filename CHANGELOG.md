@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.0 - 2026-02-15
+- syntax error (#100)
+- smol updates to actions (#99)
+- Improve module bin detection confidence for install (#98)
+- update mise config (#97)
+- Frostme/setup script (#96)
+- Change install default to local LCTFile and add remove command (#95)
+- Release v0.1.4 (#94)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.1.4...v0.2.0
+
+
 ## v0.1.4 - 2026-02-13
 - smol updates to actions (#93)
 - just lctfile (#92)
