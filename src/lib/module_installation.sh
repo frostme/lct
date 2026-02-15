@@ -80,43 +80,171 @@ module_key_slug() {
   printf '%s\n' "$ref"
 }
 
-module_find_main_script() {
+LCT_MODULE_BIN_LINK_THRESHOLD="${LCT_MODULE_BIN_LINK_THRESHOLD:-100}"
+LCT_MODULE_BIN_NO_CANDIDATE_SCORE="${LCT_MODULE_BIN_NO_CANDIDATE_SCORE:--10000}"
+
+module_collect_candidates() {
   local dir="$1"
   local base="$2"
   local stem
   stem="${base%.*}"
 
-  shopt -s nullglob
-  for candidate in \
-    "$dir/bin/$base" \
-    "$dir/bin/$stem" \
-    "$dir/bin/${stem}.sh" \
-    "$dir/bin/${stem}.bash" \
-    "$dir/$base" \
-    "$dir/$stem" \
-    "$dir/${stem}.sh" \
-    "$dir/${stem}.bash"; do
-    if [[ -f "$candidate" ]]; then
-      shopt -u nullglob
-      printf '%s\n' "$candidate"
-      return 0
-    fi
+  local explicit=(
+    "$dir/bin/$base"
+    "$dir/bin/$stem"
+    "$dir/bin/${stem}.sh"
+    "$dir/bin/${stem}.bash"
+    "$dir/$base"
+    "$dir/$stem"
+    "$dir/${stem}.sh"
+    "$dir/${stem}.bash"
+    "$dir/main.sh"
+    "$dir/run.sh"
+    "$dir/start.sh"
+    "$dir/Minifier.sh"
+  )
+
+  local candidate
+  for candidate in "${explicit[@]}"; do
+    [[ -f "$candidate" ]] && printf '%s\n' "$candidate"
   done
 
-  local executable
-  executable=$(find "$dir" -maxdepth 2 -type f -perm -111 | head -n 1)
-  if [[ -n "$executable" ]]; then
-    shopt -u nullglob
-    printf '%s\n' "$executable"
-    return 0
-  fi
-
-  local script
-  script=$(find "$dir" -maxdepth 2 -type f \( -name '*.sh' -o -name '*.bash' \) | head -n 1)
-  shopt -u nullglob
-  [[ -n "$script" ]] && printf '%s\n' "$script"
+  find "$dir" -maxdepth 3 -type f \( -perm -111 -o -name '*.sh' -o -name '*.bash' \) 2>/dev/null
 }
 
+module_normalize_name() {
+  local value="$1"
+  value="${value%.sh}"
+  value="${value%.bash}"
+  printf '%s' "${value,,}" | tr -cd '[:alnum:]'
+}
+
+module_candidate_depth() {
+  local dir="$1"
+  local path="$2"
+  local rel="${path#"$dir"/}"
+  local slash_count
+  slash_count=$(printf '%s' "$rel" | tr -cd '/' | wc -c | awk '{print $1}')
+  printf '%s\n' "$((slash_count + 1))"
+}
+
+module_score_candidate() {
+  local dir="$1"
+  local path="$2"
+  local base="$3"
+  local stem="$4"
+
+  local rel="${path#"$dir"/}"
+  local name
+  name="$(basename "$path")"
+  local depth
+  depth=$(module_candidate_depth "$dir" "$path")
+  local normalized_name normalized_stem
+  normalized_name=$(module_normalize_name "$name")
+  normalized_stem=$(module_normalize_name "$stem")
+
+  local score=0
+
+  [[ "$rel" == bin/* ]] && ((score += 120))
+
+  if [[ "$name" == "$base" || "$name" == "$stem" ]]; then
+    ((score += 110))
+  elif [[ "$name" == "${stem}.sh" || "$name" == "${stem}.bash" ]]; then
+    ((score += 90))
+  fi
+
+  if [[ -n "$normalized_name" && -n "$normalized_stem" ]]; then
+    if [[ "$normalized_name" == "$normalized_stem" ]]; then
+      ((score += 90))
+    elif [[ "$normalized_name" == *"$normalized_stem"* || "$normalized_stem" == *"$normalized_name"* ]]; then
+      ((score += 60))
+    fi
+
+    local token
+    local lower_stem
+    lower_stem="${stem,,}"
+    for token in ${lower_stem//[-_]/ }; do
+      case "$token" in
+      ""|bash|tool|module|script|cli)
+        continue
+        ;;
+      esac
+
+      if [[ "$normalized_name" == "$token" ]]; then
+        ((score += 80))
+      elif [[ "$normalized_name" == *"$token"* ]]; then
+        ((score += 40))
+      fi
+    done
+  fi
+
+  [[ -x "$path" ]] && ((score += 40))
+
+  if [[ "$depth" -eq 1 ]]; then
+    ((score += 30))
+  elif [[ "$depth" -eq 2 ]]; then
+    ((score += 15))
+  fi
+
+  if head -n 1 "$path" 2>/dev/null | grep -q '^#!'; then
+    ((score += 10))
+  fi
+
+  if [[ "$rel" =~ (^|/)(test|tests|spec|specs|docs|doc|example|examples|fixture|fixtures)/ ]]; then
+    ((score -= 140))
+  fi
+
+  if [[ "$name" == *_test* || "$name" == *.test.* || "$name" == test_* ]]; then
+    ((score -= 120))
+  fi
+
+  printf '%s\n' "$score"
+}
+
+module_find_main_script() {
+  local dir="$1"
+  local base="$2"
+  local _path_var="$3"
+  local _score_var="$4"
+  local stem
+  stem="${base%.*}"
+
+  local best_path=""
+  local best_score="$LCT_MODULE_BIN_NO_CANDIDATE_SCORE"
+  local best_depth=999
+  local candidate score depth
+
+  while IFS= read -r candidate; do
+    [[ -z "$candidate" ]] && continue
+    score=$(module_score_candidate "$dir" "$candidate" "$base" "$stem")
+    depth=$(module_candidate_depth "$dir" "$candidate")
+
+    if (( score > best_score )); then
+      best_path="$candidate"
+      best_score="$score"
+      best_depth="$depth"
+      continue
+    fi
+
+    if (( score == best_score )) && (( depth < best_depth )); then
+      best_path="$candidate"
+      best_depth="$depth"
+      continue
+    fi
+
+    if (( score == best_score )) && (( depth == best_depth )) && [[ -n "$best_path" && "$candidate" < "$best_path" ]]; then
+      best_path="$candidate"
+    fi
+  done < <(module_collect_candidates "$dir" "$base" | sort -u)
+
+  printf -v "$_score_var" '%s' "$best_score"
+
+  if [[ -n "$best_path" && "$best_score" -ge "$LCT_MODULE_BIN_LINK_THRESHOLD" ]]; then
+    printf -v "$_path_var" '%s' "$best_path"
+  else
+    printf -v "$_path_var" '%s' ""
+  fi
+}
 install_module_repo() {
   local module="$1"
   local version="$2"
@@ -202,13 +330,17 @@ install_module_repo() {
     [[ -d "$module_dest" ]] && echo "- Loaded module ${module_name}${version:+ @${version}}"
   fi
 
-  main_script=$(module_find_main_script "$module_dest" "$(module_repo_name "$module_name")")
+  local main_script main_script_score
+  module_find_main_script "$module_dest" "$(module_repo_name "$module_name")" main_script main_script_score
+
   if [[ -n "$main_script" ]]; then
     chmod +x "$main_script"
     ln -sf "$main_script" "$LCT_MODULES_BIN_DIR/$(basename "$main_script")"
     echo "  ↳ Linked $(basename "$main_script")"
+  elif [[ "$main_script_score" -gt "$LCT_MODULE_BIN_NO_CANDIDATE_SCORE" ]]; then
+    echo "  ↳ Skipped bin link (low confidence)"
   else
-    echo "❌ WARNING: No runnable script found for ${module}" >&2
+    echo "  ↳ Skipped bin link (no runnable candidate)"
   fi
 }
 

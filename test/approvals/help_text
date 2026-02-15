@@ -9,7 +9,7 @@ Commands:
   init          Initialize lct configuration
   bootstrap     Bootstrap your local configuration
   gather        Gather local configuration files
-  install       Install modules from an LCTFile or globally
+  install       Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
   remove        Remove modules from an LCTFile or globally
   alias         Manage lct aliases
   dotfiles      Manage dotfiles list

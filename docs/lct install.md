@@ -1,6 +1,6 @@
 # lct install
 
-Install modules from an LCTFile or globally
+Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
 
 ## Usage
 
@@ -26,7 +26,7 @@ lct install
 
 #### *MODULE*
 
-GitHub owner/repo of the module to install
+GitHub owner/repo or repository path of the module to install
 
 ## Options
 

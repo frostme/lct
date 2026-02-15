@@ -27,7 +27,7 @@ lct COMMAND
 - [init](lct%20init.md) - Initialize lct configuration
 - [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
 - [gather](lct%20gather.md) - Gather local configuration files
-- [install](lct%20install.md) - Install modules from an LCTFile or globally
+- [install](lct%20install.md) - Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
 - [remove](lct%20remove.md) - Remove modules from an LCTFile or globally
 - [alias](lct%20alias.md) - Manage lct aliases
 - [dotfiles](lct%20dotfiles.md) - Manage dotfiles list

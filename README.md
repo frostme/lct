@@ -15,8 +15,7 @@
 
 - run `setup.sh` to get necessary libraries
 - gum (for interactive CLI presentation)
-- `just build` to generate local version in target/build/lct
-- `just test` to run the smoke tests (uses approvals.bash)
-- `just install` to install local version (target/build/lct) to /usr/local/bin
+- `mise run build` to generate local version in target/build/lct
+- `mise run test` to run the smoke tests (uses approvals.bash)
+- `mise run install` to install local version (target/build/lct) to /usr/local/bin
 - update `src/bashly.yml` with a new version to trigger the GitHub Action release on merge to `main`
-- `scripts/setup.sh` pins the semver tool version and verifies its SHA256 before installing

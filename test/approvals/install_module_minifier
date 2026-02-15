@@ -2,12 +2,6 @@
 │ Starting module installation... │
 └─────────────────────────────────┘
                                    
-- Loaded module example/demo
-  ↳ Linked demo
-- Loaded module fsaintjacques/semver-tool
-  ↳ Linked semver
-- Loaded module Zuzzuc/Bash-minifier
+- Installed module Zuzzuc/Bash-minifier
   ↳ Linked Minifier.sh
-- Loaded module example/ambiguous
-  ↳ Skipped bin link (low confidence)
 ✅ Module installation complete
