@@ -75,9 +75,9 @@ run = '''
 #!/usr/bin/env bash
 set -euo pipefail
 current_version=$(yq '.version' ./src/bashly.yml)
-new_version=$(./lct_modules/fsaintjacques-semver-tool/src/semver bump ${usage_type} $current_version)
+new_version=$(./lct_modules/bin/semver bump ${usage_type} $current_version)
 echo "Bumping ${current_version} -> ${new_version}"
 yq -i ".version=\"${new_version}\"" ./src/bashly.yml
-''''
+'''
 description = "Bump the version of the lct CLI (patch, minor, major)"
 alias = "bu"
