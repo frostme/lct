@@ -1,6 +1,7 @@
 module=${args[module]:-}
 install_global=${args[--global]:-0}
 lctfile_path="$PWD/LCTFile"
+global_lctfile_path=""
 
 module_ref_is_valid() {
   local ref="$1"
@@ -78,6 +79,8 @@ if [[ $install_global -eq 0 ]]; then
 fi
 
 ensure_config_defaults
+global_lctfile_path="$LCT_SHARE_DIR/LCTFile"
+[[ -f "$global_lctfile_path" ]] || touch "$global_lctfile_path"
 
 if [[ -n "$module" ]]; then
   if ! module_ref_is_valid "$module"; then
@@ -104,3 +107,7 @@ if [[ -n "$module" ]]; then
 fi
 
 module_installation
+
+if [[ -n "$module" ]] && ! lctfile_module_exists "$global_lctfile_path" "$module"; then
+  lctfile_add_module_sorted "$global_lctfile_path" "$module"
+fi
