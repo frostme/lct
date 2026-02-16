@@ -51,6 +51,30 @@ EOF
   chmod +x "$stubdir/$tool"
 done
 
+
+cat >"$stubdir/curl" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_CURL:-}" == "1" ]]; then
+  echo "curl failed" >&2
+  exit 1
+fi
+if [[ "$*" == *"/repos/frostme/lct/releases/latest"* ]]; then
+  printf '{"tag_name":"%s"}
+' "${MOCK_LCT_LATEST_TAG:-v0.3.0}"
+  exit 0
+fi
+if [[ "$*" == *"https://frostme.github.io/lct/install.sh"* ]]; then
+  cat <<'SCRIPT'
+#!/usr/bin/env bash
+echo "installer ran"
+SCRIPT
+  exit 0
+fi
+echo "curl $*"
+EOF
+chmod +x "$stubdir/curl"
+
+
 cat >"$stubdir/gum" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -90,6 +114,13 @@ case "$cmd" in
       printf '%*s\n' "$((inner_width + 2))" ''
     else
       printf '%s\n' "$text"
+    fi
+    ;;
+  confirm)
+    prompt="${*: -1}"
+    printf '%s\n' "$prompt"
+    if [[ "${GUM_CONFIRM_RESULT:-yes}" == "no" ]]; then
+      exit 1
     fi
     ;;
   *)
@@ -304,3 +335,12 @@ it "sets an environment variable"
 approve "${cli} env set API_KEY 123" "env_set"
 it "unsets an environment variable"
 approve "${cli} env unset API_KEY" "env_unset"
+
+
+describe "self-update command"
+it "updates when a newer release is available"
+approve "${cli} self-update" "self_update"
+it "does nothing when already up to date"
+approve "MOCK_LCT_LATEST_TAG=v0.2.1 ${cli} self-update" "self_update_already_latest"
+it "shows an error when latest version lookup fails"
+approve "FAIL_CURL=1 ${cli} self-update" "self_update_lookup_error"
