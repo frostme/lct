@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.3 - 2026-02-16
+- update tests (#108)
+- Release v0.2.2 (#105)
+- smol parsing update (#107)
+- Update README.md (#106)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.2.2...v0.2.3
+
+
 ## v0.2.2 - 2026-02-16
 - Add self-update command with version confirmation (#104)
 - Release v0.2.1 (#103)
