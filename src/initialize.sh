@@ -109,11 +109,11 @@ load_plugin_configs() {
 
     mapfile -t plugin_configs < <(yq -r '.configs // [] | .[]' "$plugin_config")
     mapfile -t plugin_dotfiles < <(yq -r '.dotfiles // [] | .[]' "$plugin_config")
-    while IFS=$'\t' read -r key value; do
+    while IFS='=' read -r key value; do
       [[ -z "$key" ]] && continue
       [[ -n "${OTHERFILES[$key]+x}" ]] && continue
       OTHERFILES["$key"]="$value"
-    done < <(yq -r '.other // {} | to_entries[] | "\(.key)\t\(.value)"' "$plugin_config")
+    done < <(yq -r '.other // {} | to_entries[] | "\(.key)=\(.value)"' "$plugin_config")
 
     CONFIGS+=("${plugin_configs[@]}")
     DOTFILES+=("${plugin_dotfiles[@]}")
@@ -137,10 +137,10 @@ load_configuration() {
     LCT_PACKAGE_MANAGER=$(yq -r '.packageManager // ""' "${LCT_CONFIG_FILE}")
     [[ "$LCT_PACKAGE_MANAGER" == "null" ]] && LCT_PACKAGE_MANAGER=""
     declare -gA OTHERFILES
-    while IFS=$'\t' read -r key value; do
+    while IFS='=' read -r key value; do
       [[ -z "$key" ]] && continue
       OTHERFILES["$key"]="$value"
-    done < <(yq -r '.other // {} | to_entries[] | "\(.key)\t\(.value)"' "${LCT_CONFIG_FILE}")
+    done < <(yq -r '.other // {} | to_entries[] | "\(.key)=\(.value)"' "${LCT_CONFIG_FILE}")
     declare -ga PLUGINS
     mapfile -t PLUGINS < <(yq -r '.plugins // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -ga MODULES
