@@ -2,6 +2,7 @@
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
+semver_tool="$(cd "$(dirname "$0")/.." && pwd)/lct_modules/bin/semver"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
 export EDITOR="nvim"
@@ -14,6 +15,8 @@ lib_fallback_to_default_approval="lib_add_fallback_to_default"
 if [[ "$(uname -s)" != "Darwin" ]]; then
   lib_fallback_to_default_approval="lib_add_fallback_to_default_ubuntu"
 fi
+export LCT_VERSION=$("${cli}" --version | awk '{print $NF}')
+export UPDATE_VERSION=$("${semver_tool}" bump minor "$LCT_VERSION")
 
 stubdir="$tmpdir/bin"
 mkdir -p "$stubdir"
@@ -51,7 +54,6 @@ EOF
   chmod +x "$stubdir/$tool"
 done
 
-
 cat >"$stubdir/curl" <<'EOF'
 #!/usr/bin/env bash
 if [[ "${FAIL_CURL:-}" == "1" ]]; then
@@ -60,7 +62,7 @@ if [[ "${FAIL_CURL:-}" == "1" ]]; then
 fi
 if [[ "$*" == *"/repos/frostme/lct/releases/latest"* ]]; then
   printf '{"tag_name":"%s"}
-' "${MOCK_LCT_LATEST_TAG:-v0.3.0}"
+' "${MOCK_LCT_LATEST_TAG:-v$UPDATE_VERSION}"
   exit 0
 fi
 if [[ "$*" == *"https://frostme.github.io/lct/install.sh"* ]]; then
@@ -73,7 +75,6 @@ fi
 echo "curl $*"
 EOF
 chmod +x "$stubdir/curl"
-
 
 cat >"$stubdir/gum" <<'EOF'
 #!/usr/bin/env bash
@@ -336,11 +337,10 @@ approve "${cli} env set API_KEY 123" "env_set"
 it "unsets an environment variable"
 approve "${cli} env unset API_KEY" "env_unset"
 
-
 describe "self-update command"
 it "updates when a newer release is available"
-approve "${cli} self-update" "self_update"
+approve "${cli} self-update | sed -E 's/${LCT_VERSION}/CURRENT_VERSION/g' | sed -E 's/${UPDATE_VERSION}/UPDATE_VERSION/g'" "self_update"
 it "does nothing when already up to date"
-approve "MOCK_LCT_LATEST_TAG=v0.2.1 ${cli} self-update" "self_update_already_latest"
+approve "MOCK_LCT_LATEST_TAG=v${LCT_VERSION} ${cli} self-update | sed -E 's/${LCT_VERSION}/CURRENT_VERSION/g'" "self_update_already_latest"
 it "shows an error when latest version lookup fails"
 approve "FAIL_CURL=1 ${cli} self-update" "self_update_lookup_error"
