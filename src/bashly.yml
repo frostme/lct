@@ -108,6 +108,10 @@ commands:
     args:
       - name: module
         help: GitHub owner/repo or repository path of the module to install
+  - name: self-update
+    help: Update lct to the latest release
+    examples:
+      - lct self-update
   - name: remove
     help: Remove modules from an LCTFile or globally
     examples:

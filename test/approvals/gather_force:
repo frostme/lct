@@ -8,6 +8,7 @@ and the repository exists.
 │ LCT initialization │
 └────────────────────┘
                       
+Add baseline dotfiles (.bashrc)?
 ┌──────────────────────────────────────────┐
 │ Gathering configs into remote repository │
 └──────────────────────────────────────────┘

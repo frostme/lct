@@ -10,6 +10,7 @@ Commands:
   bootstrap     Bootstrap your local configuration
   gather        Gather local configuration files
   install       Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
+  self-update   Update lct to the latest release
   remove        Remove modules from an LCTFile or globally
   alias         Manage lct aliases
   dotfiles      Manage dotfiles list
