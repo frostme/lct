@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.2 - 2026-02-16
+- Add self-update command with version confirmation (#104)
+- Release v0.2.1 (#103)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.2.1...v0.2.2
+
+
 ## v0.2.1 - 2026-02-15
 - Update global module operations to maintain shared LCTFile (#102)
 - Release v0.2.0 (#101)
