@@ -4,8 +4,9 @@
 
 ## Installation
 
-- `curl -fsSL https://frostme.github.io/lct/install.sh | bash`
-- The installer downloads release assets plus `checksums.txt` and verifies SHA256 before extracting binaries.
+```bash
+curl -fsSL https://frostme.github.io/lct/install.sh | bash
+```
 
 ## Usage
 
