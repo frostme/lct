@@ -2,6 +2,7 @@
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
+semver_tool="$(cd "$(dirname "$0")/.." && pwd)/lct_modules/bin/semver"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
 export EDITOR="nvim"
@@ -15,7 +16,7 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
   lib_fallback_to_default_approval="lib_add_fallback_to_default_ubuntu"
 fi
 export LCT_VERSION=$("${cli}" --version | awk '{print $NF}')
-export UPDATE_VERSION=$(semver -i minor "$LCT_VERSION")
+export UPDATE_VERSION=$("${semver_tool}" bump minor "$LCT_VERSION")
 
 stubdir="$tmpdir/bin"
 mkdir -p "$stubdir"
