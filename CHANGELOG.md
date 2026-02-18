@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.5 - 2026-02-18
+- Update config.sh (#112)
+- Release v0.2.4 (#111)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.2.4...v0.2.5
+
+
 ## v0.2.4 - 2026-02-18
 - update config detection command (#110)
 - Release v0.2.3 (#109)
