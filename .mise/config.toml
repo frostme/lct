@@ -67,6 +67,12 @@ run = ["bashly r templates pages", "cp scripts/install.sh pages/install.sh"]
 description = "Generate GitHub Pages documentation for the lct CLI"
 alias = "p"
 
+[tasks.pages-local]
+depends = ["pages"]
+run = "http-server pages"
+description = "Serve the generated GitHub Pages documentation locally"
+alias = "pl"
+
 [tasks.bump]
 usage = '''
 arg "<type>" help="Type of version bump (patch, minor, major)" default="patch"

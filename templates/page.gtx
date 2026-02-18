@@ -27,6 +27,13 @@ if root_command? && x_pages
         > {{ step['description'].for_markdown }}
         >
       end
+      if step['notes']
+        step['notes'].each do |note|
+          > #### {{ note['label'] }}
+          > {{ note['content'].for_markdown }}
+          >
+        end
+      end
     end
   end
 

@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions: write-all
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install Mise Dependencies
+        uses: jdx/mise-action@v3
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Restore Cached Dependencies
+        uses: actions/cache/restore@v5
+        id: cache
+        with:
+          path: lct_modules
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('lct_modules/*') }}
+      - name: Install Other Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mise run i
+      - name: Cache Dependencies
+        uses: actions/cache/save@v5
+        with:
+          path: lct_modules
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('lct_modules/*') }}
+      - name: Build LCT
+        run: mise run b
+      - name: Build Pages
+        run: mise run p
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './pages' # The directory containing your static files
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

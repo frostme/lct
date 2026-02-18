@@ -8,6 +8,14 @@
 curl -fsSL https://frostme.github.io/lct/install.sh | bash
 ```
 
+### mise
+
+You can also install using [mise](https://mise.jdx.dev/):
+
+```bash
+mise use -g github:frostme/lct
+```
+
 ## Usage
 
 [See docs](./docs/README.md)
