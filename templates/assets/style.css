@@ -10,7 +10,7 @@
   --code-fg: #e2e8f0;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg: #0b1220;
   --fg: #e2e8f0;
   --panel: #111827;
@@ -26,7 +26,7 @@
 
 body {
   margin: 0;
-  font-family: "Inter", "SF Pro Text", "Segoe UI", sans-serif;
+  font-family: 'Inter', 'SF Pro Text', 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--fg);
   line-height: 1.6;
@@ -87,7 +87,7 @@ a:hover {
 }
 
 .nav li {
-  margin: 6px 0;
+  margin: 0;
 }
 
 .nav ul ul {
@@ -98,7 +98,7 @@ a:hover {
 
 .nav-link {
   display: block;
-  padding: 6px 10px;
+  padding: 0px 10px;
   border-radius: 8px;
   color: var(--fg);
 }
