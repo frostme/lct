@@ -14,7 +14,7 @@ done
 if [[ -n ${EDITOR:-} ]]; then
   read -r -a editor_cmd <<<"$EDITOR"
 fi
-if (( ${#editor_cmd[@]+"${#editor_cmd[@]}"} == 0 )); then
+if (( ${#editor_cmd[@]} == 0 )); then
   editor_cmd=("vi")
 fi
 
