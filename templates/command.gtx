@@ -1,6 +1,6 @@
 # === Header
 
-> # {{ name.split('-').map{|word| word.start_with?('_') ? word.upcase.sub('_', '') : word.capitalize }.join(' ') }}
+> # {{ full_name }}
 >
 > {{ help.for_markdown }}
 >

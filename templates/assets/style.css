@@ -87,7 +87,8 @@ a:hover {
 }
 
 .nav li {
-  margin: 0;
+  margin: 4px 0;
+  font-size: 0.95rem;
 }
 
 .nav ul ul {

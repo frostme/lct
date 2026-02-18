@@ -1,0 +1,21 @@
+name: pages
+private: true
+help: Github Pages configuration
+
+commands:
+  - name: getting-started
+    commands:
+      - name: quick-start
+        help: Quick start guide for LCT
+      - name: installation
+  - name: guides
+  - name: reference
+    commands:
+      - name: configuraion
+        help: Complete reference for lct.yml configuration files.
+      - name: environment-variables
+        help: Environment variables that control LCT behavior.
+      - name: file-locations
+        help: Where lct stores its files.
+      - name: _cli-reference
+        alias: lct

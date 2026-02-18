@@ -138,6 +138,7 @@ commands:
   - import: src/commands/env/env.yml
   - import: src/commands/plugin/plugin.yml
   - import: src/commands/lib/lib.yml
+  - import: src/commands/pages/pages.yml
   - name: completions
     help: |-
       Generate bash completions
