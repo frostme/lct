@@ -10,7 +10,7 @@
   --code-fg: #e2e8f0;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --bg: #0b1220;
   --fg: #e2e8f0;
   --panel: #111827;
@@ -26,7 +26,7 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', 'SF Pro Text', 'Segoe UI', sans-serif;
+  font-family: "Inter", "SF Pro Text", "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--fg);
   line-height: 1.6;
@@ -130,6 +130,10 @@ a:hover {
 .topbar-actions {
   display: flex;
   gap: 12px;
+}
+
+img {
+  width: 100%;
 }
 
 .button {

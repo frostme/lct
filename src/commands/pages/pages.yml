@@ -10,8 +10,8 @@ commands:
         x_sections:
           - title: Install
             content: |
-              ~~~ sh
-              # Using bash
+              ~~~
+              # Using install.sh
               curl -fsSL https://frostme.github.io/lct/install.sh | bash
 
               # Or with mise
@@ -66,11 +66,63 @@ commands:
               ~~~
               lct gather
               ~~~
-          - title: What's Next?
-            content: |
-              - [Installation](/installation.html) - All installation methods and shell completion
-
       - name: installation
+        x_sections:
+          - title: Install lct
+            content: |
+              ### [install.sh](https://frostme.github.io/lct/install.sh)
+
+              The recommended way to install lct is through the install.sh script. This will install lct, its dependencies, and add it to your PATH.
+
+              ~~~
+              curl -fsSL https://frostme.github.io/lct/install.sh | bash
+              ~~~
+
+              ### mise
+
+              You can also install through [mise-en-place](https://mise.jdx.dev/) using the github backend.
+
+              ~~~
+              mise use -g github:frostme/lct
+              ~~~
+
+              ### Github Releases
+              Download pre-built binaries from [Github Releases](https://github.com/frostme/lct/releases)
+          - title: Verify installation
+            content: |
+              ~~~
+              lct --version
+              ~~~
+          - title: Activation and Shell Completioon
+            content: |
+              To support:
+
+              * autoloading aliases
+              * autoloading env vars from lct
+              * resolving lct module bin baths
+              * tab completion for lct
+              * lct plugin tab completion
+
+              Run the following in your shell of choice:
+
+              ### bash
+
+              ~~~bash
+              echo 'eval "$(lct setup)"' >> ~/.bashrc
+              ~~~
+
+              ### zsh
+
+              ~~~bash
+              echo 'eval "$(lct setup)"' >> ~/.zshrc
+              ~~~
+
+              ### fish
+
+              ~~~bash
+              echo 'eval "$(lct setup)"' >> ~/.config/fish/config.fish.
+              ~~~
+
   - name: guides
   - name: reference
     commands:
