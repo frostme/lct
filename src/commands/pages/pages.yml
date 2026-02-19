@@ -7,6 +7,69 @@ commands:
     commands:
       - name: quick-start
         help: Quick start guide for LCT
+        x_sections:
+          - title: Install
+            content: |
+              ~~~ sh
+              # Using bash
+              curl -fsSL https://frostme.github.io/lct/install.sh | bash
+
+              # Or with mise
+              mise use -g github:frostme/lct
+
+              # Or download from Github Releases
+              # https://github.com/frostme/lct/releases
+              ~~~
+          - title: Bootstrap
+            content: |
+              Init your lct config, and bootstrap using previously saved dotfiles and configs on a new machine.
+
+              ~~~
+              lct bootstrap
+              ~~~
+          - title: Add Files
+            content: |
+              Add files you want to keep track of in your local config.
+              Add a dotfile
+
+              ~~~
+              lct dotfile add .zshrc
+              ~~~
+
+              Add a config directory for a local tool
+
+              ~~~
+              lct config add zellij
+              ~~~
+          - title: Install Plugins
+            content: |
+              Install plugins to bootstrap local config and track the necessary files..
+
+              ~~~
+              lct plugin install frostme/lct-plugins.alacritty
+              lct plugin install frostme/lct-plugins.jrnl
+              lct plugin install frostme/lct-plugins.lazyvim
+              lct plugin install frostme/lct-plugins.ohmyzsh
+              lct plugin install frostme/lct-plugins.powerlevel10k
+              ~~~
+          - title: Install Modules
+            content: |
+              Install bash modules to use in your system, with the main bash script added to your /usr/local/bin
+
+              ~~~
+              lct install -g fsaintjacques/semver-tool
+              ~~~
+          - title: Gather Tracked Items
+            content: |
+              Now you can gather all your tracked items and save them to your remote repository.
+
+              ~~~
+              lct gather
+              ~~~
+          - title: What's Next?
+            content: |
+              - [Installation](/installation.html) - All installation methods and shell completion
+
       - name: installation
   - name: guides
   - name: reference

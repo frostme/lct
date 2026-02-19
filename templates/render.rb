@@ -13,6 +13,10 @@ def page_slug(page)
   page.name.tr('_', '')
 end
 
+def section_slug(group)
+  group.name.downcase.tr(' ', '-')
+end
+
 def section_title(group)
   [
     '<div class="nav-section-title">',
