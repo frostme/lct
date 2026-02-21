@@ -126,7 +126,7 @@ commands:
   - name: guides
   - name: reference
     commands:
-      - name: configuraion
+      - name: configuration
         help: Complete reference for lct.yml configuration files.
         x_sections:
           - title: Configuration schema
