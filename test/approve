@@ -145,7 +145,7 @@ cd ./test || exit
 export APPROVALS_DIR="$(pwd)/approvals"
 
 describe "help text"
-approve "${cli} --help" "help_text"
+approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g'" "help_text"
 
 describe "env command"
 it "sets and lists environment variables"

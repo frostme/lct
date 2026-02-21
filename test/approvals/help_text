@@ -33,20 +33,20 @@ Options:
 Environment Variables:
   SOFTWARE_DIR
     Base directory for downloaded libraries managed on this machine.
-    Default: /var/folders/bq/f6fjr7hd0kqdhxz_glj_k3jm0000gn/T/tmp.9lVrW31Fbp/software
+    Default: ~/software
 
   CONFIG_DIR
     Base directory for local configuration files.
-    Default: /var/folders/bq/f6fjr7hd0kqdhxz_glj_k3jm0000gn/T/tmp.9lVrW31Fbp/.config
+    Default: ~/.config
 
   SHARE_DIR
     Base directory for local shared application data.
-    Default: /var/folders/bq/f6fjr7hd0kqdhxz_glj_k3jm0000gn/T/tmp.9lVrW31Fbp/.local/share
+    Default: ~/.local/share
 
   STATE_DIR
     Base directory for persistent local state data.
-    Default: /var/folders/bq/f6fjr7hd0kqdhxz_glj_k3jm0000gn/T/tmp.9lVrW31Fbp/.local/state
+    Default: ~/.local/state
 
   CACHE_DIR
     Base directory for local cache data.
-    Default: /var/folders/bq/f6fjr7hd0kqdhxz_glj_k3jm0000gn/T/tmp.9lVrW31Fbp/.cache
+    Default: ~/.cache
