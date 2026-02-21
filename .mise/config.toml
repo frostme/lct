@@ -91,3 +91,6 @@ yq -i ".version=\"${new_version}\"" ./src/bashly.yml
 '''
 description = "Bump the version of the lct CLI (patch, minor, major)"
 alias = "bu"
+
+[tasks.deploy]
+run = "gh workflow run Deploy"
