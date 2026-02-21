@@ -4,7 +4,7 @@ Local configuration tool
 
 | Attributes       | &nbsp;
 |------------------|-------------
-| Version:         | 0.2.5
+| Version:         | 0.2.6
 
 ## Usage
 
@@ -16,11 +16,11 @@ lct COMMAND
 
 #### *gum*
 
-
+Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-file#installation) section of gum's README.md
 
 #### *yq*
 
-
+Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md
 
 ## Commands
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.6 - 2026-02-21
+- Pages overhaul (#115)
+- deploy config (#114)
+- Release v0.2.5 (#113)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.2.5...v0.2.6
+
+
 ## v0.2.5 - 2026-02-18
 - Update config.sh (#112)
 - Release v0.2.4 (#111)

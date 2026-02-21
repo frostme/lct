@@ -1,6 +1,6 @@
 name: lct
 help: Local configuration tool
-version: 0.2.5
+version: 0.2.6
 dependencies:
   gum: Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-file#installation) section of gum's README.md
   yq: Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md
@@ -43,7 +43,7 @@ x_markdown_footer: |-
 x_pages:
   title: LCT
   tagline: Local configuration tool
-  overview: |-
+  overview: |2-
 
     ![Demo of the lct gather command](/assets/demo.gif "Demo")
 
