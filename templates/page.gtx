@@ -1,6 +1,16 @@
 # === Header
 
-> # {{ name.split('-').map{|word| word.start_with?('_') ? word.upcase.sub('_', '') : word.capitalize }.join(' ') }}
+if x_alias
+  > # `{{ x_alias }}`
+  >
+  > **Usage**: `{{ x_alias }} <SUBCOMMAND>`
+  >
+  > **Version**: {{ parent_command.parent_command.parent_command.version }}
+  >
+  > ---
+else
+  > # {{ name.split('-').map{|word| word.start_with?('_') ? word.upcase.sub('_', '') : word.capitalize }.join(' ') }}
+end
 >
 > {{ help.for_markdown }}
 >
@@ -81,10 +91,18 @@ if x_sections
   x_sections.each do |section|
     > ***
     >
-    > ## {{ section['title'] }}
+    if section['title']
+      > ## {{ section['title'] }}
+    end
     >
     > {{ section['content'].for_markdown }}
     >
     >
   end
+elsif !x_alias
+  > ---
+  >
+  > ### Page Coming Soon
+  >
+  > ---
 end

@@ -25,12 +25,13 @@ def section_title(group)
   ].join
 end
 
-def page_link(page, current_page)
+def page_link(page, current_page, cli_nav_html)
   slug = page_slug(page)
-  slug == current_page ? 'active' : ''
+  active = slug == current_page ? 'active' : ''
+  is_cli_route = /^lct-.+$/.match(current_page) ? true : false 
   [
     '<li>',
-    "<a class=\"nav-link\" href=\"#{slug}.html\">",
+    "<a class=\"nav-link #{active}\" href=\"#{slug}.html\">",
     page.name.split('-').map do |word|
       if word.start_with?('_')
         word.upcase.sub('_', '')
@@ -39,28 +40,30 @@ def page_link(page, current_page)
       end
     end.join(' '),
     '</a>',
+      (slug == 'cli-reference' && is_cli_route ? cli_nav_html : ''),
     '</li>'
   ].join
 end
 
-def nav_items_old(command, current_slug)
+def cli_nav_items(command, current_slug)
   command.commands.reject(&:private).map do |subcommand|
     slug = command_slug(subcommand)
-    children = nav_items_old(subcommand, current_slug)
+    children = cli_nav_items(subcommand, current_slug)
+    command_name =  slug.gsub('lct-', '').tr('-', ' ')
     active = slug == current_slug ? 'active' : ''
     [
       '<li>',
-      "<a class=\"nav-link #{active}\" href=\"#{slug}.html\">#{subcommand.name}</a>",
-      (children.empty? ? '' : "<ul>#{children.join}</ul>"),
-      '</li>'
+      "<a class=\"nav-link #{active}\" href=\"#{slug}.html\">#{command_name}</a>",
+      '</li>',
+      (children.empty? ? '' : children.join),
     ].join
   end
 end
 
-def nav_items(groups, current_page)
+def nav_items(groups, current_page, cli_nav_html)
   groups.commands.map do |group|
     pages = group.commands.map do |page|
-      page_link(page, current_page)
+      page_link(page, current_page, cli_nav_html)
     end
 
     [
@@ -77,6 +80,8 @@ gtx = GTX.load_file(template)
 layout = ERB.new(File.read("#{source}/layout.html.erb"))
 command_template = "#{source}/command.gtx"
 command_gtx = GTX.load_file(command_template)
+cli_template = "#{source}/cli.gtx"
+cli_gtx = GTX.load_file(cli_template)
 
 assets_target = "#{target}/assets"
 FileUtils.mkdir_p(assets_target)
@@ -98,6 +103,13 @@ all_pages = pages.commands.map(&:commands).flatten
 all_pages.each do |cmd|
   slug = page_slug(cmd)
   markdown = gtx.parse(cmd)
+  if cmd.name == '_cli-reference'
+    puts "****************"
+    puts cmd.parent_command.parent_command.parent_command.version
+    puts "***************"
+    cli_markdown = cli_gtx.parse(command)
+    markdown += "\n\n" + cli_markdown
+  end
   content = Kramdown::Document.new(markdown).to_html
 
   breadcrumbs = cmd.parents + [cmd.name]
@@ -109,7 +121,8 @@ all_pages.each do |cmd|
     end
   end.join(' / ')
 
-  nav_html = nav_items(pages, slug).join("\n")
+  cli_nav_html = "<ul>#{cli_nav_items(command, slug).join}</ul>"
+  nav_html = nav_items(pages, slug, cli_nav_html).join("\n")
   page_title = cmd.name.split('-').map do |word|
     if word.start_with?('_')
       word.upcase.sub('_', '')
@@ -149,15 +162,15 @@ all_commands.each do |cmd|
     end
   end.join(' / ')
 
-  nav_html_old = "<ul>#{nav_items_old(command, slug).join}</ul>"
-  nav_html = nav_items(pages, slug).join("\n")
+  cli_nav_html = "<ul>#{cli_nav_items(command, slug).join}</ul>"
+  nav_html = nav_items(pages, slug, cli_nav_html).join("\n")
   page_title = cmd.full_name
   description = cmd.summary
 
   html = layout.result_with_hash(
     content: content,
     nav_html: nav_html,
-    nav_html_old: nav_html_old,
+    cli_nav_html: cli_nav_html,
     page_title: page_title,
     description: description,
     site_title: site_title,

@@ -128,9 +128,51 @@ commands:
     commands:
       - name: configuraion
         help: Complete reference for lct.yml configuration files.
+        x_sections:
+          - title: Configuration schema
+            content: |
+              A yaml schema is available for editor autocompletion and validation:
+
+              URL: [https://frostme.github.io/lct/schema.yaml](/schema.yaml)
+
+          - title: Minimal valid config
+            content: |
+
+              ~~~yaml
+              remote: null
+              configs: []
+              dotfiles: []
+              other: {}
+              plugins: []
+              modules: []
+              ~~~
+
+          - title: Full config
+            content: |
+              ~~~yaml
+              remote: git@github.com:example/dotfiles.git
+              configs:
+                - alacritty
+                - nvim
+              dotfiles:
+                - .zshrc
+                - .gitconfig
+              other:
+                work/custom.conf: .config/custom/custom.conf
+                local/dev-tool: .local/bin/dev-tool
+              plugins:
+                - author/repo.example-plugin
+                - author/repo.another-plugin
+                - author/plugin-repo
+              modules:
+                - example/lct-module
+                - example/lct-theme
+                - fsaintjacques/semver-tool
+              packageManager: brew
+              ~~~
       - name: environment-variables
         help: Environment variables that control LCT behavior.
       - name: file-locations
         help: Where lct stores its files.
       - name: _cli-reference
-        alias: lct
+        x_alias: lct

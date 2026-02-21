@@ -4,42 +4,6 @@ version: 0.2.5
 dependencies:
   - gum
   - yq
-x_markdown_footer: |-
-  ## Configuration schema
-
-  The user config file at ~/.config/lct/config.yaml should conform to the LCT config schema:
-
-  - [docs/schema/lct-config.schema.yaml](schema/lct-config.schema.yaml)
-  - [Configuration guide](config-schema.md)
-
-  ### Minimal valid config
-
-      remote: null
-      configs: []
-      dotfiles: []
-      other: {}
-      plugins: []
-      modules: []
-
-  ### Full config
-
-      remote: git@github.com:example/dotfiles.git
-      configs:
-        - alacritty
-        - nvim
-      dotfiles:
-        - ~/.zshrc
-        - ~/.gitconfig
-      other:
-        ~/work/custom.conf: ~/.config/custom/custom.conf
-        ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
-      plugins:
-        - gh/owner/example-plugin
-        - gh/owner/another-plugin
-      modules:
-        - github.com/example/lct-module
-        - github.com/example/lct-theme
-      packageManager: mise
 x_pages:
   title: LCT
   tagline: Local configuration tool
@@ -50,6 +14,8 @@ x_pages:
     LCT helps you capture, share, and restore local configuration in a repeatable
     way. Use it to bootstrap machines, gather dotfiles, and manage config
     libraries with a stable CLI you can script against.
+
+    ### Checkout the [Quick Start](/quick-start.html) guide to get started!
   highlights:
     - title: Predictable CLI output
       description: Designed for automation-friendly, repeatable workflows.
@@ -57,7 +23,7 @@ x_pages:
       description: Organize config libraries and plugin collections cleanly.
     - title: Safe defaults
       description: Lean on dry-runs and explicit prompts before destructive actions.
-  footer: Want more? Visit the README for the full workflow and support links.
+  footer: Want more? Visit the [README](https://github.com/frostme/lct) for the full workflow and support links.
   repo_url: https://github.com/frostme/lct
   accent_color: "#4f46e5"
   links:

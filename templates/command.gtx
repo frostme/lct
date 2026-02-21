@@ -13,30 +13,6 @@ if root_command? && x_pages
     >
   end
 
-  if x_pages['quickstart']
-    > ## Quick start
-    >
-    x_pages['quickstart'].each do |step|
-      > ### {{ step['label'] }}
-      >
-      > ```
-      > {{ step['command'] }}
-      > ```
-      >
-      if step['description']
-        > {{ step['description'].for_markdown }}
-        >
-      end
-      if step['notes']
-        step['notes'].each do |note|
-          > #### {{ note['label'] }}
-          > {{ note['content'].for_markdown }}
-          >
-        end
-      end
-    end
-  end
-
   if x_pages['highlights']
     > ## Highlights
     >
@@ -73,13 +49,10 @@ end
 
 if dependencies.any?
   > ## Dependencies
-  >
   dependencies.each do |dependency|
-    > #### *{{ dependency.commands.join ', ' }}*
-    >
-    > {{ dependency.help&.for_markdown }}
-    >
+    > - *{{ dependency.commands.join ', ' }}*
   end
+  >
 end
 
 # === Environment Variables
@@ -111,7 +84,7 @@ end
 
 # === Commands
 
-if commands.any?
+if !root_command? && commands.any?
   grouped_commands.each do |group, commands|
     > ## {{ group.gsub(/:$/, '') }}
     >
