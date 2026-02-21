@@ -29,3 +29,24 @@ Options:
 
   --version, -v
     Show version number
+
+Environment Variables:
+  SOFTWARE_DIR
+    Base directory for downloaded libraries managed on this machine.
+    Default: ~/software
+
+  CONFIG_DIR
+    Base directory for local configuration files.
+    Default: ~/.config
+
+  SHARE_DIR
+    Base directory for local shared application data.
+    Default: ~/.local/share
+
+  STATE_DIR
+    Base directory for persistent local state data.
+    Default: ~/.local/state
+
+  CACHE_DIR
+    Base directory for local cache data.
+    Default: ~/.cache

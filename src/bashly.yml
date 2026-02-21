@@ -4,6 +4,22 @@ version: 0.2.6
 dependencies:
   gum: Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-file#installation) section of gum's README.md
   yq: Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md
+environment_variables:
+  - name: SOFTWARE_DIR
+    help: Base directory for downloaded libraries managed on this machine.
+    default: $HOME/software
+  - name: CONFIG_DIR
+    help: Base directory for local configuration files.
+    default: $HOME/.config
+  - name: SHARE_DIR
+    help: Base directory for local shared application data.
+    default: $HOME/.local/share
+  - name: STATE_DIR
+    help: Base directory for persistent local state data.
+    default: $HOME/.local/state
+  - name: CACHE_DIR
+    help: Base directory for local cache data.
+    default: $HOME/.cache
 x_markdown_footer: |-
   ## Configuration schema
 
