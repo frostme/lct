@@ -22,6 +22,48 @@ Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-f
 
 Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md
 
+## Environment Variables
+
+#### *SOFTWARE_DIR*
+
+Base directory for downloaded libraries managed on this machine.
+
+| Attributes      | &nbsp;
+|-----------------|-------------
+| Default Value:  | $HOME/software
+
+#### *CONFIG_DIR*
+
+Base directory for local configuration files.
+
+| Attributes      | &nbsp;
+|-----------------|-------------
+| Default Value:  | $HOME/.config
+
+#### *SHARE_DIR*
+
+Base directory for local shared application data.
+
+| Attributes      | &nbsp;
+|-----------------|-------------
+| Default Value:  | $HOME/.local/share
+
+#### *STATE_DIR*
+
+Base directory for persistent local state data.
+
+| Attributes      | &nbsp;
+|-----------------|-------------
+| Default Value:  | $HOME/.local/state
+
+#### *CACHE_DIR*
+
+Base directory for local cache data.
+
+| Attributes      | &nbsp;
+|-----------------|-------------
+| Default Value:  | $HOME/.cache
+
 ## Commands
 
 - [init](lct%20init.md) - Initialize lct configuration
