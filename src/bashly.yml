@@ -45,7 +45,7 @@ x_pages:
   tagline: Local configuration tool
   overview: |2-
 
-    ![Demo of the lct gather command](/assets/demo.gif "Demo")
+    ![Demo of the lct gather command](/lct/assets/demo.gif "Demo")
 
     LCT helps you capture, share, and restore local configuration in a repeatable
     way. Use it to bootstrap machines, gather dotfiles, and manage config
