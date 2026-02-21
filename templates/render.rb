@@ -49,7 +49,7 @@ def cli_nav_items(command, current_slug)
   command.commands.reject(&:private).map do |subcommand|
     slug = command_slug(subcommand)
     children = cli_nav_items(subcommand, current_slug)
-    command_name =  slug.gsub('lct-', '').tr('-', ' ')
+    command_name = slug.gsub('lct-', '').tr('-', ' ')
     active = slug == current_slug ? 'active' : ''
     [
       '<li>',
