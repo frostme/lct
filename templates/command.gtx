@@ -50,7 +50,7 @@ end
 if dependencies.any?
   > ## Dependencies
   dependencies.each do |dependency|
-    > - *{{ dependency.commands.join ', ' }}*
+    > - **{{ dependency.name }}**: {{ dependency.help.for_markdown }}
   end
   >
 end

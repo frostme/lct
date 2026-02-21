@@ -2,8 +2,44 @@ name: lct
 help: Local configuration tool
 version: 0.2.5
 dependencies:
-  - gum
-  - yq
+  gum: Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-file#installation) section of gum's README.md
+  yq: Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md
+x_markdown_footer: |-
+  ## Configuration schema
+
+  The user config file at ~/.config/lct/config.yaml should conform to the LCT config schema:
+
+  - [docs/schema/lct-config.schema.yaml](schema/lct-config.schema.yaml)
+  - [Configuration guide](config-schema.md)
+
+  ### Minimal valid config
+
+      remote: null
+      configs: []
+      dotfiles: []
+      other: {}
+      plugins: []
+      modules: []
+
+  ### Full config
+
+      remote: git@github.com:example/dotfiles.git
+      configs:
+        - alacritty
+        - nvim
+      dotfiles:
+        - ~/.zshrc
+        - ~/.gitconfig
+      other:
+        ~/work/custom.conf: ~/.config/custom/custom.conf
+        ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+      plugins:
+        - gh/owner/example-plugin
+        - gh/owner/another-plugin
+      modules:
+        - github.com/example/lct-module
+        - github.com/example/lct-theme
+      packageManager: mise
 x_pages:
   title: LCT
   tagline: Local configuration tool

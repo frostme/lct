@@ -104,9 +104,6 @@ all_pages.each do |cmd|
   slug = page_slug(cmd)
   markdown = gtx.parse(cmd)
   if cmd.name == '_cli-reference'
-    puts "****************"
-    puts cmd.parent_command.parent_command.parent_command.version
-    puts "***************"
     cli_markdown = cli_gtx.parse(command)
     markdown += "\n\n" + cli_markdown
   end
@@ -161,6 +158,12 @@ all_commands.each do |cmd|
       name
     end
   end.join(' / ')
+
+  if cmd.dependencies.any? 
+    cmd.dependencies.each do |dep|
+      puts "Checking dependency: #{dep.name}"
+    end
+end
 
   cli_nav_html = "<ul>#{cli_nav_items(command, slug).join}</ul>"
   nav_html = nav_items(pages, slug, cli_nav_html).join("\n")
