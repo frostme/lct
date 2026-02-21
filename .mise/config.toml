@@ -63,7 +63,11 @@ description = "Generate documentation for the lct CLI in GitHub-flavored Markdow
 alias = "d"
 
 [tasks.pages]
-run = ["bashly r templates pages", "cp scripts/install.sh pages/install.sh"]
+run = [
+  "bashly r templates pages",
+  "cp scripts/install.sh pages/install.sh",
+  "cp docs/schema/lct-config.schema.yaml pages/schema.yaml",
+]
 description = "Generate GitHub Pages documentation for the lct CLI"
 alias = "p"
 

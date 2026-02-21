@@ -1,0 +1,8 @@
+grouped_commands.each do |group, commands|
+  > ## {{ group.gsub(/:$/, '') }}
+  >
+  commands.each do |subcommand|
+    > - [{{ subcommand.name }}]({{ subcommand.full_name.downcase.tr(' ', '-') }}.html) - {{ subcommand.summary.for_markdown }}
+  end
+  >
+end

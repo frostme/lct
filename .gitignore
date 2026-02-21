@@ -3,6 +3,7 @@ local-plugins
 target/*
 avante.local.md
 .DS_Store
-pages
+pages/*
 .lct_cache
 lct_modules
+docs/lct*pages*

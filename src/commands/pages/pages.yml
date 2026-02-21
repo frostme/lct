@@ -1,0 +1,178 @@
+name: pages
+private: true
+help: Github Pages configuration
+
+commands:
+  - name: getting-started
+    commands:
+      - name: quick-start
+        help: Quick start guide for LCT
+        x_sections:
+          - title: Install
+            content: |
+              ~~~
+              # Using install.sh
+              curl -fsSL https://frostme.github.io/lct/install.sh | bash
+
+              # Or with mise
+              mise use -g github:frostme/lct
+
+              # Or download from Github Releases
+              # https://github.com/frostme/lct/releases
+              ~~~
+          - title: Bootstrap
+            content: |
+              Init your lct config, and bootstrap using previously saved dotfiles and configs on a new machine.
+
+              ~~~
+              lct bootstrap
+              ~~~
+          - title: Add Files
+            content: |
+              Add files you want to keep track of in your local config.
+              Add a dotfile
+
+              ~~~
+              lct dotfile add .zshrc
+              ~~~
+
+              Add a config directory for a local tool
+
+              ~~~
+              lct config add zellij
+              ~~~
+          - title: Install Plugins
+            content: |
+              Install plugins to bootstrap local config and track the necessary files..
+
+              ~~~
+              lct plugin install frostme/lct-plugins.alacritty
+              lct plugin install frostme/lct-plugins.jrnl
+              lct plugin install frostme/lct-plugins.lazyvim
+              lct plugin install frostme/lct-plugins.ohmyzsh
+              lct plugin install frostme/lct-plugins.powerlevel10k
+              ~~~
+          - title: Install Modules
+            content: |
+              Install bash modules to use in your system, with the main bash script added to your /usr/local/bin
+
+              ~~~
+              lct install -g fsaintjacques/semver-tool
+              ~~~
+          - title: Gather Tracked Items
+            content: |
+              Now you can gather all your tracked items and save them to your remote repository.
+
+              ~~~
+              lct gather
+              ~~~
+      - name: installation
+        x_sections:
+          - title: Install lct
+            content: |
+              ### [install.sh](https://frostme.github.io/lct/install.sh)
+
+              The recommended way to install lct is through the install.sh script. This will install lct, its dependencies, and add it to your PATH.
+
+              ~~~
+              curl -fsSL https://frostme.github.io/lct/install.sh | bash
+              ~~~
+
+              ### mise
+
+              You can also install through [mise-en-place](https://mise.jdx.dev/) using the github backend.
+
+              ~~~
+              mise use -g github:frostme/lct
+              ~~~
+
+              ### Github Releases
+              Download pre-built binaries from [Github Releases](https://github.com/frostme/lct/releases)
+          - title: Verify installation
+            content: |
+              ~~~
+              lct --version
+              ~~~
+          - title: Activation and Shell Completion
+            content: |
+              To support:
+
+              * autoloading aliases
+              * autoloading env vars from lct
+              * resolving lct module bin paths
+              * tab completion for lct
+              * lct plugin tab completion
+
+              Run the following in your shell of choice:
+
+              ### bash
+
+              ~~~bash
+              echo 'eval "$(lct setup)"' >> ~/.bashrc
+              ~~~
+
+              ### zsh
+
+              ~~~bash
+              echo 'eval "$(lct setup)"' >> ~/.zshrc
+              ~~~
+
+              ### fish
+
+              ~~~bash
+              echo 'eval "$(lct setup)"' >> ~/.config/fish/config.fish
+              ~~~
+
+  - name: guides
+  - name: reference
+    commands:
+      - name: configuration
+        help: Complete reference for lct.yml configuration files.
+        x_sections:
+          - title: Configuration schema
+            content: |
+              A yaml schema is available for editor autocompletion and validation:
+
+              URL: [https://frostme.github.io/lct/schema.yaml](/schema.yaml)
+
+          - title: Minimal valid config
+            content: |
+
+              ~~~yaml
+              remote: null
+              configs: []
+              dotfiles: []
+              other: {}
+              plugins: []
+              modules: []
+              ~~~
+
+          - title: Full config
+            content: |
+              ~~~yaml
+              remote: git@github.com:example/dotfiles.git
+              configs:
+                - alacritty
+                - nvim
+              dotfiles:
+                - .zshrc
+                - .gitconfig
+              other:
+                work/custom.conf: .config/custom/custom.conf
+                local/dev-tool: .local/bin/dev-tool
+              plugins:
+                - author/repo.example-plugin
+                - author/repo.another-plugin
+                - author/plugin-repo
+              modules:
+                - example/lct-module
+                - example/lct-theme
+                - fsaintjacques/semver-tool
+              packageManager: brew
+              ~~~
+      - name: environment-variables
+        help: Environment variables that control LCT behavior.
+      - name: file-locations
+        help: Where lct stores its files.
+      - name: _cli-reference
+        x_alias: lct

@@ -2,8 +2,8 @@ name: lct
 help: Local configuration tool
 version: 0.2.5
 dependencies:
-  - gum
-  - yq
+  gum: Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-file#installation) section of gum's README.md
+  yq: Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md
 x_markdown_footer: |-
   ## Configuration schema
 
@@ -44,27 +44,14 @@ x_pages:
   title: LCT
   tagline: Local configuration tool
   overview: |-
+
+    ![Demo of the lct gather command](/assets/demo.gif "Demo")
+
     LCT helps you capture, share, and restore local configuration in a repeatable
     way. Use it to bootstrap machines, gather dotfiles, and manage config
     libraries with a stable CLI you can script against.
-  quickstart:
-    - label: Install
-      command: curl -fsSL https://frostme.github.io/lct/install.sh | bash
-      description: Installs the latest release and puts `lct` on your PATH.
-      notes:
-        - label: mise
-          content: |-
-            If you have [mise](https://mise.jdx.dev), you can choose to install with:
 
-            ```
-            mise use -g github:frostme/lct
-            ```
-    - label: Bootstrap your config
-      command: lct bootstrap
-      description: Apply your saved config and plugins on a new machine.
-    - label: Gather configs
-      command: lct gather
-      description: Capture and version local configs for reuse.
+    ### Checkout the [Quick Start](/quick-start.html) guide to get started!
   highlights:
     - title: Predictable CLI output
       description: Designed for automation-friendly, repeatable workflows.
@@ -72,9 +59,9 @@ x_pages:
       description: Organize config libraries and plugin collections cleanly.
     - title: Safe defaults
       description: Lean on dry-runs and explicit prompts before destructive actions.
-  footer: Want more? Visit the README for the full workflow and support links.
+  footer: Want more? Visit the [README](https://github.com/frostme/lct) for the full workflow and support links.
   repo_url: https://github.com/frostme/lct
-  accent_color: '#4f46e5'
+  accent_color: "#4f46e5"
   links:
     - label: README
       url: https://github.com/frostme/lct
@@ -138,6 +125,7 @@ commands:
   - import: src/commands/env/env.yml
   - import: src/commands/plugin/plugin.yml
   - import: src/commands/lib/lib.yml
+  - import: src/commands/pages/pages.yml
   - name: completions
     help: |-
       Generate bash completions
