@@ -93,13 +93,13 @@ commands:
               ~~~
               lct --version
               ~~~
-          - title: Activation and Shell Completioon
+          - title: Activation and Shell Completion
             content: |
               To support:
 
               * autoloading aliases
               * autoloading env vars from lct
-              * resolving lct module bin baths
+              * resolving lct module bin paths
               * tab completion for lct
               * lct plugin tab completion
 
@@ -120,7 +120,7 @@ commands:
               ### fish
 
               ~~~bash
-              echo 'eval "$(lct setup)"' >> ~/.config/fish/config.fish.
+              echo 'eval "$(lct setup)"' >> ~/.config/fish/config.fish
               ~~~
 
   - name: guides

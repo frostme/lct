@@ -28,7 +28,7 @@ end
 def page_link(page, current_page, cli_nav_html)
   slug = page_slug(page)
   active = slug == current_page ? 'active' : ''
-  is_cli_route = /^lct-.+$/.match(current_page) ? true : false 
+  is_cli_route = /^lct-.+$/.match(current_page)
   [
     '<li>',
     "<a class=\"nav-link #{active}\" href=\"#{slug}.html\">",
@@ -173,7 +173,7 @@ end
   html = layout.result_with_hash(
     content: content,
     nav_html: nav_html,
-    cli_nav_html: cli_nav_html,
+
     page_title: page_title,
     description: description,
     site_title: site_title,
