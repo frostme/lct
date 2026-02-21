@@ -67,7 +67,7 @@ x_pages:
     way. Use it to bootstrap machines, gather dotfiles, and manage config
     libraries with a stable CLI you can script against.
 
-    ### Checkout the [Quick Start](/quick-start.html) guide to get started!
+    ### Checkout the [Quick Start](/lct/quick-start.html) guide to get started!
   highlights:
     - title: Predictable CLI output
       description: Designed for automation-friendly, repeatable workflows.
