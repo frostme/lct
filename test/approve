@@ -149,8 +149,16 @@ approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g'" "help_text"
 
 describe "env command"
 it "sets and lists environment variables"
-approve "${cli} env set SAMPLE_KEY sample-value" "env_set"
+approve "${cli} env set SAMPLE_KEY sample-value" "env_set_sample"
 approve "${cli} env list" "env_list"
+
+describe "alias and reload commands"
+it "adds an alias"
+approve "${cli} alias add ll 'ls -la'" "alias_add"
+it "reloads environment variables and aliases"
+approve "${cli} reload" "reload"
+it "removes an alias"
+approve "${cli} alias remove ll" "alias_remove"
 
 describe "dotfiles command"
 it "adds a dotfile"
@@ -333,9 +341,9 @@ approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap
 
 describe "env command"
 it "sets an environment variable"
-approve "${cli} env set API_KEY 123" "env_set"
+approve "${cli} env set API_KEY 123" "env_set_api_key"
 it "unsets an environment variable"
-approve "${cli} env unset API_KEY" "env_unset"
+approve "${cli} env unset API_KEY" "env_unset_api_key"
 
 describe "self-update command"
 it "updates when a newer release is available"

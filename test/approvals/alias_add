@@ -1,0 +1,2 @@
+export SAMPLE_KEY=sample-value
+alias ll=ls' -la'

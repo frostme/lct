@@ -29,3 +29,5 @@ while IFS= read -r line; do
     export "$key=$value"
   fi
 done < <(send_environment)
+
+send_reload
