@@ -1,2 +1,2 @@
 export SAMPLE_KEY=sample-value
-alias ll='ls -la'
+alias ll=ls' -la'

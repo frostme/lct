@@ -16,6 +16,7 @@ Commands:
   dotfiles      Manage dotfiles list
   configs       Manage configs list
   env           Manage local environment variables
+  reload        Reload lct environment variables and aliases into the current shell
   plugin        Develop and manage lct plugins
   lib           Manage lct libraries
   completions   Generate bash completions
