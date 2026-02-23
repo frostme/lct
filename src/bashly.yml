@@ -139,6 +139,10 @@ commands:
   - import: src/commands/dotfiles/dotfiles.yml
   - import: src/commands/configs/configs.yml
   - import: src/commands/env/env.yml
+  - name: reload
+    help: Reload lct environment variables and aliases into the current shell
+    examples:
+      - eval $(lct reload)
   - import: src/commands/plugin/plugin.yml
   - import: src/commands/lib/lib.yml
   - import: src/commands/pages/pages.yml

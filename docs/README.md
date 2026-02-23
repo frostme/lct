@@ -76,6 +76,7 @@ Base directory for local cache data.
 - [dotfiles](lct%20dotfiles.md) - Manage dotfiles list
 - [configs](lct%20configs.md) - Manage configs list
 - [env](lct%20env.md) - Manage local environment variables
+- [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
 - [lib](lct%20lib.md) - Manage lct libraries
 - [completions](lct%20completions.md) - Generate bash completions
