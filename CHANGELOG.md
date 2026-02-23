@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.3.0 - 2026-02-23
+- release task (#124)
+- Add lct reload command for environment and aliases (#123)
+- Update Quick Start link in bashly.yml (#121)
+- Change sidebar link to point to '/lct' (#120)
+- deploy command (#118)
+- docs and env var setup (#119)
+- Update demo image path in bashly.yml (#117)
+- Release v0.2.6 (#116)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.2.6...v0.3.0
+
+
 ## v0.2.6 - 2026-02-21
 - Pages overhaul (#115)
 - deploy config (#114)
