@@ -385,7 +385,7 @@ module_run_make_steps() {
 
   if command -v make >/dev/null 2>&1; then
     (cd "$dir" && make -s) || (cd "$dir" && make)
-    (cd "$dir" && make -s install PREFIX="$prefix" DESTDIR="$prefix") || true
+    (cd "$dir" && make -s install PREFIX="$prefix") || (cd "$dir" && make install PREFIX="$prefix")
   else
     echo "❌ ERROR: make is required to build this module" >&2
     return 1
