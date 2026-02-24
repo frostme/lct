@@ -120,14 +120,14 @@ module_download_release() {
 
   response="$(curl -fsSL "$release_url" 2>/dev/null)" || return 1
 
-  tarball_url="$(printf '%s' "$response" | python - <<'PY' 2>/dev/null)"
+  tarball_url="$(python - "$response" <<'PY' 2>/dev/null)"
 import json, sys
-data = json.loads(sys.stdin.read() or "{}")
+data = json.loads(sys.argv[1] or "{}")
 print(data.get("tarball_url") or data.get("zipball_url") or "")
 PY
-  release_tag="$(printf '%s' "$response" | python - <<'PY' 2>/dev/null)"
+  release_tag="$(python - "$response" <<'PY' 2>/dev/null)"
 import json, sys
-data = json.loads(sys.stdin.read() or "{}")
+data = json.loads(sys.argv[1] or "{}")
 print(data.get("tag_name") or "")
 PY
 
