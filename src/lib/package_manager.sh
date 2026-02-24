@@ -90,7 +90,7 @@ _lct_record_package() {
 _lct_install_library() {
   local manager="$1"
   local package="$2"
-  local target
+  local target bin_dir
 
   case "$manager" in
   brew)
@@ -129,6 +129,41 @@ _lct_install_library() {
     ;;
   flox)
     flox install "$package"
+    ;;
+  npm)
+    npm install -g "$package"
+    ;;
+  pnpm)
+    pnpm add -g "$package"
+    ;;
+  yarn)
+    yarn global add "$package"
+    ;;
+  bun)
+    bun add -g "$package"
+    ;;
+  cargo)
+    cargo install "$package"
+    ;;
+  cargo-binstall)
+    cargo binstall -y "$package"
+    ;;
+  pip)
+    pip install "$package"
+    ;;
+  uv)
+    uv tool install "$package"
+    ;;
+  gem)
+    gem install "$package"
+    ;;
+  go)
+    target="$package"
+    [[ "$target" == *@* ]] || target="${package}@latest"
+    go install "$target"
+    ;;
+  composer)
+    composer global require "$package"
     ;;
   winget)
     winget install --accept-source-agreements --accept-package-agreements "$package"
@@ -195,6 +230,39 @@ _lct_remove_library() {
     ;;
   flox)
     flox uninstall "$package"
+    ;;
+  npm)
+    npm uninstall -g "$package"
+    ;;
+  pnpm)
+    pnpm remove -g "$package"
+    ;;
+  yarn)
+    yarn global remove "$package"
+    ;;
+  bun)
+    bun remove -g "$package"
+    ;;
+  cargo | cargo-binstall)
+    cargo uninstall "$package"
+    ;;
+  pip)
+    pip uninstall -y "$package"
+    ;;
+  uv)
+    uv tool uninstall "$package"
+    ;;
+  gem)
+    gem uninstall -x "$package"
+    ;;
+  go)
+    if command -v go >/dev/null 2>&1; then
+      bin_dir="${GOBIN:-$(go env GOPATH 2>/dev/null)/bin}"
+      rm -f "${bin_dir%/}/$(basename "$package")"
+    fi
+    ;;
+  composer)
+    composer global remove "$package"
     ;;
   winget)
     winget uninstall --accept-source-agreements --accept-package-agreements "$package"
