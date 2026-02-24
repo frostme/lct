@@ -1,0 +1,3 @@
+pnpm remove -g hyperfine
+- Removed module whoaa512/hyperfine
+- Pruned module cache whoaa512/hyperfine

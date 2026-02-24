@@ -59,6 +59,16 @@ commands:
               ~~~
               lct install -g fsaintjacques/semver-tool
               ~~~
+          - title: Module install strategies
+            content: |
+              `lct install` now inspects the repo to choose an install path automatically:
+
+              * GitHub Releases: downloads the latest release archive when available.
+              * Makefiles: runs `./configure` (if present), `make`, and `make install`.
+              * Manifests: detects `package.json`, `Cargo.toml`, `pyproject.toml`, `Gemfile`, `go.mod`, `composer.json`, Java/Gradle, or .NET project files and installs with the matching package manager.
+              * Fallback: links the most likely runnable script when no manifest/build hints are found.
+
+              Removal mirrors installation; `lct remove` uses cached metadata to uninstall via the same package manager or remove linked bins.
           - title: Gather Tracked Items
             content: |
               Now you can gather all your tracked items and save them to your remote repository.

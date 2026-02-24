@@ -1,0 +1,8 @@
+┌─────────────────────────────────┐
+│ Starting module installation... │
+└─────────────────────────────────┘
+                                   
+pnpm add -g hyperfine
+  ↳ Installed via pnpm (hyperfine)
+- Installed module whoaa512/hyperfine
+✅ Module installation complete

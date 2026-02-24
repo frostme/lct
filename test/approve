@@ -137,6 +137,14 @@ echo "asdf $*"
 EOF
 chmod +x "$stubdir/asdf"
 
+for tool in npm pnpm yarn bun cargo cargo-binstall pip uv gem go composer mvn gradle dotnet; do
+  cat >"$stubdir/$tool" <<'EOF'
+#!/usr/bin/env bash
+echo "$(basename "$0") $*"
+EOF
+  chmod +x "$stubdir/$tool"
+done
+
 trap 'rm -rf "$tmpdir"' EXIT
 
 source test/approvals.bash
@@ -257,6 +265,55 @@ chmod +x "$ambiguous_repo_root/test/helper.sh"
 git -C "$ambiguous_repo_root" add docs/run.sh test/helper.sh
 git -C "$ambiguous_repo_root" commit -q -m "initial"
 approve "${cli} install -g example/ambiguous" "install_module_ambiguous"
+
+make_repo_root="$tmpdir/mock-github/example/makepkg"
+mkdir -p "$make_repo_root"
+git -C "$make_repo_root" init -q
+git -C "$make_repo_root" config user.email "test@example.com"
+git -C "$make_repo_root" config user.name "Test User"
+cat >"$make_repo_root/main.sh" <<'EOF'
+#!/usr/bin/env bash
+echo "make module"
+EOF
+chmod +x "$make_repo_root/main.sh"
+cat >"$make_repo_root/Makefile" <<'EOF'
+all:
+	@mkdir -p bin
+	@cp main.sh bin/make-tool
+
+install: all
+	@mkdir -p $(PREFIX)/bin
+	@cp bin/make-tool $(PREFIX)/bin/make-tool
+EOF
+git -C "$make_repo_root" add main.sh Makefile
+git -C "$make_repo_root" commit -q -m "initial"
+project_make="$tmpdir/project-make"
+mkdir -p "$project_make"
+touch "$project_make/LCTFile"
+pushd "$project_make" >/dev/null
+approve "${cli} install example/makepkg" "install_module_make"
+popd >/dev/null
+
+manifest_repo_root="$tmpdir/mock-github/whoaa512/hyperfine"
+mkdir -p "$manifest_repo_root"
+git -C "$manifest_repo_root" init -q
+git -C "$manifest_repo_root" config user.email "test@example.com"
+git -C "$manifest_repo_root" config user.name "Test User"
+cat >"$manifest_repo_root/package.json" <<'EOF'
+{
+  "name": "hyperfine",
+  "version": "1.0.0"
+}
+EOF
+git -C "$manifest_repo_root" add package.json
+git -C "$manifest_repo_root" commit -q -m "initial"
+manifest_project="$tmpdir/project-manifest"
+mkdir -p "$manifest_project"
+touch "$manifest_project/LCTFile"
+pushd "$manifest_project" >/dev/null
+approve "${cli} install whoaa512/hyperfine" "install_module_manifest_node"
+approve "${cli} remove whoaa512/hyperfine" "remove_module_manifest_node"
+popd >/dev/null
 
 approve "${cli} install -g" "install_without_modules"
 describe "install via LCTFile"
