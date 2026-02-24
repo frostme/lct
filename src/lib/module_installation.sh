@@ -378,14 +378,20 @@ module_detect_install_strategy() {
 module_run_make_steps() {
   local dir="$1"
   local prefix="$2"
+  local install_prefix="$prefix/.lct-install"
 
   if [[ -x "$dir/configure" ]]; then
-    (cd "$dir" && ./configure --prefix="$prefix") || (cd "$dir" && ./configure)
+    (cd "$dir" && ./configure --prefix="$install_prefix") || (cd "$dir" && ./configure --prefix="$install_prefix")
   fi
 
   if command -v make >/dev/null 2>&1; then
     (cd "$dir" && make -s) || (cd "$dir" && make)
-    (cd "$dir" && make -s install PREFIX="$prefix") || (cd "$dir" && make install PREFIX="$prefix")
+    rm -rf -- "$install_prefix"
+    (cd "$dir" && make -s install PREFIX="$install_prefix") || (cd "$dir" && make install PREFIX="$install_prefix")
+    if [[ -d "$install_prefix" ]]; then
+      (cd "$install_prefix" && tar -cf - .) | (cd "$prefix" && tar -xf -)
+      rm -rf -- "$install_prefix"
+    fi
   else
     echo "❌ ERROR: make is required to build this module" >&2
     return 1
