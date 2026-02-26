@@ -99,7 +99,7 @@ commands:
         help: overwrite existing local configuration files
   - name: gather
     alias: g
-    help: Gather local configuration files
+    help: Gather local configuration files (flags possible secrets before committing)
     examples:
       - lct gather
     flags:

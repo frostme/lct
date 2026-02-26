@@ -8,7 +8,7 @@ Usage:
 Commands:
   init          Initialize lct configuration
   bootstrap     Bootstrap your local configuration
-  gather        Gather local configuration files
+  gather        Gather local configuration files (flags possible secrets before committing)
   install       Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
   self-update   Update lct to the latest release
   remove        Remove modules from an LCTFile or globally

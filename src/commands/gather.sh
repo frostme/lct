@@ -6,6 +6,7 @@ REMOTE_CONFIGS_DIR="$LCT_REMOTE_DIR/configs"
 REMOTE_DOTFILES_DIR="$LCT_REMOTE_DIR/dotfiles"
 REMOTE_OTHER_DIR="$LCT_REMOTE_DIR/other"
 LCT_FILES=("$LCT_BREW_FILE" "$LCT_CONFIG_FILE")
+SECRET_GREP_PATTERN="api[_-]?key|auth[_-]?token|bearer|secret|password|authorization|private key|ssh-rsa|BEGIN [A-Z ]*PRIVATE KEY"
 
 copy_entry() {
   local src="$1"
@@ -18,6 +19,73 @@ copy_entry() {
   else
     echo "⚠ Skipping missing ${label}: $src"
   fi
+}
+
+find_secret_hits() {
+  mapfile -t SECRET_HITS < <(grep -R -n -I -E "$SECRET_GREP_PATTERN" "$LCT_REMOTE_DIR" --exclude-dir=.git 2>/dev/null || true)
+}
+
+scrub_secret_files() {
+  declare -A files_to_scrub=()
+
+  for match in "${SECRET_HITS[@]}"; do
+    IFS=: read -r file _ <<<"$match"
+    files_to_scrub["$file"]=1
+  done
+
+  for file in "${!files_to_scrub[@]}"; do
+    rm -rf "$file"
+    echo "🧹 Removed $file from gathered output"
+  done
+}
+
+handle_secret_hits() {
+  find_secret_hits
+
+  if ((${#SECRET_HITS[@]} == 0)); then
+    return
+  fi
+
+  echo "⚠ Potential secrets detected in gathered files:"
+  printf '  %s\n' "${SECRET_HITS[@]}"
+
+  local action="${LCT_GATHER_SECRET_ACTION:-}"
+
+  case "$action" in
+  "")
+    if gum_confirm_prompt "Continue and commit these files as-is?"; then
+      echo "Proceeding with gather despite potential secrets"
+      return
+    fi
+
+    if gum_confirm_prompt "Scrub detected files from gather and continue?"; then
+      scrub_secret_files
+      find_secret_hits
+      if ((${#SECRET_HITS[@]})); then
+        echo "❌ Secrets still detected after scrubbing; aborting gather" >&2
+        exit 1
+      fi
+      return
+    fi
+
+    echo "❌ Gather aborted to avoid committing secrets"
+    exit 1
+    ;;
+  continue)
+    echo "Proceeding with gather despite potential secrets (LCT_GATHER_SECRET_ACTION=continue)"
+    ;;
+  scrub)
+    scrub_secret_files
+    ;;
+  abort)
+    echo "❌ Gather aborted to avoid committing secrets"
+    exit 1
+    ;;
+  *)
+    echo "❌ Invalid LCT_GATHER_SECRET_ACTION value: $action (expected continue, scrub, abort)" >&2
+    exit 1
+    ;;
+  esac
 }
 
 gum_title "Gathering configs into remote repository"
@@ -60,6 +128,8 @@ done
 echo "✅ Other files successfully gathered"
 
 rm -f "$LCT_REMOTE_DIR/lct.yaml"
+
+handle_secret_hits
 
 git -C "$LCT_REMOTE_DIR" add .
 git -C "$LCT_REMOTE_DIR" commit -m "Gather configs ${GATHER_TIMESTAMP}" || echo "No changes to commit"
