@@ -1,6 +1,6 @@
 name: lct
 help: Local configuration tool
-version: 0.4.0
+version: 0.4.1
 dependencies:
   gum: Checkout the [installation](https://github.com/charmbracelet/gum?tab=readme-ov-file#installation) section of gum's README.md
   yq: Checkout the [install](https://github.com/mikefarah/yq?tab=readme-ov-file#install) section of yq's README.md

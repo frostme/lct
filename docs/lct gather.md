@@ -1,6 +1,6 @@
 # lct gather
 
-Gather local configuration files. The command scans gathered files for common secret patterns before committing and will prompt to continue, scrub, or abort. Set `LCT_GATHER_SECRET_ACTION` to `continue`, `scrub`, or `abort` to preselect an action in non-interactive runs.
+Gather local configuration files (flags possible secrets before committing)
 
 | Attributes       | &nbsp;
 |------------------|-------------
@@ -23,4 +23,5 @@ lct gather
 #### *--force, -f*
 
 overwrite existing files in remote repository
+
 
