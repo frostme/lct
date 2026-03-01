@@ -295,7 +295,13 @@ _lct_package_bundle_filename() {
   winget) echo "winget-packages.json" ;;
   mise) echo "mise-packages.txt" ;;
   nix) echo "nix-packages.txt" ;;
-  apt | dnf | yum | zypper | pacman | aur | pkg) echo "packages.txt" ;;
+  apt) echo "apt-packages.txt" ;;
+  dnf) echo "dnf-packages.txt" ;;
+  yum) echo "yum-packages.txt" ;;
+  zypper) echo "zypper-packages.txt" ;;
+  pacman) echo "pacman-packages.txt" ;;
+  aur) echo "aur-packages.txt" ;;
+  pkg) echo "pkg-packages.txt" ;;
   *) echo "${manager}.packages" ;;
   esac
 }
@@ -305,6 +311,13 @@ _lct_package_bundle_known_files() {
 Brewfile
 requirements.txt
 packages.txt
+apt-packages.txt
+dnf-packages.txt
+yum-packages.txt
+zypper-packages.txt
+pacman-packages.txt
+aur-packages.txt
+pkg-packages.txt
 winget-packages.json
 mise-packages.txt
 nix-packages.txt
@@ -346,25 +359,27 @@ _lct_dump_package_bundle() {
     fi
     ;;
   apt)
-    dpkg --get-selections >"$output_file"
+    dpkg-query -W -f='${binary:Package}\n' | sort -u >"$output_file"
     ;;
-  dnf)
-    dnf list installed >"$output_file"
-    ;;
-  yum)
-    yum list installed >"$output_file"
-    ;;
-  zypper)
-    zypper search --installed-only >"$output_file"
+  dnf | yum | zypper)
+    if command -v rpm >/dev/null 2>&1; then
+      rpm -qa --qf '%{NAME}\n' | sort -u >"$output_file"
+    elif [[ "$manager" == "dnf" ]]; then
+      dnf list installed >"$output_file"
+    elif [[ "$manager" == "yum" ]]; then
+      yum list installed >"$output_file"
+    else
+      zypper search --installed-only >"$output_file"
+    fi
     ;;
   pacman)
-    pacman -Q >"$output_file"
+    pacman -Qq >"$output_file"
     ;;
   aur)
     if command -v paru >/dev/null 2>&1; then
-      paru -Q >"$output_file"
+      paru -Qq >"$output_file"
     else
-      yay -Q >"$output_file"
+      yay -Qq >"$output_file"
     fi
     ;;
   nix)
@@ -374,7 +389,7 @@ _lct_dump_package_bundle() {
     winget export --output "$output_file" --accept-source-agreements
     ;;
   pkg)
-    pkg info >"$output_file"
+    pkg query '%n' >"$output_file"
     ;;
   mise)
     mise ls --installed >"$output_file"
@@ -388,7 +403,7 @@ _lct_dump_package_bundle() {
 
 _lct_gather_package_bundle() {
   local output_dir="$1"
-  local default_manager manager bundle_name bundle_path
+  local default_manager manager bundle_name bundle_path had_supported_manager=0
   local -a managers=()
   default_manager="$(_lct_default_package_manager)"
 
@@ -397,6 +412,7 @@ _lct_gather_package_bundle() {
     if ! _lct_can_dump_package_bundle "$manager"; then
       continue
     fi
+    had_supported_manager=1
 
     bundle_name="$(_lct_package_bundle_filename "$manager")"
     bundle_path="${output_dir%/}/$bundle_name"
@@ -409,6 +425,10 @@ _lct_gather_package_bundle() {
     echo "⚠ Failed to generate package bundle for manager: $manager" >&2
   done
 
-  echo "⚠ Skipping package bundle export: no supported package manager command found"
+  if [[ "$had_supported_manager" -eq 0 ]]; then
+    echo "⚠ Skipping package bundle export: no supported package manager command found"
+  else
+    echo "⚠ Skipping package bundle export: supported manager detected, but export failed" >&2
+  fi
   return 0
 }
