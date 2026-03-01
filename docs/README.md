@@ -4,7 +4,7 @@ Local configuration tool
 
 | Attributes       | &nbsp;
 |------------------|-------------
-| Version:         | 0.3.0
+| Version:         | 0.4.1
 
 ## Usage
 
@@ -68,7 +68,7 @@ Base directory for local cache data.
 
 - [init](lct%20init.md) - Initialize lct configuration
 - [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
-- [gather](lct%20gather.md) - Gather local configuration files
+- [gather](lct%20gather.md) - Gather local configuration files (flags possible secrets before committing)
 - [install](lct%20install.md) - Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
 - [self-update](lct%20self-update.md) - Update lct to the latest release
 - [remove](lct%20remove.md) - Remove modules from an LCTFile or globally

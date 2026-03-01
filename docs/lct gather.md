@@ -1,6 +1,6 @@
 # lct gather
 
-Gather local configuration files
+Gather local configuration files (flags possible secrets before committing)
 
 | Attributes       | &nbsp;
 |------------------|-------------

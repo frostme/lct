@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.4.1 - 2026-02-27
+- Add secret detection prompt and scrubbing to `lct gather` (#130)
+- Release v0.4.0 (#128)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.4.0...v0.4.1
+
+
+## v0.4.0 - 2026-02-25
+- Expand LCT install modules based on repository and config files (#127)
+- Release v0.3.0 (#125)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.3.0...v0.4.0
+
+
 ## v0.3.0 - 2026-02-23
 - release task (#124)
 - Add lct reload command for environment and aliases (#123)
