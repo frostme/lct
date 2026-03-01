@@ -7,3 +7,4 @@ pages/*
 .lct_cache
 lct_modules
 docs/lct*pages*
+**docs\/instructions\/**
