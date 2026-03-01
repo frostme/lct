@@ -14,6 +14,7 @@ Add baseline dotfiles (.zshrc)?
 └──────────────────────────────────────────┘
                                             
 Gathering LCT files
+Copying Brewfile
 Copying config.yaml
 Gathering package manager bundle
 Generated Brewfile from brew package manager
