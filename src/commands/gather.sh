@@ -100,6 +100,14 @@ for file in "${LCT_FILES[@]}"; do
   copy_entry "$file" "$LCT_REMOTE_DIR/$(basename "$file")" "LCT file"
 done
 
+while IFS= read -r bundle_file; do
+  [[ -n "$bundle_file" ]] || continue
+  rm -f "$LCT_REMOTE_DIR/$bundle_file"
+done < <(_lct_package_bundle_known_files)
+
+echo "Gathering package manager bundle"
+_lct_gather_package_bundle "$LCT_REMOTE_DIR"
+
 echo "Gathering library configs"
 for lib in "${CONFIGS[@]}"; do
   src_path="$CONFIG_DIR/$lib"

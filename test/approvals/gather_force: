@@ -8,7 +8,7 @@ and the repository exists.
 │ LCT initialization │
 └────────────────────┘
                       
-Add baseline dotfiles (.bashrc)?
+Add baseline dotfiles (.zshrc)?
 ┌──────────────────────────────────────────┐
 │ Gathering configs into remote repository │
 └──────────────────────────────────────────┘
@@ -16,6 +16,8 @@ Add baseline dotfiles (.bashrc)?
 Gathering LCT files
 Copying Brewfile
 Copying config.yaml
+Gathering package manager bundle
+Generated Brewfile from brew package manager
 Gathering library configs
 Copying nvim config
 Copying lazygit config
