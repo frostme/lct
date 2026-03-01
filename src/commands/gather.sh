@@ -5,7 +5,7 @@ GATHER_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 REMOTE_CONFIGS_DIR="$LCT_REMOTE_DIR/configs"
 REMOTE_DOTFILES_DIR="$LCT_REMOTE_DIR/dotfiles"
 REMOTE_OTHER_DIR="$LCT_REMOTE_DIR/other"
-LCT_FILES=("$LCT_BREW_FILE" "$LCT_CONFIG_FILE")
+LCT_FILES=("$LCT_CONFIG_FILE")
 
 copy_entry() {
   local src="$1"
@@ -31,6 +31,14 @@ for file in "${LCT_FILES[@]}"; do
   echo "Copying $(basename "$file")"
   copy_entry "$file" "$LCT_REMOTE_DIR/$(basename "$file")" "LCT file"
 done
+
+while IFS= read -r bundle_file; do
+  [[ -n "$bundle_file" ]] || continue
+  rm -f "$LCT_REMOTE_DIR/$bundle_file"
+done < <(_lct_package_bundle_known_files)
+
+echo "Gathering package manager bundle"
+_lct_gather_package_bundle "$LCT_REMOTE_DIR"
 
 echo "Gathering library configs"
 for lib in "${CONFIGS[@]}"; do
