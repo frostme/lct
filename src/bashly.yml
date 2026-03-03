@@ -64,8 +64,8 @@ x_pages:
     ![Demo of the lct gather command](/lct/assets/demo.gif "Demo")
 
     LCT helps you capture, share, and restore local configuration in a repeatable
-    way. Use it to bootstrap machines, gather dotfiles, and manage config
-    libraries with a stable CLI you can script against.
+    way. Use it to bootstrap machines and gather dotfiles with a stable CLI you
+    can script against.
 
     ### Checkout the [Quick Start](/lct/quick-start.html) guide to get started!
   highlights:
@@ -144,7 +144,6 @@ commands:
     examples:
       - eval $(lct reload)
   - import: src/commands/plugin/plugin.yml
-  - import: src/commands/lib/lib.yml
   - import: src/commands/pages/pages.yml
   - name: completions
     help: |-

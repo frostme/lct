@@ -1,0 +1,42 @@
+[mcp_servers.auth0]
+enabled = false
+
+
+[mcp_servers.chrome-devtools]
+enabled = false
+
+
+[mcp_servers.figma]
+enabled = false
+
+
+[mcp_servers.gcloud]
+enabled = false
+
+
+[mcp_servers.google-dev-knowledge]
+enabled = false
+
+
+[mcp_servers.mui-mcp]
+enabled = false
+
+
+[mcp_servers.next-devtools]
+enabled = false
+
+
+[mcp_servers.prisma]
+enabled = false
+
+
+[mcp_servers.resend]
+enabled = false
+
+
+[mcp_servers.trigger]
+enabled = false
+
+
+[mcp_servers.vercel]
+enabled = false

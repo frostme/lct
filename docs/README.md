@@ -78,7 +78,6 @@ Base directory for local cache data.
 - [env](lct%20env.md) - Manage local environment variables
 - [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
-- [lib](lct%20lib.md) - Manage lct libraries
 - [completions](lct%20completions.md) - Generate bash completions
 - [config](lct%20config.md) - Open your config files in your ${EDITOR:-editor}
 - [setup](lct%20setup.md) - Setup lct in your shell
