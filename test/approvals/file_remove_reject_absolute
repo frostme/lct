@@ -1,1 +1,1 @@
-❌ ERROR: File destination must be relative to HOME or use ~/
+❌ ERROR: File destination must resolve inside HOME

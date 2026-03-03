@@ -1,1 +1,1 @@
-❌ ERROR: File destination must not contain '.' or '..' path segments
+❌ ERROR: File destination must resolve inside HOME

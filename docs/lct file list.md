@@ -1,6 +1,6 @@
 # lct file list
 
-List configured file mappings
+List configured files (configs, dotfiles, and other)
 
 ## Usage
 

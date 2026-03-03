@@ -186,27 +186,17 @@ approve "${cli} reload" "reload"
 it "removes an alias"
 approve "${cli} alias remove ll" "alias_remove"
 
-describe "dotfiles command"
-it "adds a dotfile"
-approve "${cli} dotfiles add \"$tmpdir/.zshrc\"" "dotfiles_add"
-approve "${cli} dotfiles list" "dotfiles_list_after_add"
-it "removes a dotfile"
-approve "${cli} dotfiles remove \"$tmpdir/.zshrc\"" "dotfiles_remove"
-approve "${cli} dotfiles list" "dotfiles_list_after_remove"
-
-describe "configs command"
-it "adds a config directory"
-approve "${cli} configs add \"$tmpdir/.config/alacritty\"" "configs_add"
-approve "${cli} configs list" "configs_list_after_add"
-it "removes a config directory"
-approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
-approve "${cli} configs list" "configs_list_after_remove"
-
 describe "file command"
-it "adds a file mapping"
-approve "${cli} file add \"$tmpdir/work/custom.conf\" \"$tmpdir/.config/custom/custom.conf\"" "file_add"
+mkdir -p "$tmpdir/.config/alacritty/sub" "$tmpdir/work"
+touch "$tmpdir/.zshrc" "$tmpdir/.config/alacritty/sub/config.yml" "$tmpdir/work/custom.conf"
+it "adds and classifies files"
+approve "${cli} file add \"$tmpdir/.zshrc\"" "file_add_dotfile"
+approve "${cli} file add \"$tmpdir/.config/alacritty/sub/config.yml\"" "file_add_config"
+approve "${cli} file add \"$tmpdir/work/custom.conf\"" "file_add_other"
 approve "${cli} file list" "file_list_after_add"
-it "removes a file mapping"
+it "removes files by path"
+approve "${cli} file remove \"$tmpdir/.zshrc\"" "file_remove_dotfile"
+approve "${cli} file remove \"$tmpdir/.config/alacritty/sub/config.yml\"" "file_remove_config"
 approve "${cli} file remove \"$tmpdir/work/custom.conf\"" "file_remove"
 approve "${cli} file list" "file_list_after_remove"
 it "rejects absolute paths in file remove"
@@ -385,9 +375,9 @@ configs:
   - nvim
   - lazygit
 dotfiles:
-  - .zshrc
+  - ~/.zshrc
 other:
-  work/custom.conf: work/custom.conf
+  - ~/work/custom.conf
 plugins: []
 modules: []
 packageManager: brew
@@ -404,7 +394,7 @@ remote: null
 configs: []
 dotfiles: []
 other:
-  work/claude.json: work/claude.json
+  - ~/work/claude.json
 plugins: []
 modules: []
 EOF

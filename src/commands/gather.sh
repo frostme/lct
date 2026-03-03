@@ -119,17 +119,17 @@ echo "✅ Configs successfully gathered"
 
 echo "Gathering dotfiles"
 for file in "${DOTFILES[@]}"; do
-  src_path="$HOME/$file"
-  dest_path="$REMOTE_DOTFILES_DIR/$file"
+  src_path="$(expand_home_path "$file")"
+  dest_path="$REMOTE_DOTFILES_DIR/$(home_path_to_relative "$file")"
   echo "Copying $file"
   copy_entry "$src_path" "$dest_path" "dotfile"
 done
 echo "✅ Dotfiles successfully gathered"
 
 echo "Gathering other files"
-for key in "${!OTHERFILES[@]}"; do
-  src_file="$HOME/${OTHERFILES[$key]}"
-  dest_file="$REMOTE_OTHER_DIR/$key"
+for file in "${OTHERFILES[@]}"; do
+  src_file="$(expand_home_path "$file")"
+  dest_file="$REMOTE_OTHER_DIR/$(home_path_to_relative "$file")"
   echo "Copying $src_file to $dest_file"
   copy_entry "$src_file" "$dest_file" "other file"
 done

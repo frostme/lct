@@ -1,55 +1,25 @@
 remote_path=${args[file]}
 
-normalize_home_relative_path() {
-  local value="$1"
-
-  if [[ "$value" == "$HOME/"* ]]; then
-    printf '%s\n' "${value#"$HOME/"}"
-    return 0
-  fi
-
-  if [[ "$value" == "~/"* ]]; then
-    printf '%s\n' "${value#~/}"
-    return 0
-  fi
-
-  if [[ "$value" == /* ]]; then
-    return 1
-  fi
-
-  printf '%s\n' "$value"
-}
-
-validate_relative_path() {
-  local path="$1"
-  local IFS='/'
-  local segment
-
-  # Split the path on '/' and ensure no segment is '.' or '..'
-  read -ra segments <<< "$path"
-  for segment in "${segments[@]}"; do
-    if [[ "$segment" == "." || "$segment" == ".." ]]; then
-      return 1
-    fi
-  done
-
-  return 0
-}
-
-if ! remote_path=$(normalize_home_relative_path "$remote_path"); then
-  echo "❌ ERROR: File destination must be relative to HOME or use ~/" >&2
+if ! remote_path=$(to_home_tilde_path "$remote_path"); then
+  echo "❌ ERROR: File destination must resolve inside HOME" >&2
   exit 1
 fi
 
-if ! validate_relative_path "$remote_path"; then
-  echo "❌ ERROR: File destination must not contain '.' or '..' path segments" >&2
-  exit 1
-fi
-
-if [[ -z "$remote_path" || "$remote_path" == "." ]]; then
+if [[ -z "$remote_path" || "$remote_path" == "~" ]]; then
   echo "❌ ERROR: File destination is required" >&2
   exit 1
 fi
 
 ensure_config_defaults
-REMOTE_PATH="$remote_path" yq -i '.other = (.other // {}) | del(.other[env(REMOTE_PATH)])' "$LCT_CONFIG_FILE"
+
+if config_name="$(config_name_from_path "$remote_path" 0)"; then
+  CONFIG_NAME="$config_name" yq -i '.configs = (.configs // []) | .configs |= map(select(. != env(CONFIG_NAME)))' "$LCT_CONFIG_FILE"
+  exit 0
+fi
+
+if is_home_dotfile_path "$remote_path"; then
+  DOTFILE_PATH="$remote_path" yq -i '.dotfiles = (.dotfiles // []) | .dotfiles |= map(select(. != env(DOTFILE_PATH)))' "$LCT_CONFIG_FILE"
+  exit 0
+fi
+
+REMOTE_PATH="$remote_path" yq -i '.other = (.other // []) | .other |= map(select(. != env(REMOTE_PATH)))' "$LCT_CONFIG_FILE"

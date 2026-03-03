@@ -33,7 +33,7 @@ x_markdown_footer: |-
       remote: null
       configs: []
       dotfiles: []
-      other: {}
+      other: []
       plugins: []
       modules: []
 
@@ -47,8 +47,8 @@ x_markdown_footer: |-
         - ~/.zshrc
         - ~/.gitconfig
       other:
-        ~/work/custom.conf: ~/.config/custom/custom.conf
-        ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+        - ~/work/custom.conf
+        - ~/.local/bin/dev-tool
       plugins:
         - gh/owner/example-plugin
         - gh/owner/another-plugin
@@ -136,8 +136,6 @@ commands:
       - name: module
         help: GitHub owner/repo of the module to remove
   - import: src/commands/alias/alias.yml
-  - import: src/commands/dotfiles/dotfiles.yml
-  - import: src/commands/configs/configs.yml
   - import: src/commands/file/file.yml
   - import: src/commands/env/env.yml
   - name: reload

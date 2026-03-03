@@ -1,6 +1,6 @@
 # lct file
 
-Manage other file mappings
+Manage tracked file paths
 
 ## Usage
 
@@ -15,17 +15,25 @@ lct file list
 ```
 
 ```bash
-lct file add work/custom.conf .config/custom/custom.conf
+lct file add ~/.zshrc
 ```
 
 ```bash
-lct file remove work/custom.conf
+lct file add ~/.config/alacritty
+```
+
+```bash
+lct file add ~/work/custom.conf
+```
+
+```bash
+lct file remove ~/work/custom.conf
 ```
 
 ## Commands
 
-- [add](lct%20file%20add.md) - Add FILE mapping to other list
-- [remove](lct%20file%20remove.md) - Remove FILE mapping from other list
-- [list](lct%20file%20list.md) - List configured file mappings
+- [add](lct%20file%20add.md) - Add FILE to the correct list (configs, dotfiles, or other)
+- [remove](lct%20file%20remove.md) - Remove FILE from the correct list (configs, dotfiles, or other)
+- [list](lct%20file%20list.md) - List configured files (configs, dotfiles, and other)
 
 

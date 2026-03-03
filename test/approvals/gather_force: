@@ -8,7 +8,7 @@ and the repository exists.
 │ LCT initialization │
 └────────────────────┘
                       
-Add baseline dotfiles (.*rc)?
+Add baseline dotfiles (~/.*rc)?
 ┌──────────────────────────────────────────┐
 │ Gathering configs into remote repository │
 └──────────────────────────────────────────┘
@@ -23,7 +23,7 @@ Copying nvim config
 Copying lazygit config
 ✅ Configs successfully gathered
 Gathering dotfiles
-Copying .*rc
+Copying ~/.*rc
 ✅ Dotfiles successfully gathered
 Gathering other files
 Copying ~/work/custom.conf to ~/.local/share/lct/remote/other/work/custom.conf
