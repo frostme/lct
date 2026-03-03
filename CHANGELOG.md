@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.0 - 2026-03-03
+- Frostme/remove lib action (#132)
+- Release v0.4.1 (#131)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.4.1...v0.5.0
+
+
 ## v0.4.1 - 2026-02-27
 - Add secret detection prompt and scrubbing to `lct gather` (#130)
 - Release v0.4.0 (#128)
