@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.0 - 2026-03-03
+- overhauled the file process (#138)
+- lct file command (#134)
+- Release v0.5.0 (#133)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.5.0...v1.0.0
+
+
 ## v0.5.0 - 2026-03-03
 - Frostme/remove lib action (#132)
 - Release v0.4.1 (#131)
