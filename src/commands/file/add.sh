@@ -43,12 +43,12 @@ if ! remote_path=$(normalize_home_relative_path "$remote_path"); then
 fi
 
 if ! validate_relative_path "$remote_path"; then
-  echo "❌ ERROR: File destination must not contain '.' or '..' path segments" >&2
+  echo "❌ ERROR: File destination must be a relative path (must not be absolute)" >&2
   exit 1
 fi
 
 if ! source_path=$(normalize_home_relative_path "$source_path"); then
-  echo "❌ ERROR: File source must be relative to HOME or use ~/" >&2
+  echo "❌ ERROR: File source must be a relative path (must not be absolute)" >&2
   exit 1
 fi
 
