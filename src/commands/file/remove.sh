@@ -1,11 +1,49 @@
 remote_path=${args[file]}
 
-if [[ "$remote_path" == "$HOME/"* ]]; then
-  remote_path="${remote_path#"$HOME/"}"
+normalize_home_relative_path() {
+  local value="$1"
+
+  if [[ "$value" == "$HOME/"* ]]; then
+    printf '%s\n' "${value#"$HOME/"}"
+    return 0
+  fi
+
+  if [[ "$value" == "~/"* ]]; then
+    printf '%s\n' "${value#~/}"
+    return 0
+  fi
+
+  if [[ "$value" == /* ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "$value"
+}
+
+validate_relative_path() {
+  local path="$1"
+  local IFS='/'
+  local segment
+
+  # Split the path on '/' and ensure no segment is '.' or '..'
+  read -ra segments <<< "$path"
+  for segment in "${segments[@]}"; do
+    if [[ "$segment" == "." || "$segment" == ".." ]]; then
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+if ! remote_path=$(normalize_home_relative_path "$remote_path"); then
+  echo "❌ ERROR: File destination must be relative to HOME or use ~/" >&2
+  exit 1
 fi
 
-if [[ "$remote_path" == "~/"* ]]; then
-  remote_path="${remote_path#~/}"
+if ! validate_relative_path "$remote_path"; then
+  echo "❌ ERROR: File destination must not contain '.' or '..' path segments" >&2
+  exit 1
 fi
 
 if [[ -z "$remote_path" || "$remote_path" == "." ]]; then
