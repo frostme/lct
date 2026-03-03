@@ -2,12 +2,6 @@
 │ Starting module installation... │
 └─────────────────────────────────┘
                                    
-- Loaded module example/demo
-  ↳ Linked demo
-- Loaded module fsaintjacques/semver-tool
-  ↳ Linked semver
-- Loaded module charmbracelet/gum
+- Installed module charmbracelet/gum
   ↳ Linked gum.sh
-- Loaded module example/ambiguous
-  ↳ Skipped bin link (low confidence)
 ✅ Module installation complete
