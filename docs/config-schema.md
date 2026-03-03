@@ -10,7 +10,7 @@ The LCT CLI reads `~/.config/lct/config.yaml`. This file should conform to:
 remote: null
 configs: []
 dotfiles: []
-other: {}
+other: []
 plugins: []
 modules: []
 ```
@@ -26,8 +26,8 @@ dotfiles:
   - ~/.zshrc
   - ~/.gitconfig
 other:
-  ~/work/custom.conf: ~/.config/custom/custom.conf
-  ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+  - ~/work/custom.conf
+  - ~/.local/bin/dev-tool
 plugins:
   - gh/owner/example-plugin
   - gh/owner/another-plugin

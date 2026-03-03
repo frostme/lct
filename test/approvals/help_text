@@ -13,9 +13,7 @@ Commands:
   self-update   Update lct to the latest release
   remove        Remove modules from an LCTFile or globally
   alias         Manage lct aliases
-  dotfiles      Manage dotfiles list
-  configs       Manage configs list
-  file          Manage other file mappings
+  file          Manage tracked file paths
   env           Manage local environment variables
   reload        Reload lct environment variables and aliases into the current shell
   plugin        Develop and manage lct plugins

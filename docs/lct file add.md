@@ -1,26 +1,18 @@
 # lct file add
 
-Add FILE mapping to other list
+Add FILE to the correct list (configs, dotfiles, or other)
 
 ## Usage
 
 ```bash
-lct file add FILE SOURCE
+lct file add FILE
 ```
 
 ## Arguments
 
 #### *FILE*
 
-Destination path to store in remote repository (relative to other/)
-
-| Attributes      | &nbsp;
-|-----------------|-------------
-| Required:       | ✓ Yes
-
-#### *SOURCE*
-
-Source file path on local machine (relative to HOME or ~/...)
+File path to add (absolute, ~/..., or relative to current directory)
 
 | Attributes      | &nbsp;
 |-----------------|-------------

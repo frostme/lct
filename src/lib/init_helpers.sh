@@ -9,7 +9,7 @@ ensure_config_defaults() {
 remote: null
 configs: []
 dotfiles: []
-other: {}
+other: []
 plugins: []
 modules: []
 EOF
@@ -18,7 +18,7 @@ EOF
       .remote = (.remote // null) |
       .configs = (.configs // []) |
       .dotfiles = (.dotfiles // []) |
-      .other = (.other // {}) |
+      .other = ((.other // []) | to_entries | map(.value)) |
       .plugins = (.plugins // []) |
       .modules = (.modules // [])
     ' "$LCT_CONFIG_FILE"
@@ -68,8 +68,8 @@ prompt_dotfiles() {
 
   local suggestions=()
   case "$shell_name" in
-  zsh) suggestions+=(".zshrc") ;;
-  bash) suggestions+=(".bashrc") ;;
+  zsh) suggestions+=("~/.zshrc") ;;
+  bash) suggestions+=("~/.bashrc") ;;
   esac
 
   if [[ ${#suggestions[@]} -eq 0 ]]; then

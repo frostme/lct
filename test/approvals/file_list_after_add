@@ -1,1 +1,3 @@
-work/custom.conf=.config/custom/custom.conf
+~/.config/alacritty
+~/.zshrc
+~/work/custom.conf

@@ -29,17 +29,17 @@ commands:
               ~~~
           - title: Add Files
             content: |
-              Add files you want to keep track of in your local config.
-              Add a dotfile
+              Add files you want to track in your local config. `lct file add`
+              will auto-route each path to dotfiles, configs, or other files.
 
               ~~~
-              lct dotfile add .zshrc
+              lct file add ~/.zshrc
               ~~~
 
               Add a config directory for a local tool
 
               ~~~
-              lct config add zellij
+              lct file add ~/.config/zellij
               ~~~
           - title: Install Plugins
             content: |
@@ -152,7 +152,7 @@ commands:
               remote: null
               configs: []
               dotfiles: []
-              other: {}
+              other: []
               plugins: []
               modules: []
               ~~~
@@ -165,11 +165,11 @@ commands:
                 - alacritty
                 - nvim
               dotfiles:
-                - .zshrc
-                - .gitconfig
+                - ~/.zshrc
+                - ~/.gitconfig
               other:
-                work/custom.conf: .config/custom/custom.conf
-                local/dev-tool: .local/bin/dev-tool
+                - ~/work/custom.conf
+                - ~/.local/bin/dev-tool
               plugins:
                 - author/repo.example-plugin
                 - author/repo.another-plugin

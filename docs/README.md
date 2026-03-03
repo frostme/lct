@@ -73,9 +73,7 @@ Base directory for local cache data.
 - [self-update](lct%20self-update.md) - Update lct to the latest release
 - [remove](lct%20remove.md) - Remove modules from an LCTFile or globally
 - [alias](lct%20alias.md) - Manage lct aliases
-- [dotfiles](lct%20dotfiles.md) - Manage dotfiles list
-- [configs](lct%20configs.md) - Manage configs list
-- [file](lct%20file.md) - Manage other file mappings
+- [file](lct%20file.md) - Manage tracked file paths
 - [env](lct%20env.md) - Manage local environment variables
 - [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
@@ -96,7 +94,7 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
     remote: null
     configs: []
     dotfiles: []
-    other: {}
+    other: []
     plugins: []
     modules: []
 
@@ -110,8 +108,8 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
       - ~/.zshrc
       - ~/.gitconfig
     other:
-      ~/work/custom.conf: ~/.config/custom/custom.conf
-      ~/.local/bin/dev-tool: ~/.local/bin/dev-tool
+      - ~/work/custom.conf
+      - ~/.local/bin/dev-tool
     plugins:
       - gh/owner/example-plugin
       - gh/owner/another-plugin

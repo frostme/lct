@@ -1,6 +1,6 @@
 # lct file remove
 
-Remove FILE mapping from other list
+Remove FILE from the correct list (configs, dotfiles, or other)
 
 ## Usage
 
@@ -12,7 +12,7 @@ lct file remove FILE
 
 #### *FILE*
 
-Destination path to remove from other mappings
+File path to remove (absolute, ~/..., or relative to current directory)
 
 | Attributes      | &nbsp;
 |-----------------|-------------
