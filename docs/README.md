@@ -75,6 +75,7 @@ Base directory for local cache data.
 - [alias](lct%20alias.md) - Manage lct aliases
 - [dotfiles](lct%20dotfiles.md) - Manage dotfiles list
 - [configs](lct%20configs.md) - Manage configs list
+- [file](lct%20file.md) - Manage other file mappings
 - [env](lct%20env.md) - Manage local environment variables
 - [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins

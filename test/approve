@@ -202,6 +202,18 @@ it "removes a config directory"
 approve "${cli} configs remove \"$tmpdir/.config/alacritty\"" "configs_remove"
 approve "${cli} configs list" "configs_list_after_remove"
 
+describe "file command"
+it "adds a file mapping"
+approve "${cli} file add \"$tmpdir/work/custom.conf\" \"$tmpdir/.config/custom/custom.conf\"" "file_add"
+approve "${cli} file list" "file_list_after_add"
+it "removes a file mapping"
+approve "${cli} file remove \"$tmpdir/work/custom.conf\"" "file_remove"
+approve "${cli} file list" "file_list_after_remove"
+it "rejects absolute paths in file remove"
+approve "${cli} file remove /etc/passwd" "file_remove_reject_absolute"
+it "rejects .. segments in file remove"
+approve "${cli} file remove \"work/../etc/passwd\"" "file_remove_reject_dotdot"
+
 describe "install command"
 mock_repo_root="$tmpdir/mock-github/example/demo"
 mkdir -p "$mock_repo_root"
@@ -246,24 +258,24 @@ git -C "$semver_repo_root" add src/semver test/documentation-test
 git -C "$semver_repo_root" commit -q -m "initial"
 approve "${cli} install -g fsaintjacques/semver-tool" "install_module_semver"
 
-minifier_repo_root="$tmpdir/mock-github/Zuzzuc/Bash-minifier"
-mkdir -p "$minifier_repo_root/test"
-git -C "$minifier_repo_root" init -q
-git -C "$minifier_repo_root" config user.email "test@example.com"
-git -C "$minifier_repo_root" config user.name "Test User"
-cat >"$minifier_repo_root/Minifier.sh" <<'EOF'
+gum_repo_root="$tmpdir/mock-github/charmbracelet/gum"
+mkdir -p "$gum_repo_root/test"
+git -C "$gum_repo_root" init -q
+git -C "$gum_repo_root" config user.email "test@example.com"
+git -C "$gum_repo_root" config user.name "Test User"
+cat >"$gum_repo_root/gum.sh" <<'EOF'
 #!/usr/bin/env bash
-echo "minifier"
+echo "gum"
 EOF
-chmod +x "$minifier_repo_root/Minifier.sh"
-cat >"$minifier_repo_root/test/test.sh" <<'EOF'
+chmod +x "$gum_repo_root/gum.sh"
+cat >"$gum_repo_root/test/test.sh" <<'EOF'
 #!/usr/bin/env bash
 echo "test"
 EOF
-chmod +x "$minifier_repo_root/test/test.sh"
-git -C "$minifier_repo_root" add Minifier.sh test/test.sh
-git -C "$minifier_repo_root" commit -q -m "initial"
-approve "${cli} install -g Zuzzuc/Bash-minifier" "install_module_minifier"
+chmod +x "$gum_repo_root/test/test.sh"
+git -C "$gum_repo_root" add gum.sh test/test.sh
+git -C "$gum_repo_root" commit -q -m "initial"
+approve "${cli} install -g charmbracelet/gum" "install_module_gum"
 
 ambiguous_repo_root="$tmpdir/mock-github/example/ambiguous"
 mkdir -p "$ambiguous_repo_root/docs" "$ambiguous_repo_root/test"
