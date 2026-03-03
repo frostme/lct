@@ -14,10 +14,10 @@ Add baseline dotfiles (.*rc)?
 └──────────────────────────────────────────┘
                                             
 Gathering LCT files
-Copying Brewfile
+Copying *
 Copying config.yaml
 Gathering package manager bundle
-Generated Brewfile from brew package manager
+Generated * from * package manager
 Gathering library configs
 Copying nvim config
 Copying lazygit config
