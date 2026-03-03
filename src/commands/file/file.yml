@@ -1,0 +1,28 @@
+name: file
+help: Manage other file mappings
+examples:
+  - lct file list
+  - lct file add work/custom.conf .config/custom/custom.conf
+  - lct file remove work/custom.conf
+commands:
+  - name: add
+    help: Add FILE mapping to other list
+    completions:
+      - <file>
+    args:
+      - name: file
+        help: Destination path to store in remote repository (relative to other/)
+        required: true
+      - name: source
+        help: Source file path on local machine (relative to HOME or ~/...)
+        required: true
+  - name: remove
+    help: Remove FILE mapping from other list
+    completions:
+      - $(yq -r '.other // {} | keys | .[]?' $LCT_CONFIG_FILE 2>/dev/null)
+    args:
+      - name: file
+        help: Destination path to remove from other mappings
+        required: true
+  - name: list
+    help: List configured file mappings

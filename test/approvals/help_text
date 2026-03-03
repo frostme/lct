@@ -15,6 +15,7 @@ Commands:
   alias         Manage lct aliases
   dotfiles      Manage dotfiles list
   configs       Manage configs list
+  file          Manage other file mappings
   env           Manage local environment variables
   reload        Reload lct environment variables and aliases into the current shell
   plugin        Develop and manage lct plugins
