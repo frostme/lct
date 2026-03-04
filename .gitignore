@@ -8,3 +8,4 @@ pages/*
 lct_modules
 docs/lct*pages*
 **docs\/instructions\/**
+*.log
