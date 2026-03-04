@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASHLY_FILE="${ROOT_DIR}/src/bashly.yml"
 
 log() {
-  echo "[delrelease] $*" >&2
+  echo "[unrelease] $*" >&2
 }
 
 require_cmd() {
@@ -24,7 +24,7 @@ ensure_repo_state() {
     exit 1
   fi
 
-  if ! git -C "${ROOT_DIR}" diff --quiet || ! git -C "${ROOT_DIR}" diff --cached --quiet; then
+  if [[ -n "$(git -C "${ROOT_DIR}" status --porcelain)" ]]; then
     log "Working tree must be clean before running this script."
     exit 1
   fi
