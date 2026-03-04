@@ -26,6 +26,8 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     permissions: write-all
+    env:
+      GITHUB_TOKEN: "${{ secrets.LCT_RELEASE_TOKEN }}"
 
     steps:
       - name: Checkout
