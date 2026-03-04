@@ -12,6 +12,12 @@ on:
           - patch
           - minor
           - major
+          - isolated
+      isolatedVersioyn:
+        description: Version number of isolated release
+        type: string
+        required: false
+        default: ""
 
 jobs:
   test:
@@ -53,7 +59,7 @@ jobs:
         id: release_meta
         run: |
           set -euo pipefail
-          mise run bu ${{ github.event.inputs.releaseType}}
+          mise run bu ${{ github.event.inputs.releaseType}} ${{ github.event.inputs.isolatedVersion}}
           version="$(yq '.version' src/bashly.yml)"
           tag="v${version}"
           last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"

@@ -79,13 +79,22 @@ alias = "pl"
 
 [tasks.bump]
 usage = '''
-arg "<type>" help="Type of version bump (patch, minor, major)" default="patch"
+arg "<type>" help="Type of version bump (patch, minor, major, isolated)" default="patch"
+arg "<new_version>" help="New version to set (optional, overrides type-based bump)" default=""
 '''
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
 current_version=$(yq '.version' ./src/bashly.yml)
+if [[ "${usage_type}" == "isolated" ]]; then
+  if [[ -z "${usage_new_version}" ]]; then
+    echo "Error: new_version argument is required when type is 'isolated'"
+    exit 1
+  fi
+  new_version="${usage_new_version}"
+else
 new_version=$(./lct_modules/bin/semver bump ${usage_type} $current_version)
+fi
 echo "Bumping ${current_version} -> ${new_version}"
 yq -i ".version=\"${new_version}\"" ./src/bashly.yml
 '''
