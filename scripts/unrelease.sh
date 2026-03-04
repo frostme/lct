@@ -5,11 +5,11 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASHLY_FILE="${ROOT_DIR}/src/bashly.yml"
 
 log() {
-  gum log --prefix "[unrelease]" -sl info "$*"
+  gum log -o output.log --prefix "[unrelease]" -sl info "$*"
 }
 
 log_error() {
-  gum log --prefix "[unrelease]" -sl error "$*"
+  gum log -o output.log --prefix "[unrelease]" -sl error "$*"
 }
 
 require_cmd() {
