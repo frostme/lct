@@ -1,4 +1,5 @@
 No plugins specified in config.yaml, nothing to install.
+No modules specified in config.yaml, nothing to install.
 ┌────────────────────────────┐
 │ Starting Bootstrap Process │
 └────────────────────────────┘
@@ -13,3 +14,4 @@ Applying library configs
 Applying nvim config
 Applying lazygit config
 ✅ Configs successfully copied
+✅ Bootstrap complete

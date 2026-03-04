@@ -36,7 +36,7 @@ plugin_installation() {
   if [[ ${#PLUGINS[@]} -eq 0 ]]; then
     lct_log_debug "plugin_installation found no plugins to install"
     echo "No plugins specified in config.yaml, nothing to install." >&2
-    exit 0
+    return 0
   fi
 
   gum_title "Starting plugin installation..."
