@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.6 - 2026-03-04
+- fixt bootstrap (#148)
+- Release v0.6.5 (#147)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.6.5...v0.6.6
+
+
 ## v0.6.5 - 2026-03-04
 - use token in github release
 - head roll
