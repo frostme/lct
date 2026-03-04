@@ -101,6 +101,10 @@ detect_directories() {
     SHARE_DIR="$HOME/.local/share"
   fi
 
+  if [ -z "${CODE_DIR+x}" ]; then
+    CODE_DIR="$HOME/code"
+  fi
+
   if [ -z "${STATE_DIR+x}" ]; then
     STATE_DIR="$HOME/.local/state"
   fi
@@ -125,6 +129,7 @@ detect_directories() {
   LCT_MODULES_CACHE_DIR="${LCT_CACHE_DIR}/modules"
   LCT_MODULES_DIR="${LCT_SHARE_DIR}/modules"
   LCT_MODULES_BIN_DIR="${LCT_MODULES_DIR}/bin"
+  LCT_CODE_DIR="${CODE_DIR}"
   LCT_DEBUG_LOG_FILE="${LCT_STATE_DIR}/debug.log"
   lct_init_logging
   lct_log_debug "Resolved log file path: ${LCT_DEBUG_LOG_FILE}"
@@ -204,8 +209,10 @@ load_configuration() {
     mapfile -t PLUGINS < <(yq -r '.plugins // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -ga MODULES
     mapfile -t MODULES < <(yq -r '.modules // [] | .[]' "${LCT_CONFIG_FILE}")
+    declare -ga PROJECTS
+    mapfile -t PROJECTS < <(yq -r '.projects // [] | .[]' "${LCT_CONFIG_FILE}")
     load_plugin_configs
-    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]}"
+    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]} projects=${#PROJECTS[@]}"
   fi
 }
 
