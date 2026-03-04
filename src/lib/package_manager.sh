@@ -324,6 +324,23 @@ nix-packages.txt
 EOF
 }
 
+_lct_package_bundle_managers() {
+  cat <<'EOF'
+brew
+pip
+apt
+dnf
+yum
+zypper
+pacman
+aur
+pkg
+winget
+mise
+nix
+EOF
+}
+
 _lct_can_dump_package_bundle() {
   local manager="$1"
   case "$manager" in
@@ -341,6 +358,151 @@ _lct_can_dump_package_bundle() {
   mise) command -v mise >/dev/null 2>&1 ;;
   *) return 1 ;;
   esac
+}
+
+_lct_can_install_package_bundle() {
+  local manager="$1"
+  case "$manager" in
+  brew) command -v brew >/dev/null 2>&1 ;;
+  pip) command -v python >/dev/null 2>&1 || command -v pip >/dev/null 2>&1 ;;
+  apt) command -v apt-get >/dev/null 2>&1 ;;
+  dnf) command -v dnf >/dev/null 2>&1 ;;
+  yum) command -v yum >/dev/null 2>&1 ;;
+  zypper) command -v zypper >/dev/null 2>&1 ;;
+  pacman) command -v pacman >/dev/null 2>&1 ;;
+  aur) command -v paru >/dev/null 2>&1 || command -v yay >/dev/null 2>&1 ;;
+  pkg) command -v pkg >/dev/null 2>&1 ;;
+  winget) command -v winget >/dev/null 2>&1 ;;
+  mise) command -v mise >/dev/null 2>&1 ;;
+  nix) command -v nix-env >/dev/null 2>&1 ;;
+  *) return 1 ;;
+  esac
+}
+
+_lct_read_bundle_packages() {
+  local bundle_file="$1"
+  sed -e 's/#.*$//' "$bundle_file" | awk 'NF'
+}
+
+_lct_install_package_bundle_from_file() {
+  local manager="$1"
+  local bundle_file="$2"
+  local -a packages=()
+
+  [[ -f "$bundle_file" ]] || return 1
+
+  case "$manager" in
+  brew)
+    brew bundle --file "$bundle_file"
+    ;;
+  pip)
+    if command -v python >/dev/null 2>&1; then
+      python -m pip install -r "$bundle_file"
+    else
+      pip install -r "$bundle_file"
+    fi
+    ;;
+  apt | dnf | yum | zypper | pacman | aur | pkg | nix)
+    mapfile -t packages < <(_lct_read_bundle_packages "$bundle_file")
+    if [[ ${#packages[@]} -eq 0 ]]; then
+      return 0
+    fi
+    case "$manager" in
+    apt) apt-get install -y "${packages[@]}" ;;
+    dnf) dnf install -y "${packages[@]}" ;;
+    yum) yum install -y "${packages[@]}" ;;
+    zypper) zypper --non-interactive install -y "${packages[@]}" ;;
+    pacman) pacman -S --noconfirm "${packages[@]}" ;;
+    aur)
+      if command -v paru >/dev/null 2>&1; then
+        paru -S --noconfirm "${packages[@]}"
+      else
+        yay -S --noconfirm "${packages[@]}"
+      fi
+      ;;
+    pkg) pkg install -y "${packages[@]}" ;;
+    nix)
+      local package
+      for package in "${packages[@]}"; do
+        nix-env -iA "nixpkgs.${package}" || return 1
+      done
+      ;;
+    esac
+    ;;
+  winget)
+    winget import --import-file "$bundle_file" --accept-source-agreements --accept-package-agreements
+    ;;
+  mise)
+    mapfile -t packages < <(_lct_read_bundle_packages "$bundle_file")
+    if [[ ${#packages[@]} -eq 0 ]]; then
+      return 0
+    fi
+    local package
+    for package in "${packages[@]}"; do
+      mise use --global "$package" &&
+        mise install "$package" || return 1
+    done
+    ;;
+  *)
+    return 1
+    ;;
+  esac
+}
+
+_lct_install_gathered_package_bundle() {
+  local bundle_dir="$1"
+  local default_manager manager bundle_name bundle_path
+  local -a managers=() discovered_managers=()
+
+  default_manager="$(_lct_default_package_manager)"
+  mapfile -t managers < <(_lct_package_manager_candidates "" "${LCT_PACKAGE_MANAGER:-}" "$default_manager")
+
+  while IFS= read -r manager; do
+    [[ -n "$manager" ]] || continue
+    bundle_name="$(_lct_package_bundle_filename "$manager")"
+    bundle_path="${bundle_dir%/}/$bundle_name"
+    [[ -f "$bundle_path" ]] || continue
+    discovered_managers+=("$manager")
+  done < <(_lct_package_bundle_managers)
+
+  for manager in "${discovered_managers[@]}"; do
+    local seen=0 existing
+    for existing in "${managers[@]}"; do
+      if [[ "$existing" == "$manager" ]]; then
+        seen=1
+        break
+      fi
+    done
+    [[ "$seen" -eq 1 ]] || managers+=("$manager")
+  done
+
+  for manager in "${managers[@]}"; do
+    bundle_name="$(_lct_package_bundle_filename "$manager")"
+    bundle_path="${bundle_dir%/}/$bundle_name"
+    [[ -f "$bundle_path" ]] || continue
+
+    if ! _lct_can_install_package_bundle "$manager"; then
+      echo "⚠ Found ${bundle_name}, but ${manager} is not available; skipping"
+      continue
+    fi
+
+    if [[ "$manager" == "brew" ]]; then
+      cp "$bundle_path" "$LCT_BREW_FILE"
+    else
+      cp "$bundle_path" "$(_lct_package_manager_file "$manager")"
+    fi
+
+    echo "Installing package bundle from ${bundle_name} (${manager})"
+    if _lct_install_package_bundle_from_file "$manager" "$bundle_path"; then
+      echo "✅ Package bundle installed from ${bundle_name}"
+      return 0
+    fi
+
+    echo "⚠ Failed to install package bundle from ${bundle_name}" >&2
+  done
+
+  echo "⚠ No installable package bundle found in ${bundle_dir}"
+  return 0
 }
 
 _lct_dump_package_bundle() {

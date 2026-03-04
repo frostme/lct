@@ -5,9 +5,9 @@ No plugins specified in config.yaml, nothing to install.
                               
 Using config.yaml from remote repository
 Installing package manager dependencies
-Installing package bundle from Brewfile (brew)
-brew bundle --file ~/.local/share/lct/remote/Brewfile
-✅ Package bundle installed from Brewfile
+Installing package bundle from apt-packages.txt (apt)
+apt-get install -y ripgrep fd-find
+✅ Package bundle installed from apt-packages.txt
  ~/software already exists
 Applying library configs
 Applying nvim config

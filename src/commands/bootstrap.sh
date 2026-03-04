@@ -16,13 +16,6 @@ if git -C "$LCT_REMOTE_DIR" remote get-url origin >/dev/null 2>&1; then
   git -C "$LCT_REMOTE_DIR" pull --ff-only >/dev/null 2>&1 || true
 fi
 
-if [ -f "$LCT_BREW_FILE" ] && [ "$FORCE" == 0 ]; then
-  echo "Using existing Brewfile at $LCT_BREW_FILE"
-else
-  echo "Using Brewfile from remote repository"
-  cp "$LCT_REMOTE_DIR/Brewfile" "$LCT_BREW_FILE"
-fi
-
 if [ -f "$LCT_CONFIG_FILE" ] && [ "$FORCE" == 0 ]; then
   echo "Using existing config.yaml at $LCT_CONFIG_FILE"
 else
@@ -30,8 +23,8 @@ else
   cp "$LCT_REMOTE_DIR/config.yaml" "$LCT_CONFIG_FILE"
 fi
 
-gum_spinner "Installing homebrew dependencies" brew bundle --file "$LCT_BREW_FILE"
-echo "✅ homebrew dependencies succesfully installed"
+echo "Installing package manager dependencies"
+_lct_install_gathered_package_bundle "$LCT_REMOTE_DIR"
 
 if [ -d "$SOFTWARE_DIR" ]; then
   echo " $SOFTWARE_DIR already exists"

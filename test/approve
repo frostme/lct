@@ -415,6 +415,26 @@ it "shows bootstrap help"
 approve "${cli} bootstrap --help" "bootstrap_help"
 it "bootstraps from gathered remote repository"
 approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_force"
+it "bootstraps using non-brew package bundle when present"
+rm -f "$tmpdir/.local/share/lct/remote/Brewfile"
+cat >"$tmpdir/.local/share/lct/remote/apt-packages.txt" <<'EOF'
+ripgrep
+fd-find
+EOF
+cat >"$tmpdir/.local/share/lct/remote/config.yaml" <<'EOF'
+remote: null
+configs:
+  - nvim
+  - lazygit
+dotfiles:
+  - ~/.zshrc
+other:
+  - ~/work/custom.conf
+plugins: []
+modules: []
+packageManager: apt
+EOF
+approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_force_apt_bundle"
 
 describe "env command"
 it "sets an environment variable"
