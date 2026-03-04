@@ -100,8 +100,8 @@ clone_remote_repo_if_configured() {
 
   lct_log_info "Cloning remote repository ${remote_url}"
   if ! git ls-remote "$remote_url" HEAD >/dev/null 2>&1; then
-    echo "❌ Remote repository not found: $remote_url" >&2
-    echo "Please create the remote repository and rerun lct init." >&2
+    echo "❌ Remote repository not found or inaccessible: $remote_url" >&2
+    echo "Please ensure the remote exists, that you have network connectivity and access/credentials, then rerun lct init." >&2
     lct_log_error "Remote repository missing or inaccessible: ${remote_url}"
     return 1
   fi
