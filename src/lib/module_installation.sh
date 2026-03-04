@@ -102,6 +102,49 @@ module_release_api_base() {
   printf '%s\n' "${base%/}"
 }
 
+module_network_timeout() {
+  local timeout="${LCT_MODULE_NETWORK_TIMEOUT:-45}"
+  if [[ ! "$timeout" =~ ^[0-9]+$ || "$timeout" -le 0 ]]; then
+    timeout=45
+  fi
+  printf '%s\n' "$timeout"
+}
+
+module_connect_timeout() {
+  local timeout="${LCT_MODULE_CONNECT_TIMEOUT:-10}"
+  if [[ ! "$timeout" =~ ^[0-9]+$ || "$timeout" -le 0 ]]; then
+    timeout=10
+  fi
+  printf '%s\n' "$timeout"
+}
+
+module_curl() {
+  local network_timeout connect_timeout
+  network_timeout="$(module_network_timeout)"
+  connect_timeout="$(module_connect_timeout)"
+  curl -fsSL --connect-timeout "$connect_timeout" --max-time "$network_timeout" "$@"
+}
+
+module_git() {
+  local network_timeout connect_timeout ssh_command
+  network_timeout="$(module_network_timeout)"
+  connect_timeout="$(module_connect_timeout)"
+  ssh_command="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes -o ConnectTimeout=${connect_timeout}}"
+
+  env \
+    GIT_TERMINAL_PROMPT=0 \
+    GIT_ASKPASS=/bin/true \
+    GCM_INTERACTIVE=Never \
+    GIT_SSH_COMMAND="$ssh_command" \
+    git \
+    -c credential.interactive=never \
+    -c core.askPass=/bin/true \
+    -c http.lowSpeedLimit=1 \
+    -c "http.lowSpeedTime=${network_timeout}" \
+    -c "http.connectTimeout=${connect_timeout}" \
+    "$@"
+}
+
 module_download_release() {
   local owner_repo="$1"
   local tag="$2"
@@ -118,7 +161,7 @@ module_download_release() {
     release_url+="/latest"
   fi
 
-  response="$(curl -fsSL "$release_url" 2>/dev/null)" || return 1
+  response="$(module_curl "$release_url" 2>/dev/null)" || return 1
 
   tarball_url="$(python - "$response" -c 'import json,sys;data=json.loads(sys.argv[1] or "{}");print(data.get("tarball_url") or data.get("zipball_url") or "")' 2>/dev/null)"
   release_tag="$(python - "$response" -c 'import json,sys;data=json.loads(sys.argv[1] or "{}");print(data.get("tag_name") or "")' 2>/dev/null)"
@@ -126,7 +169,7 @@ module_download_release() {
   [[ -n "$tarball_url" ]] || return 1
 
   tmpdir="$(mktemp -d)"
-  if ! curl -fsSL "$tarball_url" -o "$tmpdir/release.tar.gz" 2>/dev/null; then
+  if ! module_curl "$tarball_url" -o "$tmpdir/release.tar.gz" 2>/dev/null; then
     rm -rf -- "$tmpdir"
     return 1
   fi
@@ -668,41 +711,36 @@ install_module_repo() {
     if [[ ! -d "$module_cache/.git" ]]; then
       [[ -d "$module_cache" ]] && rm -rf -- "$module_cache"
       mkdir -p "$(dirname "$module_cache")"
-      if gum_available; then
-        gum spin --spinner line --title "Cloning ${module}" -- git clone "$repo_url" "$module_cache" >/dev/null 2>&1 || {
-          echo "❌ ERROR: Unable to clone module ${module}" >&2
-          return 1
-        }
-      elif ! git clone "$repo_url" "$module_cache" >/dev/null 2>&1; then
+      if ! module_git clone "$repo_url" "$module_cache" >/dev/null 2>&1; then
         echo "❌ ERROR: Unable to clone module ${module}" >&2
         return 1
       fi
     fi
 
     if [[ -d "$module_cache/.git" ]]; then
-      git -C "$module_cache" fetch --quiet --tags || echo "❌ WARNING: Unable to refresh module ${module}" >&2
+      module_git -C "$module_cache" fetch --quiet --tags || echo "❌ WARNING: Unable to refresh module ${module}" >&2
     else
       echo "❌ ERROR: Missing module cache at ${module_cache}" >&2
       return 1
     fi
 
     if [[ -n "$version" && "$version" != "latest" ]]; then
-      if ! git -C "$module_cache" checkout --quiet "$version" 2>/dev/null; then
+      if ! module_git -C "$module_cache" checkout --quiet "$version" 2>/dev/null; then
         echo "❌ ERROR: Unable to find version '${version}' for ${module_name}" >&2
         return 1
       fi
     else
-      latest_ref="$(git -C "$module_cache" tag --sort=-v:refname | head -n1)"
+      latest_ref="$(module_git -C "$module_cache" tag --sort=-v:refname | head -n1)"
       if [[ -n "$latest_ref" ]]; then
-        git -C "$module_cache" checkout --quiet "$latest_ref" 2>/dev/null || true
+        module_git -C "$module_cache" checkout --quiet "$latest_ref" 2>/dev/null || true
       else
-        remote_ref="$(git -C "$module_cache" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+        remote_ref="$(module_git -C "$module_cache" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
         [[ -z "$remote_ref" ]] && remote_ref="HEAD"
-        git -C "$module_cache" checkout --quiet "$remote_ref" 2>/dev/null || true
+        module_git -C "$module_cache" checkout --quiet "$remote_ref" 2>/dev/null || true
       fi
     fi
 
-    cache_commit="$(git -C "$module_cache" rev-parse HEAD 2>/dev/null || true)"
+    cache_commit="$(module_git -C "$module_cache" rev-parse HEAD 2>/dev/null || true)"
   fi
 
   installed_commit="$(cache_metadata_get "installed_commit" "$meta_file")"
@@ -746,7 +784,7 @@ install_module_repo() {
     esac
   fi
 
-  cache_commit="${cache_commit:-$(git -C "$module_cache" rev-parse HEAD 2>/dev/null || true)}"
+  cache_commit="${cache_commit:-$(module_git -C "$module_cache" rev-parse HEAD 2>/dev/null || true)}"
   installed_commit="${cache_commit:-${installed_commit:-}}"
   module_write_metadata "$meta_file" "$repo_url" "$cache_commit" "$installed_commit" "$strategy" "$strategy_detail" "$strategy_name"
 
@@ -767,7 +805,6 @@ install_module_repo() {
     fi
   fi
 }
-
 
 remove_module_repo() {
   local module="$1"
