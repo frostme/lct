@@ -141,11 +141,11 @@ main() {
 
   # Keep this exact order to safely undo the release.
   delete_local_tag_if_present
+  gh release delete "${RELEASE_NAME}" --yes
   git -C "${ROOT_DIR}" push --quiet --delete origin "${RELEASE_TAG}"
   yq -i ".version = \"${NEW_VERSION}\"" "${BASHLY_FILE}"
   git -C "${ROOT_DIR}" commit --quiet -am "Undo release ${RELEASE_TAG}"
   git -C "${ROOT_DIR}" push --quiet origin main &>/dev/null
-  gh release delete "${RELEASE_TAG}" --yes
   gh workflow run Deploy
 
   log "Deleted release ${RELEASE_TAG} and updated version to ${NEW_VERSION}."
