@@ -81,7 +81,7 @@ jobs:
         id: changelog_builder
         uses: mikepenz/release-changelog-builder-action@v6.1.1
       - name: Update Repo Changelog
-        if: steps.release_meta_outputs.tag_exists != 'true'
+        if: steps.release_meta.outputs.tag_exists != 'true'
         run: |
           set -euo pipefail
           tag="${{ steps.release_meta.outputs.tag }}"
