@@ -102,6 +102,36 @@ cmd="${1:-}"
 shift || true
 
 case "$cmd" in
+  log)
+    output_file=""
+    while (($#)); do
+      case "$1" in
+      -o)
+        shift || true
+        output_file="${1:-}"
+        ;;
+      --prefix|--structured|--time|--level|--separator|--formatter|-s|-t|-l|-sl)
+        # Option with value
+        shift || true
+        ;;
+      --*)
+        # Ignore unhandled long options
+        ;;
+      *)
+        break
+        ;;
+      esac
+      shift || true
+    done
+    message="$*"
+    if [[ -n "$output_file" ]]; then
+      mkdir -p "$(dirname "$output_file")"
+      printf '%s\n' "$message" >>"$output_file"
+    fi
+    if [[ "${GUM_LOG_TO_STDOUT:-1}" == "1" ]]; then
+      printf '%s\n' "$message"
+    fi
+    ;;
   spin)
     # Execute the command after "--" to mimic gum spinner behavior in tests.
     while (($#)); do
@@ -172,6 +202,11 @@ export APPROVALS_DIR="$(pwd)/approvals"
 
 describe "help text"
 approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g'" "help_text"
+approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g' | grep -F -- '--verbose, -V'" "help_text_has_verbose"
+
+describe "verbose logging"
+approve "${cli} --verbose env list | sed 's/${tmpdir_escaped}/~/g'" "verbose_env_list"
+approve "cat $tmpdir/.local/state/lct/debug.log | sed 's/${tmpdir_escaped}/~/g'" "verbose_debug_log"
 
 describe "env command"
 it "sets and lists environment variables"

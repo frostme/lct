@@ -2,6 +2,7 @@ module=${args[module]:-}
 remove_global=${args[--global]:-0}
 lctfile_path="$PWD/LCTFile"
 global_lctfile_path=""
+lct_log_debug "remove command started (global=${remove_global}, module=${module:-<none>})"
 
 module_ref_is_valid() {
   local ref="$1"
@@ -58,11 +59,13 @@ remove_global_module_from_config() {
 }
 
 if [[ -z "$module" ]]; then
+  lct_log_error "Remove failed: module argument is required"
   echo "❌ ERROR: Module is required" >&2
   exit 1
 fi
 
 if ! module_ref_is_valid "$module"; then
+  lct_log_error "Remove failed: invalid module reference ${module}"
   echo "❌ ERROR: Module must be in owner/repo format or point to a local/remote repository path" >&2
   exit 1
 fi
@@ -73,6 +76,7 @@ if [[ $remove_global -eq 0 ]]; then
   LCT_MODULES_CACHE_DIR="$PWD/.lct_cache/modules"
 
   remove_module_repo "$module" || {
+    lct_log_error "Module removal failed (local mode) for ${module}"
     echo "❌ ERROR: Module removal failed" >&2
     exit 1
   }
@@ -89,9 +93,11 @@ global_lctfile_path="$LCT_SHARE_DIR/LCTFile"
 [[ -f "$global_lctfile_path" ]] || touch "$global_lctfile_path"
 
 remove_module_repo "$module" || {
+  lct_log_error "Module removal failed (global mode) for ${module}"
   echo "❌ ERROR: Module removal failed" >&2
   exit 1
 }
 
 remove_global_module_from_config "$module"
 lctfile_remove_module "$global_lctfile_path" "$module"
+lct_log_info "Remove completed (global=${remove_global}, module=${module})"

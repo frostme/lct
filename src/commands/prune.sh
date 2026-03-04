@@ -3,6 +3,7 @@ prune_unused=${args[--unused]:-0}
 prune_plugins=${args[--plugins]:-0}
 prune_cache=${args[--cache]:-0}
 directories_to_prune=()
+lct_log_debug "prune command started (dry=${dry_run}, unused=${prune_unused}, plugins=${prune_plugins}, cache=${prune_cache})"
 
 # TODO: Implement prune unused logic
 # if [[ $prune_unused -eq 1 ]]; then
@@ -89,5 +90,6 @@ else
     done
 
     echo "Pruning complete."
+    lct_log_info "Prune completed: removed ${#directories_to_prune[@]} directories"
   fi
 fi

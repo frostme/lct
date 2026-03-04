@@ -161,10 +161,14 @@ module_download_release() {
     release_url+="/latest"
   fi
 
+  lct_log_debug "Fetching release info from ${release_url}"
   response="$(module_curl "$release_url" 2>/dev/null)" || return 1
+  lct_log_debug "Received release response: ${response}"
 
-  tarball_url="$(python - "$response" -c 'import json,sys;data=json.loads(sys.argv[1] or "{}");print(data.get("tarball_url") or data.get("zipball_url") or "")' 2>/dev/null)"
-  release_tag="$(python - "$response" -c 'import json,sys;data=json.loads(sys.argv[1] or "{}");print(data.get("tag_name") or "")' 2>/dev/null)"
+  tarball_url="$(printf '%s' "$response" | yq -r '.tarball_url // .zipball_url // ""' 2>/dev/null || true)"
+  lct_log_debug "Extracted tarball URL: ${tarball_url}"
+  release_tag="$(printf '%s' "$response" | yq -r '.tag_name // ""' 2>/dev/null || true)"
+  lct_log_debug "Extracted release tag: ${release_tag}"
 
   [[ -n "$tarball_url" ]] || return 1
 
@@ -593,7 +597,7 @@ module_score_candidate() {
     lower_stem="${stem,,}"
     for token in ${lower_stem//[-_]/ }; do
       case "$token" in
-      ""|bash|tool|module|script|cli)
+      "" | bash | tool | module | script | cli)
         continue
         ;;
       esac
@@ -647,20 +651,20 @@ module_find_main_script() {
     score=$(module_score_candidate "$dir" "$candidate" "$base" "$stem")
     depth=$(module_candidate_depth "$dir" "$candidate")
 
-    if (( score > best_score )); then
+    if ((score > best_score)); then
       best_path="$candidate"
       best_score="$score"
       best_depth="$depth"
       continue
     fi
 
-    if (( score == best_score )) && (( depth < best_depth )); then
+    if ((score == best_score)) && ((depth < best_depth)); then
       best_path="$candidate"
       best_depth="$depth"
       continue
     fi
 
-    if (( score == best_score )) && (( depth == best_depth )) && [[ -n "$best_path" && "$candidate" < "$best_path" ]]; then
+    if ((score == best_score)) && ((depth == best_depth)) && [[ -n "$best_path" && "$candidate" < "$best_path" ]]; then
       best_path="$candidate"
     fi
   done < <(module_collect_candidates "$dir" "$base" | sort -u)
@@ -871,8 +875,10 @@ module_installation() {
   : "${LCT_MODULES_CACHE_DIR:?LCT_MODULES_CACHE_DIR is required}"
 
   mkdir -p "$LCT_MODULES_DIR" "$LCT_MODULES_BIN_DIR" "$LCT_MODULES_CACHE_DIR"
+  lct_log_debug "module_installation started (modules=${#MODULES[@]})"
 
   if [[ ${#MODULES[@]} -eq 0 ]]; then
+    lct_log_debug "module_installation found no modules to install"
     echo "No modules specified in config.yaml, nothing to install." >&2
     return 0
   fi
@@ -881,6 +887,7 @@ module_installation() {
 
   local failures=0
   for module in "${MODULES[@]}"; do
+    lct_log_debug "Installing module entry: ${module}"
     local parsed_name parsed_version
     module_parse_entry "$module" parsed_name parsed_version
     install_module_repo "$parsed_name" "$parsed_version" || failures=1
@@ -892,5 +899,6 @@ module_installation() {
     echo "✅ Module installation complete"
   fi
 
+  lct_log_info "module_installation completed (failures=${failures})"
   return $failures
 }

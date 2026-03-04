@@ -2,6 +2,65 @@ gum_available() {
   command -v gum >/dev/null 2>&1
 }
 
+lct_verbose_enabled() {
+  [[ "${LCT_VERBOSE:-0}" == "1" ]]
+}
+
+lct_log_file_path() {
+  printf '%s\n' "${LCT_DEBUG_LOG_FILE:-$HOME/.local/state/lct/debug.log}"
+}
+
+lct_init_logging() {
+  local log_file
+  log_file="$(lct_log_file_path)"
+  mkdir -p "$(dirname "$log_file")"
+  [[ -f "$log_file" ]] || : >"$log_file"
+}
+
+lct_log() {
+  local level="$1"
+  shift || true
+  local message="$*"
+  local log_file
+  log_file="$(lct_log_file_path)"
+
+  lct_init_logging || return 1
+
+  if gum_available; then
+    gum log -o "$log_file" --prefix "[lct]" -sl "$level" "$message" >/dev/null
+    if lct_verbose_enabled; then
+      gum log --prefix "[lct]" -sl "$level" "$message"
+    fi
+  else
+    local ts
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    printf '%s [%s] %s\n' "$ts" "$level" "$message" >>"$log_file"
+    if lct_verbose_enabled; then
+      printf '%s [%s] %s\n' "$ts" "$level" "$message" >&2
+    fi
+  fi
+}
+
+lct_log_debug() {
+  lct_log debug "$*"
+}
+
+lct_log_info() {
+  lct_log info "$*"
+}
+
+lct_log_warn() {
+  lct_log warn "$*"
+}
+
+lct_log_error() {
+  lct_log error "$*"
+}
+
+lct_log_exception() {
+  lct_log_error "$*"
+}
+
 gum_title() {
   local text="$1"
   if gum_available; then

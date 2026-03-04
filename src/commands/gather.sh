@@ -1,6 +1,7 @@
 run_init_if_needed
 
 FORCE=${args[--force]:-0}
+lct_log_debug "gather command started (force=${FORCE})"
 GATHER_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 REMOTE_CONFIGS_DIR="$LCT_REMOTE_DIR/configs"
 REMOTE_DOTFILES_DIR="$LCT_REMOTE_DIR/dotfiles"
@@ -14,9 +15,11 @@ copy_entry() {
   local label="$3"
 
   if [[ -e "$src" ]]; then
+    lct_log_debug "Copying ${label}: ${src} -> ${dest}"
     mkdir -p "$(dirname "$dest")"
     cp -R "$src" "$dest"
   else
+    lct_log_warn "Missing ${label}, skipping: ${src}"
     echo "⚠ Skipping missing ${label}: $src"
   fi
 }
@@ -43,6 +46,7 @@ handle_secret_hits() {
   find_secret_hits
 
   if ((${#SECRET_HITS[@]} == 0)); then
+    lct_log_debug "No potential secret hits detected in gathered files"
     return
   fi
 
@@ -62,6 +66,7 @@ handle_secret_hits() {
       scrub_secret_files
       find_secret_hits
       if ((${#SECRET_HITS[@]})); then
+        lct_log_error "Gather scrub failed to remove all secret hits"
         echo "❌ Secrets still detected after scrubbing; aborting gather" >&2
         exit 1
       fi
@@ -69,20 +74,25 @@ handle_secret_hits() {
     fi
 
     echo "❌ Gather aborted to avoid committing secrets"
+    lct_log_error "Gather aborted by user during secret review"
     exit 1
     ;;
   continue)
     echo "Proceeding with gather despite potential secrets (LCT_GATHER_SECRET_ACTION=continue)"
+    lct_log_warn "Gather continuing with detected secret hits due to configured action"
     ;;
   scrub)
+    lct_log_warn "Gather scrubbing files with potential secret hits"
     scrub_secret_files
     ;;
   abort)
     echo "❌ Gather aborted to avoid committing secrets"
+    lct_log_error "Gather aborted due to LCT_GATHER_SECRET_ACTION=abort"
     exit 1
     ;;
   *)
     echo "❌ Invalid LCT_GATHER_SECRET_ACTION value: $action (expected continue, scrub, abort)" >&2
+    lct_log_error "Invalid LCT_GATHER_SECRET_ACTION value: ${action}"
     exit 1
     ;;
   esac
@@ -142,6 +152,7 @@ handle_secret_hits
 git -C "$LCT_REMOTE_DIR" add .
 git -C "$LCT_REMOTE_DIR" commit -m "Gather configs ${GATHER_TIMESTAMP}" || echo "No changes to commit"
 git -C "$LCT_REMOTE_DIR" push origin main || echo "No remote repository configured, skipping push"
+lct_log_info "Gather completed (timestamp=${GATHER_TIMESTAMP})"
 
 if gum_available; then
   gum_join_vertical \

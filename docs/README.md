@@ -9,7 +9,7 @@ Local configuration tool
 ## Usage
 
 ```bash
-lct COMMAND
+lct [OPTIONS] COMMAND
 ```
 
 ## Dependencies
@@ -81,6 +81,12 @@ Base directory for local cache data.
 - [config](lct%20config.md) - Open your config files in your ${EDITOR:-editor}
 - [setup](lct%20setup.md) - Setup lct in your shell
 - [prune](lct%20prune.md) - Prune config and plugins files
+
+## Options
+
+#### *--verbose, -V*
+
+Enable verbose debug logs
 
 ## Configuration schema
 

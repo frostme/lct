@@ -34,14 +34,17 @@ plugin_installation() {
   fi
 
   if [[ ${#PLUGINS[@]} -eq 0 ]]; then
+    lct_log_debug "plugin_installation found no plugins to install"
     echo "No plugins specified in config.yaml, nothing to install." >&2
     exit 0
   fi
 
   gum_title "Starting plugin installation..."
+  lct_log_debug "plugin_installation started (plugins=${#PLUGINS[@]})"
 
   for idx in "${!PLUGINS[@]}"; do
     plugin="${PLUGINS[$idx]}"
+    lct_log_debug "Processing plugin entry: ${plugin}"
     # Determine owner, repo, and name (if exists)
     owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
     repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
@@ -111,6 +114,7 @@ plugin_installation() {
         cp -r "$plugin_cache_dest" "$plugin_dest"
         cache_metadata_write "$plugin_cache_meta" "$repo_url" "$cache_commit" "$cache_commit" "$plugin_subpath"
         if [[ -d "$plugin_dest" ]]; then
+          lct_log_debug "Installed plugin from cache path ${plugin_cache_dest} to ${plugin_dest}"
           echo "- Installed plugin $plugin"
         else
           echo "❌ WARNING: Plugin $plugin could not be copied into $plugin_dest" >&2
@@ -132,4 +136,5 @@ plugin_installation() {
   else
     echo "✅ Plugin installation complete"
   fi
+  lct_log_info "plugin_installation completed"
 }

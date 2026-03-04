@@ -2,6 +2,7 @@ module=${args[module]:-}
 install_global=${args[--global]:-0}
 lctfile_path="$PWD/LCTFile"
 global_lctfile_path=""
+lct_log_debug "install command started (global=${install_global}, module=${module:-<all>})"
 
 module_ref_is_valid() {
   local ref="$1"
@@ -42,6 +43,7 @@ lctfile_add_module_sorted() {
 
 if [[ $install_global -eq 0 ]]; then
   if [[ ! -f "$lctfile_path" ]]; then
+    lct_log_error "Install failed: LCTFile not found at ${lctfile_path}"
     echo "❌ ERROR: LCTFile not found at ${lctfile_path}" >&2
     exit 1
   fi
@@ -50,6 +52,7 @@ if [[ $install_global -eq 0 ]]; then
     mapfile -t MODULES < <(sed -e 's/#.*$//' "$lctfile_path" | awk 'NF')
 
     if [[ ${#MODULES[@]} -eq 0 ]]; then
+      lct_log_error "Install failed: no modules found in ${lctfile_path}"
       echo "❌ ERROR: No modules listed in ${lctfile_path}" >&2
       exit 1
     fi
@@ -67,6 +70,7 @@ if [[ $install_global -eq 0 ]]; then
   LCT_MODULES_CACHE_DIR="$PWD/.lct_cache/modules"
 
   module_installation || {
+    lct_log_error "Module installation failed (local mode)"
     echo "❌ ERROR: Module installation failed" >&2
     exit 1
   }
@@ -107,6 +111,7 @@ if [[ -n "$module" ]]; then
 fi
 
 module_installation
+lct_log_info "Install completed (global=${install_global}, module=${module:-<all>})"
 
 if [[ -n "$module" ]] && ! lctfile_module_exists "$global_lctfile_path" "$module"; then
   lctfile_add_module_sorted "$global_lctfile_path" "$module"

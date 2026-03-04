@@ -90,12 +90,14 @@ prompt_dotfiles() {
 }
 
 run_init_flow() {
+  lct_log_debug "Running init flow"
   gum_title "LCT initialization"
   ensure_init_paths
   ensure_config_defaults
   prompt_remote_repo
   prompt_dotfiles
   date >"$LCT_INIT_FILE"
+  lct_log_info "Initialization completed and marker written to ${LCT_INIT_FILE}"
   if gum_available; then
     gum_join_vertical \
       "$(gum style --foreground 121 '✅ Initialization complete')" \
@@ -107,9 +109,11 @@ run_init_flow() {
 
 run_init_if_needed() {
   if [[ -f "$LCT_INIT_FILE" ]]; then
+    lct_log_debug "Initialization marker already present at ${LCT_INIT_FILE}"
     return
   fi
 
+  lct_log_info "Initialization marker missing; running init flow"
   echo "ℹ Running lct init to complete setup..."
   run_init_flow
 }

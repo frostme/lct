@@ -1,0 +1,9 @@
+Ensuring lct directories and base files exist
+Detecting base directories from environment and defaults
+Resolved log file path: ~/.local/state/lct/debug.log
+Directory setup complete
+Loading config from ~/.config/lct/config.yaml
+Loaded config arrays: configs=0 dotfiles=0 other=0 plugins=0 modules=0
+Loading environment overrides from ~/.local/share/lct/env.yaml
+Initialization complete (verbose=1)
+value=

@@ -1,7 +1,7 @@
 lct - Local configuration tool
 
 Usage:
-  lct COMMAND
+  lct [OPTIONS] COMMAND
   lct [COMMAND] --help | -h
   lct --version | -v
 
@@ -22,7 +22,10 @@ Commands:
   setup         Setup lct in your shell
   prune         Prune config and plugins files
 
-Options:
+Global Options:
+  --verbose, -V
+    Enable verbose debug logs
+
   --help, -h
     Show this help
 
