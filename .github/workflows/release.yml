@@ -41,7 +41,6 @@ jobs:
           echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
         shell: bash
       - name: Install Other Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           mise run i
       - name: Resolve release metadata
@@ -86,8 +85,8 @@ jobs:
         run: |
           set -euo pipefail
           tag="${{ steps.release_meta.outputs.tag }}"
-          release_notes="${{ steps.changelog_builder.changelog }}"
-          release_date="${{ steps.release_meta.outputs.release_date}}"
+          release_notes="${{ steps.changelog_builder.outputs.changelog }}"
+          release_date="${{ steps.release_meta.outputs.release_date }}"
 
           changelog_file="CHANGELOG.md"
           if [[ -f "$changelog_file" ]]; then
