@@ -89,13 +89,69 @@ prompt_dotfiles() {
   fi
 }
 
+clone_remote_repo_if_configured() {
+  local remote_url
+  remote_url=$(yq -r '.remote // ""' "$LCT_CONFIG_FILE")
+
+  if [[ -z "$remote_url" || "$remote_url" == "null" ]]; then
+    lct_log_debug "No remote configured; skipping remote clone"
+    return 0
+  fi
+
+  lct_log_info "Cloning remote repository ${remote_url}"
+  if ! git ls-remote "$remote_url" HEAD >/dev/null 2>&1; then
+    echo "❌ Remote repository not found: $remote_url" >&2
+    echo "Please create the remote repository and rerun lct init." >&2
+    lct_log_error "Remote repository missing or inaccessible: ${remote_url}"
+    return 1
+  fi
+
+  rm -rf "$LCT_REMOTE_DIR"
+  mkdir -p "$LCT_REMOTE_DIR"
+
+  if ! git clone "$remote_url" "$LCT_REMOTE_DIR" >/dev/null 2>&1; then
+    echo "❌ Failed to clone remote repository: $remote_url" >&2
+    lct_log_error "Failed to clone remote repository: ${remote_url}"
+    return 1
+  fi
+
+  lct_log_debug "Remote repository cloned into ${LCT_REMOTE_DIR}"
+}
+
+seed_local_config_from_remote() {
+  local imported=0
+  local remote_config="$LCT_REMOTE_DIR/config.yaml"
+
+  if [[ -f "$remote_config" ]]; then
+    lct_log_info "Copying config.yaml from remote repository"
+    cp "$remote_config" "$LCT_CONFIG_FILE"
+    imported=1
+  fi
+
+  while IFS= read -r bundle_file; do
+    [[ -n "$bundle_file" ]] || continue
+    if [[ -f "$LCT_REMOTE_DIR/$bundle_file" ]]; then
+      lct_log_info "Copying package bundle ${bundle_file} from remote repository"
+      cp "$LCT_REMOTE_DIR/$bundle_file" "$LCT_SHARE_DIR/$bundle_file"
+      imported=1
+    fi
+  done < <(_lct_package_bundle_known_files)
+
+  if ((imported)); then
+    lct_log_debug "Seeded local configuration from remote repository"
+  fi
+}
+
 run_init_flow() {
   lct_log_debug "Running init flow"
   gum_title "LCT initialization"
   ensure_init_paths
   ensure_config_defaults
   prompt_remote_repo
-  prompt_dotfiles
+  clone_remote_repo_if_configured
+  seed_local_config_from_remote
+  ensure_config_defaults
+  load_configuration
   date >"$LCT_INIT_FILE"
   lct_log_info "Initialization completed and marker written to ${LCT_INIT_FILE}"
   if gum_available; then
