@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.7 - 2026-03-04
+- Frostme/smol updates (#150)
+- Release v0.6.6 (#149)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.6.6...v0.6.7
+
+
 ## v0.6.6 - 2026-03-04
 - fixt bootstrap (#148)
 - Release v0.6.5 (#147)
