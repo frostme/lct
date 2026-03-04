@@ -5,12 +5,16 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASHLY_FILE="${ROOT_DIR}/src/bashly.yml"
 
 log() {
-  echo "[unrelease] $*" >&2
+  gum log --prefix "[unrelease]" -sl info "$*"
+}
+
+log_error() {
+  gum log --prefix "[unrelease]" -sl error "$*"
 }
 
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
-    log "Missing required command: $1"
+    log_error "Missing required command: $1"
     exit 1
   fi
 }
@@ -20,12 +24,12 @@ ensure_repo_state() {
 
   branch="$(git -C "${ROOT_DIR}" branch --show-current)"
   if [[ "${branch}" != "main" ]]; then
-    log "This script only runs on branch 'main' (current: ${branch})."
+    log_error "This script only runs on branch 'main' (current: ${branch})."
     exit 1
   fi
 
   if [[ -n "$(git -C "${ROOT_DIR}" status --porcelain)" ]]; then
-    log "Working tree must be clean before running this script."
+    log_error "Working tree must be clean before running this script."
     exit 1
   fi
 }
@@ -39,7 +43,7 @@ select_release() {
   )
 
   if [[ "${#release_rows[@]}" -eq 0 ]]; then
-    log "No releases found."
+    log_error "No releases found."
     exit 1
   fi
 
@@ -71,7 +75,7 @@ select_release() {
     fi
   done
 
-  log "Failed to resolve selected release."
+  log_error "Failed to resolve selected release."
   exit 1
 }
 
@@ -86,12 +90,12 @@ prompt_new_version() {
     --value "${default_version}")"
 
   if [[ -z "${input_version}" ]]; then
-    log "Version cannot be empty."
+    log_error "Version cannot be empty."
     exit 1
   fi
 
   if [[ "${input_version}" == "${current_version}" ]]; then
-    log "Version is unchanged (${current_version}). Pick a different version."
+    log_error "Version is unchanged (${current_version}). Pick a different version."
     exit 1
   fi
 
@@ -100,14 +104,14 @@ prompt_new_version() {
 }
 
 confirm_action() {
-  echo
-  echo "Release deletion plan:"
-  echo "  Release: ${RELEASE_NAME:-<no name>}"
-  echo "  Tag:     ${RELEASE_TAG}"
-  echo "  Version: ${CURRENT_VERSION} -> ${NEW_VERSION} in src/bashly.yml"
-  echo
-  echo "This will delete the tag and release permanently."
-  echo
+  gum style \
+    --foreground 212 --border-foreground 93 --border double \
+    --align left --width 100 --margin "1 2" --padding "2 4" \
+    "Release deletion plan:" \
+    "  Release: ${RELEASE_NAME:-<no name>}" \
+    "  Tag:     ${RELEASE_TAG}" \
+    "  Version: ${CURRENT_VERSION} -> ${NEW_VERSION} in src/bashly.yml" \
+    "This will delete the tag and release permanently."
 
   if ! gum confirm "Proceed with deletion?"; then
     log "Cancelled."
@@ -136,12 +140,12 @@ main() {
   confirm_action
 
   # Keep this exact order to safely undo the release.
-  # delete_local_tag_if_present
-  # git -C "${ROOT_DIR}" push --quiet --delete origin "${RELEASE_TAG}"
-  # yq -i ".version = \"${NEW_VERSION}\"" "${BASHLY_FILE}"
-  # git -C "${ROOT_DIR}" commit --quiet -am "Undo release ${RELEASE_TAG}"
-  # git -C "${ROOT_DIR}" push --quiet origin main &>/dev/null
-  # gh release delete "${RELEASE_TAG}" --yes
+  delete_local_tag_if_present
+  git -C "${ROOT_DIR}" push --quiet --delete origin "${RELEASE_TAG}"
+  yq -i ".version = \"${NEW_VERSION}\"" "${BASHLY_FILE}"
+  git -C "${ROOT_DIR}" commit --quiet -am "Undo release ${RELEASE_TAG}"
+  git -C "${ROOT_DIR}" push --quiet origin main &>/dev/null
+  gh release delete "${RELEASE_TAG}" --yes
 
   log "Deleted release ${RELEASE_TAG} and updated version to ${NEW_VERSION}."
 }
