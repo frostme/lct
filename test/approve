@@ -202,7 +202,7 @@ export APPROVALS_DIR="$(pwd)/approvals"
 
 describe "help text"
 approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g'" "help_text"
-approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g' | rg -- '--verbose, -V'" "help_text_has_verbose"
+approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g' | grep -F -- '--verbose, -V'" "help_text_has_verbose"
 
 describe "verbose logging"
 approve "${cli} --verbose env list | sed 's/${tmpdir_escaped}/~/g'" "verbose_env_list"
