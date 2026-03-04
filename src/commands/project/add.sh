@@ -9,7 +9,7 @@ fi
 
 ensure_config_defaults
 
-if yq -e ".projects // [] | index(\"${owner_repo}\")" "$LCT_CONFIG_FILE" >/dev/null 2>&1; then
+if PROJECT_ENTRY="$owner_repo" yq -e '((.projects // []) | map(select(. == env(PROJECT_ENTRY)))) | length > 0' "$LCT_CONFIG_FILE" >/dev/null 2>&1; then
   echo "Project ${owner_repo} already configured"
   exit 0
 fi
