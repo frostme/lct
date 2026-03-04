@@ -139,6 +139,7 @@ jobs:
           tar_release_asset="${release_dir}/${tar_asset}"
           checksums_asset="checksums.txt"
           checksums_release_asset="${release_dir}/${checksums_asset}"
+          mkdir -p "$release_dir"
           mv "$zip_asset" "$zip_release_asset"
           mv "$tar_asset" "$tar_release_asset"
           mv "$checksums_asset" "$checksums_release_asset"
