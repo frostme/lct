@@ -62,33 +62,6 @@ prompt_remote_repo() {
   fi
 }
 
-prompt_dotfiles() {
-  local shell_name
-  shell_name="$(basename "${SHELL:-}")"
-
-  local suggestions=()
-  case "$shell_name" in
-  zsh) suggestions+=("~/.zshrc") ;;
-  bash) suggestions+=("~/.bashrc") ;;
-  esac
-
-  if [[ ${#suggestions[@]} -eq 0 ]]; then
-    return
-  fi
-
-  local suggestion_list
-  suggestion_list=$(printf '%s ' "${suggestions[@]}" | sed 's/[[:space:]]*$//')
-  if gum_confirm_prompt "Add baseline dotfiles (${suggestion_list})?"; then
-    mapfile -t selected_dotfiles < <(gum_choose_multi "${suggestions[@]}")
-    if [[ ${#selected_dotfiles[@]} -eq 0 ]]; then
-      selected_dotfiles=("${suggestions[@]}")
-    fi
-    for dotfile in "${selected_dotfiles[@]}"; do
-      append_unique "dotfiles" "$dotfile"
-    done
-  fi
-}
-
 clone_remote_repo_if_configured() {
   local remote_url
   remote_url=$(yq -r '.remote // ""' "$LCT_CONFIG_FILE")
