@@ -190,6 +190,8 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.LCT_RELEASE_TOKEN }}"
           PULL_REQUEST: ${{ steps.cpr.outputs.pull-request-number }}
           MERGE_METHOD: squash
+          MERGE_RETRIES: 10
+          MERGE_RETRY_SLEEP: 10000
   deploy:
     needs: release
     permissions:
