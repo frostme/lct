@@ -38,6 +38,7 @@ x_markdown_footer: |-
       configs: []
       dotfiles: []
       other: []
+      secrets: []
       plugins: []
       modules: []
 
@@ -53,6 +54,9 @@ x_markdown_footer: |-
       other:
         - ~/work/custom.conf
         - ~/.local/bin/dev-tool
+      secrets:
+        - ~/.claude.json
+        - ~/.ssh/id_rsa
       plugins:
         - gh/owner/example-plugin
         - gh/owner/another-plugin
@@ -103,7 +107,7 @@ commands:
         help: overwrite existing local configuration files
   - name: gather
     alias: g
-    help: Gather local configuration files (flags possible secrets before committing)
+    help: Gather local configuration files and encrypt configured secrets (flags possible secrets before committing)
     examples:
       - lct gather
     flags:
@@ -141,6 +145,7 @@ commands:
         help: GitHub owner/repo of the module to remove
   - import: src/commands/alias/alias.yml
   - import: src/commands/file/file.yml
+  - import: src/commands/secrets/secrets.yml
   - import: src/commands/env/env.yml
   - name: reload
     help: Reload lct environment variables and aliases into the current shell

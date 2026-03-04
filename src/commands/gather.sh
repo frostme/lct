@@ -6,6 +6,7 @@ GATHER_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 REMOTE_CONFIGS_DIR="$LCT_REMOTE_DIR/configs"
 REMOTE_DOTFILES_DIR="$LCT_REMOTE_DIR/dotfiles"
 REMOTE_OTHER_DIR="$LCT_REMOTE_DIR/other"
+REMOTE_SECRETS_DIR="$LCT_REMOTE_SECRETS_DIR"
 LCT_FILES=("$LCT_BREW_FILE" "$LCT_CONFIG_FILE")
 SECRET_GREP_PATTERN="api[_-]?key|auth[_-]?token|bearer|secret|password|authorization|private key|ssh-rsa|BEGIN [A-Z ]*PRIVATE KEY"
 
@@ -26,6 +27,18 @@ copy_entry() {
 
 find_secret_hits() {
   mapfile -t SECRET_HITS < <(grep -R -n -I -E "$SECRET_GREP_PATTERN" "$LCT_REMOTE_DIR" --exclude-dir=.git 2>/dev/null || true)
+  if ((${#SECRET_HITS[@]})); then
+    local filtered_hits=()
+    local match_file
+    for match in "${SECRET_HITS[@]}"; do
+      IFS=: read -r match_file _ <<<"$match"
+      if [[ "$match_file" == "$LCT_REMOTE_DIR/config.yaml" ]]; then
+        continue
+      fi
+      filtered_hits+=("$match")
+    done
+    SECRET_HITS=("${filtered_hits[@]}")
+  fi
 }
 
 scrub_secret_files() {
@@ -98,10 +111,48 @@ handle_secret_hits() {
   esac
 }
 
+gather_secrets() {
+  if ((${#SECRETS[@]} == 0)); then
+    lct_log_debug "No secrets configured; skipping secret encryption"
+    rm -rf "$REMOTE_SECRETS_DIR"
+    return
+  fi
+
+  if ! command -v openssl >/dev/null 2>&1; then
+    echo "❌ openssl is required to encrypt secrets" >&2
+    lct_log_error "openssl missing; cannot encrypt secrets"
+    exit 1
+  fi
+
+  local passphrase
+  if ! passphrase="$(lct_read_secret_passphrase "Enter password to encrypt secrets (session only):")"; then
+    echo "❌ Failed to read encryption password" >&2
+    exit 1
+  fi
+
+  if [[ -z "$passphrase" ]]; then
+    echo "❌ Encryption password cannot be empty" >&2
+    exit 1
+  fi
+
+  rm -rf "$REMOTE_SECRETS_DIR"
+  mkdir -p "$REMOTE_SECRETS_DIR"
+
+  echo "Encrypting configured secrets"
+  for secret_path in "${SECRETS[@]}"; do
+    echo "Encrypting $secret_path"
+    if ! lct_encrypt_secret_path "$secret_path" "$REMOTE_SECRETS_DIR" "$passphrase"; then
+      echo "❌ Failed to encrypt configured secret: $secret_path" >&2
+      exit 1
+    fi
+  done
+  echo "✅ Secrets encrypted"
+}
+
 gum_title "Gathering configs into remote repository"
 
 
-rm -rf "$REMOTE_CONFIGS_DIR" "$REMOTE_DOTFILES_DIR" "$REMOTE_OTHER_DIR"
+rm -rf "$REMOTE_CONFIGS_DIR" "$REMOTE_DOTFILES_DIR" "$REMOTE_OTHER_DIR" "$REMOTE_SECRETS_DIR"
 mkdir -p "$REMOTE_CONFIGS_DIR" "$REMOTE_DOTFILES_DIR" "$REMOTE_OTHER_DIR"
 
 echo "Gathering LCT files"
@@ -147,11 +198,17 @@ echo "✅ Other files successfully gathered"
 
 rm -f "$LCT_REMOTE_DIR/lct.yaml"
 
+gather_secrets
+
 handle_secret_hits
 
 git -C "$LCT_REMOTE_DIR" add .
 git -C "$LCT_REMOTE_DIR" commit -m "Gather configs ${GATHER_TIMESTAMP}" || echo "No changes to commit"
-git -C "$LCT_REMOTE_DIR" push origin main || echo "No remote repository configured, skipping push"
+if git -C "$LCT_REMOTE_DIR" remote get-url origin >/dev/null 2>&1; then
+  git -C "$LCT_REMOTE_DIR" push origin main || echo "No remote repository configured, skipping push"
+else
+  echo "No remote repository configured, skipping push"
+fi
 lct_log_info "Gather completed (timestamp=${GATHER_TIMESTAMP})"
 
 if gum_available; then

@@ -10,6 +10,7 @@ remote: null
 configs: []
 dotfiles: []
 other: []
+secrets: []
 plugins: []
 modules: []
 EOF
@@ -19,6 +20,7 @@ EOF
       .configs = (.configs // []) |
       .dotfiles = (.dotfiles // []) |
       .other = ((.other // []) | to_entries | map(.value)) |
+      .secrets = (.secrets // []) |
       .plugins = (.plugins // []) |
       .modules = (.modules // [])
     ' "$LCT_CONFIG_FILE"

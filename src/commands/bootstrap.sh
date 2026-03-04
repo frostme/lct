@@ -52,6 +52,69 @@ done
 
 echo "✅ Configs successfully copied"
 
+restore_secrets() {
+  if ((${#SECRETS[@]} == 0)); then
+    lct_log_debug "No secrets configured; skipping secret restore"
+    return
+  fi
+
+  if [[ ! -d "$LCT_REMOTE_SECRETS_DIR" ]]; then
+    echo "ℹ No encrypted secrets found in remote repository, skipping secrets restore"
+    lct_log_warn "Secrets configured but ${LCT_REMOTE_SECRETS_DIR} is missing"
+    return
+  fi
+
+  if ! command -v openssl >/dev/null 2>&1; then
+    echo "❌ openssl is required to decrypt secrets" >&2
+    lct_log_error "openssl missing; cannot decrypt secrets"
+    exit 1
+  fi
+
+  local passphrase
+  if ! passphrase="$(lct_read_secret_passphrase "Enter password to decrypt secrets:")"; then
+    echo "❌ Failed to read decryption password" >&2
+    exit 1
+  fi
+
+  if [[ -z "$passphrase" ]]; then
+    echo "❌ Decryption password cannot be empty" >&2
+    exit 1
+  fi
+
+  echo "Restoring secrets"
+  for secret_path in "${SECRETS[@]}"; do
+    local archive_name dest_path tmp_tar
+    archive_name="$(lct_secret_archive_name "$secret_path")" || {
+      echo "⚠ Skipping invalid secret path: $secret_path"
+      lct_log_warn "Invalid secret path: ${secret_path}"
+      continue
+    }
+
+    dest_path="$(expand_home_path "$secret_path")"
+    if [[ -e "$dest_path" ]]; then
+      echo "Skipping existing secret: $secret_path"
+      continue
+    fi
+
+    if [[ ! -f "$LCT_REMOTE_SECRETS_DIR/$archive_name" ]]; then
+      echo "⚠ Encrypted secret not found for $secret_path, skipping"
+      lct_log_warn "Encrypted secret missing for ${secret_path}"
+      continue
+    fi
+
+    tmp_tar="$(mktemp "${LCT_CACHE_DIR:-/tmp}/lct-secret.XXXXXX.tar.gz")"
+    if ! lct_decrypt_secret_archive "$LCT_REMOTE_SECRETS_DIR/$archive_name" "$tmp_tar" "$passphrase"; then
+      echo "❌ Failed to decrypt secret: $secret_path" >&2
+      rm -f "$tmp_tar"
+      exit 1
+    fi
+
+    tar -xzf "$tmp_tar" -C "$HOME" --keep-old-files
+    rm -f "$tmp_tar"
+    echo "Restored $secret_path"
+  done
+}
+
 ############# plugin installations #############
 total_plugins=${#PLUGINS[@]}
 loaded=0
@@ -60,6 +123,7 @@ plugin_installation
 load_plugins
 
 module_installation
+restore_secrets
 lct_log_info "Bootstrap completed successfully"
 
 # ##################################################

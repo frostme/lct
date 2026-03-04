@@ -117,6 +117,7 @@ detect_directories() {
   LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
   LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
   LCT_REMOTE_DIR="${LCT_SHARE_DIR}/remote"
+  LCT_REMOTE_SECRETS_DIR="${LCT_REMOTE_DIR}/secrets"
   LCT_BREW_FILE="${LCT_SHARE_DIR}/Brewfile"
   LCT_ALIAS_FILE="${LCT_SHARE_DIR}/alias.yaml"
   LCT_INIT_FILE="${LCT_SHARE_DIR}/.init_done"
@@ -139,6 +140,7 @@ setup_directories() {
   [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
   [[ -d "${LCT_STATE_DIR}" ]] || mkdir -p "${LCT_STATE_DIR}"
   [[ -d "${LCT_REMOTE_DIR}" ]] || mkdir -p "${LCT_REMOTE_DIR}"
+  [[ -d "${LCT_REMOTE_SECRETS_DIR}" ]] || mkdir -p "${LCT_REMOTE_SECRETS_DIR}"
   [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
   [[ -f "${LCT_ALIAS_FILE}" ]] || touch "${LCT_ALIAS_FILE}"
@@ -200,12 +202,17 @@ load_configuration() {
     [[ "$LCT_PACKAGE_MANAGER" == "null" ]] && LCT_PACKAGE_MANAGER=""
     declare -ga OTHERFILES
     mapfile -t OTHERFILES < <(yq -r '.other // [] | .[]?' "${LCT_CONFIG_FILE}")
+    declare -ga SECRETS
+    mapfile -t SECRETS < <(yq -r '.secrets // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -ga PLUGINS
     mapfile -t PLUGINS < <(yq -r '.plugins // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -ga MODULES
     mapfile -t MODULES < <(yq -r '.modules // [] | .[]' "${LCT_CONFIG_FILE}")
     load_plugin_configs
-    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]}"
+    if ((${#SECRETS[@]})); then
+      mapfile -t SECRETS < <(printf '%s\n' "${SECRETS[@]}" | awk 'NF && !seen[$0]++')
+    fi
+    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} secrets=${#SECRETS[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]}"
   fi
 }
 
