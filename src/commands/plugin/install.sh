@@ -1,4 +1,5 @@
 plugin=${args[plugin]:-}
+lct_log_debug "plugin install command started (plugin=${plugin:-<all>})"
 
 if [[ -n "$plugin" ]]; then
   if [[ "$plugin" != */* ]]; then
@@ -31,3 +32,4 @@ fi
 
 plugin_installation
 load_plugins
+lct_log_info "plugin install command completed"

@@ -73,8 +73,10 @@ plugin_paths_for_entry() {
 load_plugins() {
   local plugin owner repo name plugin_dir main_script
 
+  lct_log_debug "Loading plugin entrypoints (count=${#PLUGINS[@]})"
   for plugin in "${PLUGINS[@]}"; do
     if [[ ! "$plugin" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+      lct_log_error "Invalid plugin identifier: ${plugin}"
       echo "❌ ERROR: Invalid plugin identifier '${plugin}'. Expected only [A-Za-z0-9._-] characters with / separators." >&2
       return 1
     fi
@@ -92,9 +94,11 @@ load_plugins() {
     main_script="$plugin_dir/main.sh"
 
     if [[ -f "$main_script" ]]; then
+      lct_log_debug "Sourcing plugin entrypoint ${main_script}"
       # shellcheck disable=SC1090
       source "$main_script"
     else
+      lct_log_error "Plugin entrypoint not found: ${main_script}"
       echo "❌ ERROR: Plugin entrypoint not found at ${main_script}" >&2
       return 1
     fi

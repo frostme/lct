@@ -1,0 +1,32 @@
+DEBUG [lct]: Ensuring lct directories and base files exist
+DEBUG [lct]: Detecting base directories from environment and defaults
+DEBUG [lct]: Resolved log file path: ~/.local/state/lct/debug.log
+DEBUG [lct]: Directory setup complete
+DEBUG [lct]: Loading config from ~/.config/lct/config.yaml
+DEBUG [lct]: Loaded config arrays: configs=0 dotfiles=0 other=0 plugins=0 modules=0
+DEBUG [lct]: Loading environment overrides from ~/.local/share/lct/env.yaml
+DEBUG [lct]: Initialization complete (verbose=0)
+Ensuring lct directories and base files exist
+Detecting base directories from environment and defaults
+Resolved log file path: ~/.local/state/lct/debug.log
+Directory setup complete
+Loading config from ~/.config/lct/config.yaml
+Loaded config arrays: configs=0 dotfiles=0 other=0 plugins=0 modules=0
+Loading environment overrides from ~/.local/share/lct/env.yaml
+Initialization complete (verbose=0)
+Ensuring lct directories and base files exist
+Detecting base directories from environment and defaults
+Resolved log file path: ~/.local/state/lct/debug.log
+Directory setup complete
+Loading config from ~/.config/lct/config.yaml
+Loaded config arrays: configs=0 dotfiles=0 other=0 plugins=0 modules=0
+Loading environment overrides from ~/.local/share/lct/env.yaml
+Initialization complete (verbose=0)
+Ensuring lct directories and base files exist
+Detecting base directories from environment and defaults
+Resolved log file path: ~/.local/state/lct/debug.log
+Directory setup complete
+Loading config from ~/.config/lct/config.yaml
+Loaded config arrays: configs=0 dotfiles=0 other=0 plugins=0 modules=0
+Loading environment overrides from ~/.local/share/lct/env.yaml
+Initialization complete (verbose=1)

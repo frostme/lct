@@ -1,7 +1,59 @@
-enable_stacktrace
 enable_auto_colors
 
 LCT_PACKAGE_MANAGER=""
+LCT_VERBOSE="${LCT_VERBOSE:-0}"
+
+lct_stacktrace() {
+  local exit_status="$?"
+  local i=0
+  local caller_output line func file
+  local trace_lines=()
+
+  trace_lines+=("command=${BASH_COMMAND}")
+  trace_lines+=("source=${BASH_SOURCE[0]}:${BASH_LINENO[0]}")
+  trace_lines+=("function=${FUNCNAME[1]}")
+  trace_lines+=("exit_status=${exit_status}")
+
+  printf "%s:%s in \`%s\`: %s\n" "${BASH_SOURCE[0]}" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" "$BASH_COMMAND" >&2
+  printf "\nStack trace:\n" >&2
+  while caller_output="$(caller $i)"; do
+    read -r line func file <<<"$caller_output"
+    printf "\tfrom %s:%s in \`%s\`\n" "$file" "$line" "$func" >&2
+    trace_lines+=("frame=${file}:${line}:${func}")
+    i=$((i + 1))
+  done
+
+  if declare -F lct_log_exception >/dev/null 2>&1; then
+    local joined
+    joined="$(printf '%s | ' "${trace_lines[@]}")"
+    joined="${joined% | }"
+    lct_log_exception "Unhandled error with stacktrace: ${joined}"
+  fi
+
+  exit "$exit_status"
+}
+
+enable_lct_stacktrace() {
+  trap 'lct_stacktrace' ERR
+  set -o errtrace
+  set -o errexit
+}
+
+enable_lct_stacktrace
+
+detect_verbose_flag() {
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+    --verbose | -V)
+      LCT_VERBOSE=1
+      break
+      ;;
+    esac
+  done
+}
+
+detect_verbose_flag "${command_line_args[@]:-}"
 
 # -----------------------------
 # Function: set_origin_remote
@@ -36,6 +88,7 @@ set_origin_remote() {
 }
 
 detect_directories() {
+  lct_log_debug "Detecting base directories from environment and defaults"
   if [ -z "${SOFTWARE_DIR+x}" ]; then
     SOFTWARE_DIR="$HOME/software"
   fi
@@ -59,6 +112,7 @@ detect_directories() {
   LCT_SOFTWARE_DIR="${SOFTWARE_DIR}/lct"
   LCT_SHARE_DIR="${SHARE_DIR}/lct"
   LCT_CONFIG_DIR="${CONFIG_DIR}/lct"
+  LCT_STATE_DIR="${STATE_DIR}/lct"
   LCT_CACHE_DIR="${CACHE_DIR}/lct"
   LCT_ENV_FILE="${LCT_SHARE_DIR}/env.yaml"
   LCT_CONFIG_FILE="${LCT_CONFIG_DIR}/config.yaml"
@@ -71,14 +125,19 @@ detect_directories() {
   LCT_MODULES_CACHE_DIR="${LCT_CACHE_DIR}/modules"
   LCT_MODULES_DIR="${LCT_SHARE_DIR}/modules"
   LCT_MODULES_BIN_DIR="${LCT_MODULES_DIR}/bin"
+  LCT_DEBUG_LOG_FILE="${LCT_STATE_DIR}/debug.log"
+  lct_init_logging
+  lct_log_debug "Resolved log file path: ${LCT_DEBUG_LOG_FILE}"
 }
 
 setup_directories() {
+  lct_log_debug "Ensuring lct directories and base files exist"
   detect_directories
 
   [[ -d "${LCT_SOFTWARE_DIR}" ]] || mkdir -p "${LCT_SOFTWARE_DIR}"
   [[ -d "${LCT_SHARE_DIR}" ]] || mkdir -p "${LCT_SHARE_DIR}"
   [[ -d "${LCT_CONFIG_DIR}" ]] || mkdir -p "${LCT_CONFIG_DIR}"
+  [[ -d "${LCT_STATE_DIR}" ]] || mkdir -p "${LCT_STATE_DIR}"
   [[ -d "${LCT_REMOTE_DIR}" ]] || mkdir -p "${LCT_REMOTE_DIR}"
   [[ -f "${LCT_ENV_FILE}" ]] || touch "${LCT_ENV_FILE}"
   [[ -f "${LCT_CONFIG_FILE}" ]] || touch "${LCT_CONFIG_FILE}"
@@ -92,6 +151,7 @@ setup_directories() {
   [[ -d "${LCT_MODULES_DIR}" ]] || mkdir -p "${LCT_MODULES_DIR}"
   [[ -d "${LCT_MODULES_BIN_DIR}" ]] || mkdir -p "${LCT_MODULES_BIN_DIR}"
   [[ -d "${LCT_MODULES_CACHE_DIR}" ]] || mkdir -p "${LCT_MODULES_CACHE_DIR}"
+  lct_log_debug "Directory setup complete"
 }
 
 load_plugin_configs() {
@@ -130,6 +190,7 @@ load_plugin_configs() {
 }
 
 load_configuration() {
+  lct_log_debug "Loading config from ${LCT_CONFIG_FILE}"
   # Load LCT configuration
   if [[ -f "${LCT_CONFIG_FILE}" ]]; then
     REMOTE_CONFIG_REPO=$(yq -r '.remote // ""' "${LCT_CONFIG_FILE}")
@@ -144,10 +205,12 @@ load_configuration() {
     declare -ga MODULES
     mapfile -t MODULES < <(yq -r '.modules // [] | .[]' "${LCT_CONFIG_FILE}")
     load_plugin_configs
+    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]}"
   fi
 }
 
 load_env() {
+  lct_log_debug "Loading environment overrides from ${LCT_ENV_FILE}"
   # Load LCT environment variables
   if [[ -f "${LCT_ENV_FILE}" ]]; then
     while IFS='=' read -r key value; do
@@ -163,6 +226,7 @@ load_env() {
   fi
 
   if [[ -n "$REMOTE_CONFIG_REPO" && "$REMOTE_CONFIG_REPO" != "null" ]]; then
+    lct_log_debug "Configuring origin remote for ${LCT_REMOTE_DIR}"
     set_origin_remote
   fi
 }
@@ -170,3 +234,4 @@ load_env() {
 setup_directories
 load_configuration
 load_env
+lct_log_debug "Initialization complete (verbose=${LCT_VERBOSE})"

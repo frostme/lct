@@ -871,8 +871,10 @@ module_installation() {
   : "${LCT_MODULES_CACHE_DIR:?LCT_MODULES_CACHE_DIR is required}"
 
   mkdir -p "$LCT_MODULES_DIR" "$LCT_MODULES_BIN_DIR" "$LCT_MODULES_CACHE_DIR"
+  lct_log_debug "module_installation started (modules=${#MODULES[@]})"
 
   if [[ ${#MODULES[@]} -eq 0 ]]; then
+    lct_log_debug "module_installation found no modules to install"
     echo "No modules specified in config.yaml, nothing to install." >&2
     return 0
   fi
@@ -881,6 +883,7 @@ module_installation() {
 
   local failures=0
   for module in "${MODULES[@]}"; do
+    lct_log_debug "Installing module entry: ${module}"
     local parsed_name parsed_version
     module_parse_entry "$module" parsed_name parsed_version
     install_module_repo "$parsed_name" "$parsed_version" || failures=1
@@ -892,5 +895,6 @@ module_installation() {
     echo "✅ Module installation complete"
   fi
 
+  lct_log_info "module_installation completed (failures=${failures})"
   return $failures
 }

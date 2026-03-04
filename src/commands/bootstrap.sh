@@ -1,4 +1,5 @@
 FORCE=${args[--force]:-0}
+lct_log_debug "bootstrap command started (force=${FORCE})"
 
 run_init_if_needed
 
@@ -7,12 +8,14 @@ REMOTE_CONFIGS_DIR="$LCT_REMOTE_DIR/configs"
 gum_title "Starting Bootstrap Process"
 
 if [[ ! -d "$REMOTE_CONFIGS_DIR" ]]; then
+  lct_log_error "Bootstrap aborted: missing remote configs dir ${REMOTE_CONFIGS_DIR}"
   echo "❌ No gathered remote configuration found at $REMOTE_CONFIGS_DIR" >&2
   echo "Run 'lct gather' first to populate the remote repository." >&2
   exit 1
 fi
 
 if git -C "$LCT_REMOTE_DIR" remote get-url origin >/dev/null 2>&1; then
+  lct_log_debug "Pulling latest remote config repository changes"
   git -C "$LCT_REMOTE_DIR" pull --ff-only >/dev/null 2>&1 || true
 fi
 
@@ -24,6 +27,7 @@ else
 fi
 
 echo "Installing package manager dependencies"
+lct_log_debug "Installing package manager bundle from ${LCT_REMOTE_DIR}"
 _lct_install_gathered_package_bundle "$LCT_REMOTE_DIR"
 
 if [ -d "$SOFTWARE_DIR" ]; then
@@ -34,6 +38,7 @@ else
 fi
 
 echo "Applying library configs"
+lct_log_debug "Applying ${#CONFIGS[@]} config entries"
 
 for lib in "${CONFIGS[@]}"; do
   if [ -d "$CONFIG_DIR/$lib" ] && [ "$FORCE" == 0 ]; then
@@ -55,6 +60,7 @@ plugin_installation
 load_plugins
 
 module_installation
+lct_log_info "Bootstrap completed successfully"
 
 # ##################################################
 
