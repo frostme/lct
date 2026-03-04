@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.6.5 - 2026-03-04
+- use token in github release
+- head roll
+- isolated release code (#144)
+- Undo release v1.0.0
+- unrelease final take
+- run deploy at end (#143)
+- Frostme/unrelease take 2 (#142)
+- unrelease first take (#141)
+- Add merge retry settings to release.yml (#140)
+- Release v1.0.0 (#139)
+- overhauled the file process (#138)
+- lct file command (#134)
+- Release v0.5.0 (#133)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.5.0...v0.6.5
+
+
 ## v1.0.0 - 2026-03-03
 - overhauled the file process (#138)
 - lct file command (#134)
