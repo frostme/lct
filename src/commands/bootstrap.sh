@@ -67,7 +67,10 @@ if ((${#PROJECTS[@]})); then
 
     repo_name="${project#*/}"
     dest_dir="${CODE_DIR}/${repo_name}"
-    if [[ -d "$dest_dir" ]]; then
+    if [[ -e "$dest_dir" && ! -d "$dest_dir" ]]; then
+      echo "❌ ERROR: Destination path ${dest_dir} exists and is not a directory; cannot clone ${project}" >&2
+      exit 1
+    elif [[ -d "$dest_dir" ]]; then
       echo " - ${project} already present"
       continue
     fi
