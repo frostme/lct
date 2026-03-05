@@ -8,5 +8,9 @@ if ! owner_repo="$(project_owner_repo_from_git)"; then
 fi
 
 ensure_config_defaults
-PROJECT_ENTRY="$owner_repo" yq -i '.projects = (.projects // []) | .projects |= map(select(. != env(PROJECT_ENTRY)))' "$LCT_CONFIG_FILE"
-echo "Removed project ${owner_repo}"
+if PROJECT_ENTRY="$owner_repo" yq -r '(.projects // []) | any(. == env(PROJECT_ENTRY))' "$LCT_CONFIG_FILE" | grep -q 'true'; then
+  PROJECT_ENTRY="$owner_repo" yq -i '.projects = (.projects // []) | .projects |= map(select(. != env(PROJECT_ENTRY)))' "$LCT_CONFIG_FILE"
+  echo "Removed project ${owner_repo}"
+else
+  echo "Project ${owner_repo} not configured"
+fi
