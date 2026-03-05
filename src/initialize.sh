@@ -129,7 +129,6 @@ detect_directories() {
   LCT_MODULES_CACHE_DIR="${LCT_CACHE_DIR}/modules"
   LCT_MODULES_DIR="${LCT_SHARE_DIR}/modules"
   LCT_MODULES_BIN_DIR="${LCT_MODULES_DIR}/bin"
-  LCT_CODE_DIR="${CODE_DIR}"
   LCT_DEBUG_LOG_FILE="${LCT_STATE_DIR}/debug.log"
   lct_init_logging
   lct_log_debug "Resolved log file path: ${LCT_DEBUG_LOG_FILE}"
