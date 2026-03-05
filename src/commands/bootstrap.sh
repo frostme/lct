@@ -61,7 +61,7 @@ if ((${#PROJECTS[@]})); then
     [[ -n "$project" ]] || continue
 
     if ! project_entry_valid "$project"; then
-      echo "❌ ERROR: Skipping invalid project entry '${project}'" >&2
+      echo "❌ ERROR: Invalid project entry '${project}'. Aborting bootstrap." >&2
       exit 1
     fi
 
