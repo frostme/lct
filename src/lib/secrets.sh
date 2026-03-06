@@ -29,14 +29,18 @@ lct_secret_relative_path() {
 
 lct_secret_archive_name() {
   local input="$1"
-  local relative safe
+  local relative encoded
 
   if ! relative="$(lct_secret_relative_path "$input")"; then
     return 1
   fi
 
-  safe="$(printf '%s' "$relative" | tr '/' '_' | tr -c 'A-Za-z0-9._-' '_')"
-  printf '%s.tar.gz.enc\n' "$safe"
+  # Use a collision-resistant, filename-safe encoding (base64url) of the relative path.
+  if ! encoded="$(printf '%s' "$relative" | base64 | tr '+/' '-_' | tr -d '=')"; then
+    return 1
+  fi
+
+  printf '%s.tar.gz.enc\n' "$encoded"
 }
 
 lct_encrypt_secret_path() {

@@ -205,7 +205,7 @@ handle_secret_hits
 git -C "$LCT_REMOTE_DIR" add .
 git -C "$LCT_REMOTE_DIR" commit -m "Gather configs ${GATHER_TIMESTAMP}" || echo "No changes to commit"
 if git -C "$LCT_REMOTE_DIR" remote get-url origin >/dev/null 2>&1; then
-  git -C "$LCT_REMOTE_DIR" push origin main || echo "No remote repository configured, skipping push"
+  git -C "$LCT_REMOTE_DIR" push origin main || echo "Failed to push to remote 'origin', skipping push (see git error above)"
 else
   echo "No remote repository configured, skipping push"
 fi

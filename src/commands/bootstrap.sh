@@ -64,6 +64,24 @@ restore_secrets() {
     return
   fi
 
+  local has_encrypted_archives=0
+  local archive_name
+  for secret_path in "${SECRETS[@]}"; do
+    archive_name="$(lct_secret_archive_name "$secret_path")" || {
+      lct_log_warn "Invalid secret path during secrets availability check: ${secret_path}"
+      continue
+    }
+    if [[ -f "$LCT_REMOTE_SECRETS_DIR/$archive_name" ]]; then
+      has_encrypted_archives=1
+      break
+    fi
+  done
+
+  if (( has_encrypted_archives == 0 )); then
+    echo "ℹ No encrypted secrets archives found in remote repository, skipping secrets restore"
+    lct_log_info "Secrets configured but no encrypted archives present in ${LCT_REMOTE_SECRETS_DIR}"
+    return
+  fi
   if ! command -v openssl >/dev/null 2>&1; then
     echo "❌ openssl is required to decrypt secrets" >&2
     lct_log_error "openssl missing; cannot decrypt secrets"
@@ -109,6 +127,31 @@ restore_secrets() {
       exit 1
     fi
 
+    # Validate archive contents before extraction to prevent path traversal
+    local archive_entries safe_archive entry
+    if ! archive_entries="$(tar -tzf "$tmp_tar")"; then
+      echo "❌ Failed to inspect decrypted secret archive for $secret_path" >&2
+      rm -f "$tmp_tar"
+      exit 1
+    fi
+
+    safe_archive=1
+    while IFS= read -r entry; do
+      # Skip empty lines
+      [[ -z "$entry" ]] && continue
+      case "$entry" in
+        /*|../*|*/../*|*/..|..)
+          safe_archive=0
+          ;;
+      esac
+      (( safe_archive )) || break
+    done <<< "$archive_entries"
+
+    if (( ! safe_archive )); then
+      echo "❌ Unsafe paths detected in decrypted secret archive for $secret_path; aborting restore" >&2
+      rm -f "$tmp_tar"
+      exit 1
+    fi
     tar -xzf "$tmp_tar" -C "$HOME" --keep-old-files
     rm -f "$tmp_tar"
     echo "Restored $secret_path"
