@@ -13,6 +13,7 @@ dotfiles: []
 other: []
 plugins: []
 modules: []
+projects: []
 ```
 
 ## Full config
@@ -34,5 +35,8 @@ plugins:
 modules:
   - github.com/example/lct-module
   - github.com/example/lct-theme
+projects:
+  - frostme/lct
+  - frostme/hmgmt-vibe
 packageManager: mise
 ```

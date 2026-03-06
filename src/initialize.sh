@@ -101,6 +101,10 @@ detect_directories() {
     SHARE_DIR="$HOME/.local/share"
   fi
 
+  if [ -z "${CODE_DIR+x}" ]; then
+    CODE_DIR="$HOME/code"
+  fi
+
   if [ -z "${STATE_DIR+x}" ]; then
     STATE_DIR="$HOME/.local/state"
   fi
@@ -204,8 +208,10 @@ load_configuration() {
     mapfile -t PLUGINS < <(yq -r '.plugins // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -ga MODULES
     mapfile -t MODULES < <(yq -r '.modules // [] | .[]' "${LCT_CONFIG_FILE}")
+    declare -ga PROJECTS
+    mapfile -t PROJECTS < <(yq -r '.projects // [] | .[]' "${LCT_CONFIG_FILE}")
     load_plugin_configs
-    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]}"
+    lct_log_debug "Loaded config arrays: configs=${#CONFIGS[@]} dotfiles=${#DOTFILES[@]} other=${#OTHERFILES[@]} plugins=${#PLUGINS[@]} modules=${#MODULES[@]} projects=${#PROJECTS[@]}"
   fi
 }
 

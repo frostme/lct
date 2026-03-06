@@ -52,6 +52,40 @@ done
 
 echo "✅ Configs successfully copied"
 
+if ((${#PROJECTS[@]})); then
+  echo "Cloning configured projects"
+  lct_log_debug "Cloning ${#PROJECTS[@]} projects into ${CODE_DIR}"
+  [[ -d "$CODE_DIR" ]] || mkdir -p "$CODE_DIR"
+
+  for project in "${PROJECTS[@]}"; do
+    [[ -n "$project" ]] || continue
+
+    if ! project_entry_valid "$project"; then
+      echo "❌ ERROR: Invalid project entry '${project}'. Aborting bootstrap." >&2
+      exit 1
+    fi
+
+    repo_name="${project#*/}"
+    dest_dir="${CODE_DIR}/${repo_name}"
+    if [[ -e "$dest_dir" && ! -d "$dest_dir" ]]; then
+      echo "❌ ERROR: Destination path ${dest_dir} exists and is not a directory; cannot clone ${project}" >&2
+      exit 1
+    elif [[ -d "$dest_dir" ]]; then
+      echo " - ${project} already present"
+      continue
+    fi
+
+    clone_url="$(project_clone_url "$project")"
+    lct_log_debug "Cloning ${project} from ${clone_url} into ${dest_dir}"
+    if ! gum_spinner "Cloning ${project}" git clone --quiet "$clone_url" "$dest_dir"; then
+      echo "❌ ERROR: Failed to clone ${project} from ${clone_url}" >&2
+      exit 1
+    fi
+  done
+
+  echo "✅ Projects cloned"
+fi
+
 ############# plugin installations #############
 total_plugins=${#PLUGINS[@]}
 loaded=0

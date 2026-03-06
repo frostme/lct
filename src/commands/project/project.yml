@@ -1,0 +1,13 @@
+name: project
+help: Manage tracked code projects
+examples:
+  - lct project list
+  - lct project add
+  - lct project remove
+commands:
+  - name: list
+    help: List configured projects
+  - name: add
+    help: Add the current git project to the config
+  - name: remove
+    help: Remove the current git project from the config

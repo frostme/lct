@@ -12,6 +12,7 @@ dotfiles: []
 other: []
 plugins: []
 modules: []
+projects: []
 EOF
   else
     yq -i '
@@ -20,7 +21,8 @@ EOF
       .dotfiles = (.dotfiles // []) |
       .other = ((.other // []) | to_entries | map(.value)) |
       .plugins = (.plugins // []) |
-      .modules = (.modules // [])
+      .modules = (.modules // []) |
+      .projects = (.projects // [])
     ' "$LCT_CONFIG_FILE"
   fi
 }
