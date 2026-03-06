@@ -1,4 +1,6 @@
 No plugins specified in config.yaml, nothing to install.
+No modules specified in config.yaml, nothing to install.
+
 ┌────────────────────────────┐
 │ Starting Bootstrap Process │
 └────────────────────────────┘
@@ -12,3 +14,4 @@ Applying nvim config
 ✅ Configs successfully copied
 Cloning configured projects
 ✅ Projects cloned
+✅ Bootstrap complete
