@@ -18,6 +18,7 @@ Commands:
   env           Manage local environment variables
   reload        Reload lct environment variables and aliases into the current shell
   plugin        Develop and manage lct plugins
+  project       Manage tracked code projects
   completions   Generate bash completions
   config        Open your config files in your nvim
   setup         Setup lct in your shell
@@ -45,6 +46,10 @@ Environment Variables:
   SHARE_DIR
     Base directory for local shared application data.
     Default: ~/.local/share
+
+  CODE_DIR
+    Base directory for local code projects.
+    Default: ~/code
 
   STATE_DIR
     Base directory for persistent local state data.

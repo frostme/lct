@@ -18,6 +18,9 @@ environment_variables:
   - name: SHARE_DIR
     help: Base directory for local shared application data.
     default: $HOME/.local/share
+  - name: CODE_DIR
+    help: Base directory for local code projects.
+    default: $HOME/code
   - name: STATE_DIR
     help: Base directory for persistent local state data.
     default: $HOME/.local/state
@@ -152,6 +155,7 @@ commands:
     examples:
       - eval $(lct reload)
   - import: src/commands/plugin/plugin.yml
+  - import: src/commands/project/project.yml
   - import: src/commands/pages/pages.yml
   - name: completions
     help: |-

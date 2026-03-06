@@ -13,6 +13,7 @@ other: []
 secrets: []
 plugins: []
 modules: []
+projects: []
 EOF
   else
     yq -i '
@@ -22,7 +23,8 @@ EOF
       .other = ((.other // []) | to_entries | map(.value)) |
       .secrets = (.secrets // []) |
       .plugins = (.plugins // []) |
-      .modules = (.modules // [])
+      .modules = (.modules // []) |
+      .projects = (.projects // [])
     ' "$LCT_CONFIG_FILE"
   fi
 }

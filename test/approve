@@ -253,6 +253,31 @@ approve "${cli} secrets list" "secrets_list_after_remove"
 it "rejects absolute secret paths"
 approve "${cli} secrets add /etc/passwd" "secrets_add_reject_absolute"
 
+describe "project command"
+cat >"$tmpdir/.config/lct/config.yaml" <<'EOF'
+remote: null
+configs: []
+dotfiles: []
+other: []
+plugins: []
+modules: []
+projects: []
+EOF
+project_workdir="$tmpdir/work-project"
+mkdir -p "$project_workdir"
+git -C "$project_workdir" init -q
+git -C "$project_workdir" config user.email "test@example.com"
+git -C "$project_workdir" config user.name "Test User"
+git -C "$project_workdir" remote add origin "git@github.com:frostme/lct.git"
+pushd "$project_workdir" >/dev/null
+approve "${cli} project list" "project_list_empty"
+approve "${cli} project add" "project_add"
+approve "${cli} project add" "project_add_idempotent"
+approve "${cli} project list" "project_list_after_add"
+approve "${cli} project remove" "project_remove"
+approve "${cli} project list" "project_list_after_remove"
+popd >/dev/null
+
 describe "install command"
 mock_repo_root="$tmpdir/mock-github/example/demo"
 mkdir -p "$mock_repo_root"
@@ -507,6 +532,47 @@ modules: []
 packageManager: apt
 EOF
 approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_force_apt_bundle"
+it "clones configured projects during bootstrap"
+rm -rf "$tmpdir/.local/share/lct/remote"
+mkdir -p "$tmpdir/.local/share/lct/remote/configs/nvim"
+cat >"$tmpdir/.local/share/lct/remote/configs/nvim/init.lua" <<'EOF'
+print("init")
+EOF
+cat >"$tmpdir/.local/share/lct/remote/config.yaml" <<'EOF'
+remote: null
+configs:
+  - nvim
+dotfiles: []
+other: []
+plugins: []
+modules: []
+projects:
+  - example/demo
+EOF
+cat >"$tmpdir/.config/lct/config.yaml" <<'EOF'
+remote: null
+configs:
+  - nvim
+dotfiles: []
+other: []
+plugins: []
+modules: []
+projects:
+  - example/demo
+EOF
+rm -rf "$tmpdir/code"
+project_clone_repo="$tmpdir/mock-github/example/demo.git"
+mkdir -p "$project_clone_repo"
+git -C "$project_clone_repo" init -q
+git -C "$project_clone_repo" config user.email "test@example.com"
+git -C "$project_clone_repo" config user.name "Test User"
+cat >"$project_clone_repo/README.md" <<'EOF'
+# demo
+EOF
+git -C "$project_clone_repo" add README.md
+git -C "$project_clone_repo" commit -q -m "initial"
+approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_projects"
+approve "ls -1 $tmpdir/code" "bootstrap_projects_clone"
 
 describe "env command"
 it "sets an environment variable"

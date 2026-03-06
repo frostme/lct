@@ -1,0 +1,14 @@
+No plugins specified in config.yaml, nothing to install.
+┌────────────────────────────┐
+│ Starting Bootstrap Process │
+└────────────────────────────┘
+                              
+Using config.yaml from remote repository
+Installing package manager dependencies
+⚠ No installable package bundle found in ~/.local/share/lct/remote
+ ~/software already exists
+Applying library configs
+Applying nvim config
+✅ Configs successfully copied
+Cloning configured projects
+✅ Projects cloned

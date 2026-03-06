@@ -48,6 +48,14 @@ Base directory for local shared application data.
 |-----------------|-------------
 | Default Value:  | $HOME/.local/share
 
+#### *CODE_DIR*
+
+Base directory for local code projects.
+
+| Attributes      | &nbsp;
+|-----------------|-------------
+| Default Value:  | $HOME/code
+
 #### *STATE_DIR*
 
 Base directory for persistent local state data.
@@ -78,6 +86,7 @@ Base directory for local cache data.
 - [env](lct%20env.md) - Manage local environment variables
 - [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
+- [project](lct%20project.md) - Manage tracked code projects
 - [completions](lct%20completions.md) - Generate bash completions
 - [config](lct%20config.md) - Open your config files in your ${EDITOR:-editor}
 - [setup](lct%20setup.md) - Setup lct in your shell

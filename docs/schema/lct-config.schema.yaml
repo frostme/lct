@@ -68,6 +68,15 @@ properties:
     default: []
     examples:
       - - github.com/example/lct-module
+  projects:
+    type: array
+    description: List of code projects to clone during bootstrap (OWNER/REPO format).
+    items:
+      type: string
+    default: []
+    examples:
+      - - frostme/lct
+        - frostme/hmgmt-vibe
   packageManager:
     type: string
     description: >-
@@ -90,6 +99,7 @@ examples:
     secrets: []
     plugins: []
     modules: []
+    projects: []
   - remote: git@github.com:example/dotfiles.git
     configs:
       - alacritty
@@ -109,4 +119,7 @@ examples:
     modules:
       - github.com/example/lct-module
       - github.com/example/lct-theme
+    projects:
+      - frostme/lct
+      - frostme/hmgmt-vibe
     packageManager: mise
