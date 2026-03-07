@@ -52,4 +52,4 @@ jobs:
         env:
           CI_NODE_INDEX: ${{ matrix.shard.index }}
           CI_NODE_TOTAL: ${{ matrix.shard.total }}
-        run: bash test/approve
+        run: mise test
