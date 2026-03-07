@@ -45,6 +45,9 @@ jobs:
         with:
           name: lct-build
           path: target/build
+      - name: Make script executable
+        run: |
+          chmod +x ./target/build/lct
       - name: Run Smoke Tests
         env:
           CI_NODE_INDEX: ${{ matrix.shard.index }}
