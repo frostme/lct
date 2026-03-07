@@ -104,15 +104,23 @@ shift || true
 case "$cmd" in
   log)
     output_file=""
+    prefix="lct"
+    log_level=""
     while (($#)); do
       case "$1" in
       -o)
         shift || true
         output_file="${1:-}"
         ;;
-      --prefix|--structured|--time|--level|--separator|--formatter|-s|-t|-l|-sl)
-        # Option with value
+      --prefix)
         shift || true
+        prefix="${1:-lct}"
+        ;;
+      -l|--level|-sl)
+        shift || true
+        log_level="${1:-}"
+        ;;
+      --structured|--time|--separator|--formatter|-s|-t)
         ;;
       --*)
         # Ignore unhandled long options
@@ -124,9 +132,12 @@ case "$cmd" in
       shift || true
     done
     message="$*"
+    log_level="${log_level:-debug}"
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    log_line_file="$(printf '%s [%s] %s' "$ts" "$log_level" "$message")"
     if [[ -n "$output_file" ]]; then
       mkdir -p "$(dirname "$output_file")"
-      printf '%s\n' "$message" >>"$output_file"
+      printf '%s\n' "$log_line_file" >>"$output_file"
     fi
     if [[ "${GUM_LOG_TO_STDOUT:-1}" == "1" ]]; then
       printf '%s\n' "$message"
