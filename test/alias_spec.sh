@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+env_file="${SHARE_DIR}/lct/env.yaml"
+
+cat <<EOF >>"$env_file"
+SAMPLE_KEY: sample-value
+EOF
+
 source "$(dirname "$0")/approvals.bash"
 
 describe "alias command"

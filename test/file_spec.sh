@@ -4,7 +4,7 @@ set -euo pipefail
 source "$(dirname "$0")/approvals.bash"
 
 describe "file command"
-work_dir="$tmpdir/work-files"
+work_dir="$tmpdir/work"
 mkdir -p "$tmpdir/.config/alacritty/sub" "$work_dir"
 touch "$tmpdir/.zshrc" "$tmpdir/.config/alacritty/sub/config.yml" "$work_dir/custom.conf"
 
