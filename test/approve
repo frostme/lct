@@ -2,7 +2,7 @@
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
-semver_tool="$(cd "$(dirname "$0")/.." && pwd)/lct_modules/bin/semver"
+semver_tool="$(cd "$(dirname "$0")/.." && pwd)/scripts/semver"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
 export EDITOR="nvim"

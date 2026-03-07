@@ -45,11 +45,6 @@ description = "Install local lct modules"
 depends = ["build"]
 alias = "i"
 
-[tasks.setup]
-run = "target/build/lct install -g fsaintjacques/semver-tool"
-description = "Setup the development environment by installing necessary tools"
-depends = ["build"]
-
 [tasks.dev]
 run = [
   "gum spin --title \"Installing lct...\" -- bashly g -u",
@@ -93,7 +88,7 @@ if [[ "${usage_type}" == "isolated" ]]; then
   fi
   new_version="${usage_new_version}"
 else
-new_version=$(./lct_modules/bin/semver bump ${usage_type} $current_version)
+new_version=$(./scripts/semver bump ${usage_type} $current_version)
 fi
 echo "Bumping ${current_version} -> ${new_version}"
 yq -i ".version=\"${new_version}\"" ./src/bashly.yml
