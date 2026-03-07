@@ -76,12 +76,13 @@ Base directory for local cache data.
 
 - [init](lct%20init.md) - Initialize lct configuration
 - [bootstrap](lct%20bootstrap.md) - Bootstrap your local configuration
-- [gather](lct%20gather.md) - Gather local configuration files (flags possible secrets before committing)
+- [gather](lct%20gather.md) - Gather local configuration files and encrypt configured secrets (flags possible secrets before committing)
 - [install](lct%20install.md) - Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
 - [self-update](lct%20self-update.md) - Update lct to the latest release
 - [remove](lct%20remove.md) - Remove modules from an LCTFile or globally
 - [alias](lct%20alias.md) - Manage lct aliases
 - [file](lct%20file.md) - Manage tracked file paths
+- [secrets](lct%20secrets.md) - Manage encrypted secret paths
 - [env](lct%20env.md) - Manage local environment variables
 - [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
@@ -110,6 +111,7 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
     configs: []
     dotfiles: []
     other: []
+    secrets: []
     plugins: []
     modules: []
 
@@ -125,6 +127,9 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
     other:
       - ~/work/custom.conf
       - ~/.local/bin/dev-tool
+    secrets:
+      - ~/.claude.json
+      - ~/.ssh/id_rsa
     plugins:
       - gh/owner/example-plugin
       - gh/owner/another-plugin

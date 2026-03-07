@@ -10,6 +10,7 @@ remote: null
 configs: []
 dotfiles: []
 other: []
+secrets: []
 plugins: []
 modules: []
 projects: []
@@ -20,6 +21,7 @@ EOF
       .configs = (.configs // []) |
       .dotfiles = (.dotfiles // []) |
       .other = ((.other // []) | to_entries | map(.value)) |
+      .secrets = (.secrets // []) |
       .plugins = (.plugins // []) |
       .modules = (.modules // []) |
       .projects = (.projects // [])

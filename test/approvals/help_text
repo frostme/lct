@@ -8,12 +8,13 @@ Usage:
 Commands:
   init          Initialize lct configuration
   bootstrap     Bootstrap your local configuration
-  gather        Gather local configuration files (flags possible secrets before committing)
+  gather        Gather local configuration files and encrypt configured secrets (flags possible secrets before committing)
   install       Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
   self-update   Update lct to the latest release
   remove        Remove modules from an LCTFile or globally
   alias         Manage lct aliases
   file          Manage tracked file paths
+  secrets       Manage encrypted secret paths
   env           Manage local environment variables
   reload        Reload lct environment variables and aliases into the current shell
   plugin        Develop and manage lct plugins

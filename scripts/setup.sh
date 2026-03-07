@@ -10,4 +10,3 @@ fi
 
 mise trust
 mise install
-mise run setup

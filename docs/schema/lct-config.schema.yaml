@@ -43,6 +43,15 @@ properties:
     examples:
       - - ~/work/custom.conf
         - ~/.local/bin/dev-tool
+  secrets:
+    type: array
+    description: List of secret files or directories to encrypt during gather.
+    items:
+      type: string
+    default: []
+    examples:
+      - - ~/.claude.json
+        - ~/.ssh/id_rsa
   plugins:
     type: array
     description: List of lct plugins to install or load.
@@ -79,6 +88,7 @@ required:
   - configs
   - dotfiles
   - other
+  - secrets
   - plugins
   - modules
 examples:
@@ -86,6 +96,7 @@ examples:
     configs: []
     dotfiles: []
     other: []
+    secrets: []
     plugins: []
     modules: []
     projects: []
@@ -99,6 +110,9 @@ examples:
     other:
       - ~/work/custom.conf
       - ~/.local/bin/dev-tool
+    secrets:
+      - ~/.claude.json
+      - ~/.ssh/id_rsa
     plugins:
       - gh/owner/example-plugin
       - gh/owner/another-plugin

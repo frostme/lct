@@ -2,7 +2,7 @@
 tmpdir="$(mktemp -d)"
 tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
 cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
-semver_tool="$(cd "$(dirname "$0")/.." && pwd)/lct_modules/bin/semver"
+semver_tool="$(cd "$(dirname "$0")/.." && pwd)/scripts/semver"
 mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
 export HOME="$tmpdir"
 export EDITOR="nvim"
@@ -104,15 +104,23 @@ shift || true
 case "$cmd" in
   log)
     output_file=""
+    prefix="lct"
+    log_level=""
     while (($#)); do
       case "$1" in
       -o)
         shift || true
         output_file="${1:-}"
         ;;
-      --prefix|--structured|--time|--level|--separator|--formatter|-s|-t|-l|-sl)
-        # Option with value
+      --prefix)
         shift || true
+        prefix="${1:-lct}"
+        ;;
+      -l|--level|-sl)
+        shift || true
+        log_level="${1:-}"
+        ;;
+      --structured|--time|--separator|--formatter|-s|-t)
         ;;
       --*)
         # Ignore unhandled long options
@@ -124,9 +132,12 @@ case "$cmd" in
       shift || true
     done
     message="$*"
+    log_level="${log_level:-debug}"
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    log_line_file="$(printf '%s [%s] %s' "$ts" "$log_level" "$message")"
     if [[ -n "$output_file" ]]; then
       mkdir -p "$(dirname "$output_file")"
-      printf '%s\n' "$message" >>"$output_file"
+      printf '%s\n' "$log_line_file" >>"$output_file"
     fi
     if [[ "${GUM_LOG_TO_STDOUT:-1}" == "1" ]]; then
       printf '%s\n' "$message"
@@ -172,6 +183,10 @@ case "$cmd" in
       exit 1
     fi
     ;;
+  input)
+    value="${GUM_INPUT_VALUE:-}"
+    printf '%s\n' "$value"
+    ;;
   *)
     exit 0
     ;;
@@ -206,7 +221,7 @@ approve "${cli} --help | sed 's/${tmpdir_escaped}/~/g' | grep -F -- '--verbose, 
 
 describe "verbose logging"
 approve "${cli} --verbose env list | sed 's/${tmpdir_escaped}/~/g'" "verbose_env_list"
-approve "cat $tmpdir/.local/state/lct/debug.log | sed -E 's/${tmpdir_escaped}/~/g; s/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z/<TIME>/g'" "verbose_debug_log"
+approve "cat $tmpdir/.local/state/lct/debug.log | sed -E 's/${tmpdir_escaped}/~/g; s/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]{8}Z \\[[^]]+\\] //; s/^\\[[^]]+\\] //'" "verbose_debug_log"
 
 describe "env command"
 it "sets and lists environment variables"
@@ -238,6 +253,16 @@ it "rejects absolute paths in file remove"
 approve "${cli} file remove /etc/passwd" "file_remove_reject_absolute"
 it "rejects .. segments in file remove"
 approve "${cli} file remove \"work/../etc/passwd\"" "file_remove_reject_dotdot"
+
+describe "secrets command"
+touch "$tmpdir/.claude.json"
+it "manages secret paths"
+approve "${cli} secrets add ~/.claude.json" "secrets_add"
+approve "${cli} secrets list" "secrets_list_after_add"
+approve "${cli} secrets remove ~/.claude.json" "secrets_remove"
+approve "${cli} secrets list" "secrets_list_after_remove"
+it "rejects absolute secret paths"
+approve "${cli} secrets add /etc/passwd" "secrets_add_reject_absolute"
 
 describe "project command"
 cat >"$tmpdir/.config/lct/config.yaml" <<'EOF'
@@ -469,6 +494,29 @@ it "scrubs detected secrets when requested"
 allow_diff "(zsh|bash|Brewfile|brew|apt-packages.txt|apt)"
 approve "HOME=$secret_home CONFIG_DIR=$secret_home/.config SHARE_DIR=$secret_home/.local/share STATE_DIR=$secret_home/.local/state CACHE_DIR=$secret_home/.cache LCT_GATHER_SECRET_ACTION=scrub GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com ${cli} gather --force | sed -E 's/[0-9]{4}\-[0-9]{2}\-[0-9]{2}/<DATE>/g; s/T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/<TIME>/g; s/${tmpdir_escaped}/~/g; s/[0-9]+ file(s)? changed.*/<GIT_COMMIT_SUMMARY>/g; s/[a-f0-9]{7}\.\.[a-f0-9]{7}/<GIT_RANGE>/g; s/\[main \(root-commit\) [a-f0-9]{7}\]/[main (root-commit) <GIT_HASH>]/g' | sed '/^ create mode /d'" "gather_scrub_secrets":
 approve "if [[ ! -f $secret_home/.local/share/lct/remote/other/work/claude.json ]]; then echo 'secret file scrubbed'; else echo 'secret file still present'; fi" "gather_scrub_secrets_result"
+
+describe "gather and bootstrap secrets flow"
+secret_flow_home="$tmpdir/secret-flow"
+mkdir -p "$secret_flow_home/.config/lct" "$secret_flow_home/.local/share" "$secret_flow_home/.local/state" "$secret_flow_home/.cache"
+cat >"$secret_flow_home/.config/lct/config.yaml" <<'EOF'
+remote: null
+configs: []
+dotfiles: []
+other: []
+secrets:
+  - ~/.claude.json
+plugins: []
+modules: []
+packageManager: brew
+EOF
+cat >"$secret_flow_home/.claude.json" <<'EOF'
+{"api_key":"top-secret"}
+EOF
+approve "HOME=$secret_flow_home CONFIG_DIR=$secret_flow_home/.config SHARE_DIR=$secret_flow_home/.local/share STATE_DIR=$secret_flow_home/.local/state CACHE_DIR=$secret_flow_home/.cache LCT_SECRET_PASSPHRASE=testpass GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com ${cli} gather --force | sed -E 's/[0-9]{4}\-[0-9]{2}\-[0-9]{2}/<DATE>/g; s/T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/<TIME>/g; s/${tmpdir_escaped}/~/g; s/[0-9]+ file(s)? changed.*/<GIT_COMMIT_SUMMARY>/g; s/[a-f0-9]{7}\.\.[a-f0-9]{7}/<GIT_RANGE>/g; s/\\[main \\(root-commit\\) [a-f0-9]{7}\\]/[main (root-commit) <GIT_HASH>]/g' | sed '/^ create mode /d'" "gather_secrets_encrypt"
+approve "ls -A $secret_flow_home/.local/share/lct/remote/secrets" "gather_secrets_files"
+rm -f "$secret_flow_home/.claude.json"
+approve "HOME=$secret_flow_home CONFIG_DIR=$secret_flow_home/.config SHARE_DIR=$secret_flow_home/.local/share STATE_DIR=$secret_flow_home/.local/state CACHE_DIR=$secret_flow_home/.cache LCT_SECRET_PASSPHRASE=testpass ${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_secrets_restore"
+approve "cat $secret_flow_home/.claude.json" "bootstrap_secrets_contents"
 
 describe "bootstrap command"
 it "shows bootstrap help"
