@@ -74,7 +74,8 @@ lct_encrypt_secret_path() {
   tar -czf "$tmp_tar" -C "$HOME" -- "$relative"
 
   dest_file="$dest_dir/$archive_name"
-  if ! openssl enc -aes-256-cbc -salt -pbkdf2 -pass "pass:$passphrase" -in "$tmp_tar" -out "$dest_file"; then
+  # passphrase via fd to avoid exposing it in argv/env
+  if ! openssl enc -aes-256-cbc -salt -pbkdf2 -pass fd:3 -in "$tmp_tar" -out "$dest_file" 3<<<"$passphrase"; then
     echo "❌ Failed to encrypt secret: $input" >&2
     lct_log_error "Failed to encrypt secret ${input}"
     rm -f "$tmp_tar"
@@ -90,5 +91,6 @@ lct_decrypt_secret_archive() {
   local output_tar="$2"
   local passphrase="$3"
 
-  openssl enc -d -aes-256-cbc -salt -pbkdf2 -pass "pass:$passphrase" -in "$encrypted_file" -out "$output_tar"
+  # passphrase via fd to avoid exposing it in argv/env
+  openssl enc -d -aes-256-cbc -salt -pbkdf2 -pass fd:3 -in "$encrypted_file" -out "$output_tar" 3<<<"$passphrase"
 }
