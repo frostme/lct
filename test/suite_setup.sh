@@ -1,0 +1,213 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+tmpdir="$(mktemp -d)"
+tmpdir_escaped=$(printf '%s\n' "$tmpdir" | sed 's/[]\/$*.^|[]/\\&/g')
+cli="$(cd "$(dirname "$0")/.." && pwd)/target/build/lct"
+semver_tool="$(cd "$(dirname "$0")/.." && pwd)/scripts/semver"
+mkdir -p "$tmpdir/.config" "$tmpdir/.local/share" "$tmpdir/.local/state" "$tmpdir/.cache"
+export HOME="$tmpdir"
+export EDITOR="nvim"
+export CONFIG_DIR="$tmpdir/.config"
+export SHARE_DIR="$tmpdir/.local/share"
+export STATE_DIR="$tmpdir/.local/state"
+export CACHE_DIR="$tmpdir/.cache"
+export LCT_GITHUB_BASE="file://${tmpdir}/mock-github"
+export LCT_VERSION=$("${cli}" --version | awk '{print $NF}')
+export UPDATE_VERSION=$("${semver_tool}" bump minor "$LCT_VERSION")
+
+stubdir="$tmpdir/bin"
+mkdir -p "$stubdir"
+export PATH="$stubdir:/home/runner/go/bin:$PATH"
+
+cat >"$stubdir/brew" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_BREW:-}" == "1" ]]; then
+  echo "brew failed" >&2
+  exit 1
+fi
+cmd="$1"
+shift || true
+if [[ "$cmd" == "bundle" && "${1:-}" == "dump" ]]; then
+  output_file=""
+  while (($#)); do
+    case "$1" in
+    --file=*)
+      output_file="${1#--file=}"
+      ;;
+    --file)
+      shift || true
+      output_file="${1:-}"
+      ;;
+    esac
+    shift || true
+  done
+  if [[ -n "$output_file" ]]; then
+    cat >"$output_file" <<'BUNDLE'
+brew "bat"
+cask "docker"
+BUNDLE
+  fi
+  exit 0
+fi
+printf "brew %s %s\n" "$cmd" "$*"
+EOF
+chmod +x "$stubdir/brew"
+
+cat >"$stubdir/mise" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_MISE:-}" == "1" ]]; then
+  echo "mise failed" >&2
+  exit 1
+fi
+cmd="$1"
+shift || true
+printf "mise %s %s\n" "$cmd" "$*"
+EOF
+chmod +x "$stubdir/mise"
+
+for tool in apt apt-get dnf yum zypper pacman paru yay nix-env flox winget scoop pkg; do
+  cat >"$stubdir/$tool" <<'EOF'
+#!/usr/bin/env bash
+echo "$(basename "$0") $*"
+EOF
+  chmod +x "$stubdir/$tool"
+done
+
+cat >"$stubdir/curl" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${FAIL_CURL:-}" == "1" ]]; then
+  echo "curl failed" >&2
+  exit 1
+fi
+if [[ "$*" == *"/repos/frostme/lct/releases/latest"* ]]; then
+  printf '{"tag_name":"%s"}
+' "${MOCK_LCT_LATEST_TAG:-v$UPDATE_VERSION}"
+  exit 0
+fi
+if [[ "$*" == *"https://frostme.github.io/lct/install.sh"* ]]; then
+  cat <<'SCRIPT'
+#!/usr/bin/env bash
+echo "installer ran"
+SCRIPT
+  exit 0
+fi
+echo "curl $*"
+EOF
+chmod +x "$stubdir/curl"
+
+cat >"$stubdir/gum" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  log)
+    output_file=""
+    prefix="lct"
+    log_level=""
+    while (($#)); do
+      case "$1" in
+      -o)
+        shift || true
+        output_file="${1:-}"
+        ;;
+      --prefix)
+        shift || true
+        prefix="${1:-lct}"
+        ;;
+      -l|--level|-sl)
+        shift || true
+        log_level="${1:-}"
+        ;;
+      --structured|--time|--separator|--formatter|-s|-t)
+        ;;
+      --*)
+        # Ignore unhandled long options
+        ;;
+      *)
+        break
+        ;;
+      esac
+      shift || true
+    done
+    message="$*"
+    log_level="${log_level:-debug}"
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    log_line_file="$(printf '%s [%s] %s' "$ts" "$log_level" "$message")"
+    if [[ -n "$output_file" ]]; then
+      mkdir -p "$(dirname "$output_file")"
+      printf '%s\n' "$log_line_file" >>"$output_file"
+    fi
+    if [[ "${GUM_LOG_TO_STDOUT:-1}" == "1" ]]; then
+      printf '%s\n' "$message"
+    fi
+    ;;
+  spin)
+    # Execute the command after "--" to mimic gum spinner behavior in tests.
+    while (($#)); do
+      if [[ "$1" == "--" ]]; then
+        shift
+        break
+      fi
+      shift
+    done
+    if (($#)); then
+      "$@"
+    fi
+    ;;
+  style)
+    text="${*: -1}"
+    if printf '%s\n' "$*" | grep -q -- '--border'; then
+      # Minimal boxed output for the specific style used in gum_title.
+      padding_left=1
+      padding_right=1
+      text_length=${#text}
+      inner_width=$((text_length + padding_left + padding_right))
+      top_bottom=""
+      for ((i = 0; i < inner_width; i++)); do
+        top_bottom+="─"
+      done
+      printf '┌%s┐\n' "$top_bottom"
+      printf '│%*s%s%*s│\n' "$padding_left" '' "$text" "$padding_right" ''
+      printf '└%s┘\n' "$top_bottom"
+      printf '%*s\n' "$((inner_width + 2))" ''
+    else
+      printf '%s\n' "$text"
+    fi
+    ;;
+  confirm)
+    prompt="${*: -1}"
+    printf '%s\n' "$prompt"
+    if [[ "${GUM_CONFIRM_RESULT:-yes}" == "no" ]]; then
+      exit 1
+    fi
+    ;;
+  input)
+    value="${GUM_INPUT_VALUE:-}"
+    printf '%s\n' "$value"
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+EOF
+chmod +x "$stubdir/gum"
+
+cat >"$stubdir/asdf" <<'EOF'
+#!/usr/bin/env bash
+echo "asdf $*"
+EOF
+chmod +x "$stubdir/asdf"
+
+for tool in npm pnpm yarn bun cargo cargo-binstall pip uv gem go composer mvn gradle dotnet; do
+  cat >"$stubdir/$tool" <<'EOF'
+#!/usr/bin/env bash
+echo "$(basename "$0") $*"
+EOF
+  chmod +x "$stubdir/$tool"
+done
+
+export tmpdir tmpdir_escaped cli semver_tool stubdir
