@@ -24,16 +24,16 @@ jobs:
           path: target/build
 
   test:
-    name: Smoke Tests ${{ matrix.shard.index + 1}}/${{ matrix.shard.total }}
+    name: Smoke Tests ${{ matrix.shard.index }}/${{ matrix.shard.total }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         shard:
-          - { index: 0, total: 3 }
           - { index: 1, total: 3 }
           - { index: 2, total: 3 }
+          - { index: 3, total: 3 }
 
     steps:
       - name: Checkout
