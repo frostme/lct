@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.7.1 - 2026-03-08
+- and the fix to fix them all
+- no really fix it
+- workflow update
+- Parallelize approval specs and shard CI smoke tests (#159)
+- Addressing PR comments (#157)
+- Add project tracking to config, CLI, and bootstrap (#156)
+- Addressing PR comments (#155)
+- Release v0.6.7 (#151)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.6.7...v0.7.1
+
+
 ## v0.6.7 - 2026-03-04
 - Frostme/smol updates (#150)
 - Release v0.6.6 (#149)
