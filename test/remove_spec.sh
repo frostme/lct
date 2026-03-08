@@ -35,6 +35,14 @@ popd >/dev/null
 approve "(cd $project_dir && ${cli} remove example/demo)" "remove_module_local"
 approve "cat $project_dir/LCTFile" "remove_module_local_lctfile"
 approve "(cd $project_dir && ${cli} remove example/demo)" "remove_module_local_idempotent"
+
+cat >"$SHARE_DIR/lct/LCTFile" <<'EOF'
+charmbracelet/gum
+example/ambiguous
+example/demo
+fsaintjacques/semver-tool
+EOF
+
 approve "${cli} remove -g example/demo" "remove_module_global"
 approve "cat $tmpdir/.local/share/lct/LCTFile" "remove_module_global_lctfile"
 approve "${cli} remove -g example/demo" "remove_module_global_idempotent"
