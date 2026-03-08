@@ -25,15 +25,15 @@ else
 fi
 
 node_total=${CI_NODE_TOTAL:-1}
-node_index=${CI_NODE_INDEX:-0}
+node_index=${CI_NODE_INDEX:-1}
 
 if ((node_total < 1)); then
   echo "CI_NODE_TOTAL must be at least 1" >&2
   exit 1
 fi
 
-if ((node_index < 0 || node_index >= node_total)); then
-  echo "CI_NODE_INDEX ${node_index} must be between 0 and $((node_total - 1))" >&2
+if ((node_index < 1 || node_index > node_total)); then
+  echo "CI_NODE_INDEX ${node_index} must be between 1 and $(node_total)" >&2
   exit 1
 fi
 
