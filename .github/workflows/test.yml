@@ -24,7 +24,7 @@ jobs:
           path: target/build
 
   test:
-    name: Smoke Tests ${{ matrix.shard.index }}/${{ matrix.shard.total }}
+    name: Smoke Tests ${{ matrix.shard.index + 1}}/${{ matrix.shard.total }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
