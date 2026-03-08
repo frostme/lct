@@ -42,25 +42,12 @@ if ((${#specs[@]} == 0)); then
   exit 1
 fi
 
-run_test() {
-  local file="$1"
-  ./test_setup.sh
-  context "$file"
-  "./$file"
-  ./test_cleanup.sh
-}
-
 for i in "${!specs[@]}"; do
   file="${specs[$i]}"
   if ((i % node_total == node_index)); then
-    if [[ -v GITHUB_ACTIONS ]]; then
-      run_test "$file" &
-    else
-      run_test "$file"
-    fi
+    ./test_setup.sh
+    context "$file"
+    "./$file"
+    ./test_cleanup.sh
   fi
 done
-
-if [[ -v GITHUB_ACTIONS ]]; then
-  wait
-fi
