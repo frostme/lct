@@ -511,7 +511,10 @@ _lct_dump_package_bundle() {
 
   case "$manager" in
   brew)
-    brew bundle dump --describe --force --file="$output_file" >/dev/null
+    HOMEBREW_NO_AUTO_UPDATE=1 \
+      HOMEBREW_NO_INSTALL_CLEANUP=1 \
+      HOMEBREW_NO_ENV_HINTS=1 \
+      brew bundle dump --describe --force --file="$output_file" >/dev/null
     ;;
   pip)
     if command -v python >/dev/null 2>&1; then
