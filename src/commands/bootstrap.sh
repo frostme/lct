@@ -109,6 +109,12 @@ restore_secrets() {
     }
 
     dest_path="$(expand_home_path "$secret_path")"
+    if ((LCT_ENCRYPT_ALIAS_FILE)) && [[ "$dest_path" == "$LCT_ALIAS_FILE" ]]; then
+      rm -f "$dest_path"
+    fi
+    if ((LCT_ENCRYPT_ENV_FILE)) && [[ "$dest_path" == "$LCT_ENV_FILE" ]]; then
+      rm -f "$dest_path"
+    fi
     if [[ -e "$dest_path" ]]; then
       echo "Skipping existing secret: $secret_path"
       continue

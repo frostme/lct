@@ -214,7 +214,31 @@ load_configuration() {
     mapfile -t MODULES < <(yq -r '.modules // [] | .[]' "${LCT_CONFIG_FILE}")
     declare -ga PROJECTS
     mapfile -t PROJECTS < <(yq -r '.projects // [] | .[]' "${LCT_CONFIG_FILE}")
+    local encrypt_alias_flag encrypt_env_flag
+    encrypt_alias_flag="$(yq -r '.encryptAliasFile // false' "${LCT_CONFIG_FILE}")"
+    encrypt_env_flag="$(yq -r '.encryptEnvFile // false' "${LCT_CONFIG_FILE}")"
+    LCT_ENCRYPT_ALIAS_FILE=0
+    LCT_ENCRYPT_ENV_FILE=0
+    [[ "$encrypt_alias_flag" == "true" || "$encrypt_alias_flag" == "1" ]] && LCT_ENCRYPT_ALIAS_FILE=1
+    [[ "$encrypt_env_flag" == "true" || "$encrypt_env_flag" == "1" ]] && LCT_ENCRYPT_ENV_FILE=1
     load_plugin_configs
+    if ((${#SECRETS[@]})); then
+      mapfile -t SECRETS < <(printf '%s\n' "${SECRETS[@]}" | awk 'NF && !seen[$0]++')
+    fi
+    if ((LCT_ENCRYPT_ALIAS_FILE)); then
+      if alias_secret="$(to_home_tilde_path "$LCT_ALIAS_FILE" 2>/dev/null)"; then
+        SECRETS+=("$alias_secret")
+      else
+        lct_log_warn "Alias file path could not be resolved inside HOME; skipping encryption flag"
+      fi
+    fi
+    if ((LCT_ENCRYPT_ENV_FILE)); then
+      if env_secret="$(to_home_tilde_path "$LCT_ENV_FILE" 2>/dev/null)"; then
+        SECRETS+=("$env_secret")
+      else
+        lct_log_warn "Env file path could not be resolved inside HOME; skipping encryption flag"
+      fi
+    fi
     if ((${#SECRETS[@]})); then
       mapfile -t SECRETS < <(printf '%s\n' "${SECRETS[@]}" | awk 'NF && !seen[$0]++')
     fi
