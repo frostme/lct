@@ -99,6 +99,15 @@ restore_secrets() {
     exit 1
   fi
 
+  # Reload configuration so SECRETS and LCT_ENCRYPT_* reflect the active config.yaml
+  if declare -F load_configuration >/dev/null 2>&1; then
+    if ! load_configuration; then
+      lct_log_error "Bootstrap aborted: failed to reload configuration before restoring secrets"
+      echo "❌ Failed to reload configuration before restoring secrets" >&2
+      exit 1
+    fi
+  fi
+
   echo "Restoring secrets"
   for secret_path in "${SECRETS[@]}"; do
     local archive_name dest_path tmp_tar
