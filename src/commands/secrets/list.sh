@@ -3,6 +3,10 @@ ensure_config_defaults
 mapfile -t secrets < <(yq -r '.secrets // [] | .[]' "$LCT_CONFIG_FILE")
 
 if [[ ${#secrets[@]} -eq 0 ]]; then
+  if [[ ${LCT_COMPLETIONS:-0} == 1 ]]; then
+    exit 0
+  fi
+
   echo "No secrets configured."
   exit 0
 fi
