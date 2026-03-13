@@ -25,6 +25,7 @@ lct alias remove ll
 ## Commands
 
 - [add](lct%20alias%20add.md) - add ALIAS alias
+- [list](lct%20alias%20list.md) - list configured aliases
 - [remove](lct%20alias%20remove.md) - unset and remove ALIAS alias
 
 

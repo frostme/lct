@@ -1,7 +1,9 @@
 module=${args[module]:-}
 install_global=${args[--global]:-0}
+force_install=${args[--force]:-0}
 lctfile_path="$PWD/LCTFile"
 global_lctfile_path=""
+MODULE_INSTALL_FORCE="$force_install"
 lct_log_debug "install command started (global=${install_global}, module=${module:-<all>})"
 
 module_ref_is_valid() {

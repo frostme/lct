@@ -2,6 +2,10 @@
 
 Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
 
+| Attributes       | &nbsp;
+|------------------|-------------
+| Alias:           | add
+
 ## Usage
 
 ```bash
@@ -29,6 +33,10 @@ lct install
 GitHub owner/repo or repository path of the module to install
 
 ## Options
+
+#### *--force, -f*
+
+Force reinstall and bypass the module cache
 
 #### *--global, -g*
 
