@@ -15,6 +15,10 @@ mapfile -t other_files < <(yq -r '.other // [] | .[]' "$LCT_CONFIG_FILE")
 file_mappings+=("${other_files[@]}")
 
 if [[ ${#file_mappings[@]} -eq 0 ]]; then
+  if [[ ${LCT_COMPLETIONS:-0} == 1 ]]; then
+    exit 0
+  fi
+
   echo "No file mappings configured."
   exit 0
 fi
