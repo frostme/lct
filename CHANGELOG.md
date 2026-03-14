@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.8.1 - 2026-03-14
+- Add module listing, install force flag, and alias/list aliases commands (#168)
+- Add opt-in encryption for alias/env files during gather/bootstrap (#165)
+- Refine completions for file and secrets commands (#166)
+- Disable brew autoupdate during gather bundle export (#164)
+- Release v0.7.1 (#160)
+
+**Full Changelog**: https://github.com/frostme/lct/compare/v0.7.1...v0.8.1
+
+
 ## v0.7.1 - 2026-03-08
 - and the fix to fix them all
 - no really fix it
