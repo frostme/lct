@@ -14,6 +14,8 @@ secrets: []
 plugins: []
 modules: []
 projects: []
+encryptAliasFile: false
+encryptEnvFile: false
 EOF
   else
     yq -i '
@@ -24,7 +26,9 @@ EOF
       .secrets = (.secrets // []) |
       .plugins = (.plugins // []) |
       .modules = (.modules // []) |
-      .projects = (.projects // [])
+      .projects = (.projects // []) |
+      .encryptAliasFile = (.encryptAliasFile // false) |
+      .encryptEnvFile = (.encryptEnvFile // false)
     ' "$LCT_CONFIG_FILE"
   fi
 }
