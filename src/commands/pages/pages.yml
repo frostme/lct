@@ -134,6 +134,132 @@ commands:
               ~~~
 
   - name: guides
+    commands:
+      - name: tracking-and-sharing
+        help: Capture your local config and sync it safely.
+        x_sections:
+          - title: Pick what to track
+            content: |
+              Start with the files you actually care about. LCT routes them automatically:
+
+              * Home dotfiles such as `~/.zshrc` land in `dotfiles`.
+              * Config directories under `~/.config` (for example `alacritty`, `nvim`) land in `configs`.
+              * Everything else is treated as `other`.
+
+              Add paths and let LCT categorize them:
+
+              ~~~bash
+              lct file add ~/.zshrc
+              lct file add ~/.config/alacritty
+              lct file add ~/work/custom.conf
+              ~~~
+
+              To keep the list tidy, remove entries that no longer exist:
+
+              ~~~bash
+              lct file list
+              lct file remove ~/.config/alacritty
+              ~~~
+          - title: Gather into your remote
+            content: |
+              Save a snapshot to your remote repository after reviewing the plan:
+
+              ~~~bash
+              lct gather          # copies tracked files, warns about secrets
+              lct gather --force  # overwrite existing copies in the remote
+              ~~~
+
+              After a gather you can push the prepared remote (`~/.local/share/lct/remote`) to Git to share or back it up.
+          - title: Bootstrap a new machine
+            content: |
+              Recreate your setup on another machine using the same config repository:
+
+              ~~~bash
+              lct init                  # writes ~/.config/lct/config.yaml
+              lct bootstrap             # restores tracked files and configs
+              lct reload                # refresh aliases + env vars in your shell
+              ~~~
+
+              If a local config folder already exists and you want to replace it, pass `--force` to `lct bootstrap`.
+          - title: Keep things clean
+            content: |
+              Remove unused copies from the remote or cache when they accumulate:
+
+              ~~~bash
+              lct prune            # clean tracked config + plugin files
+              lct prune --plugins  # focus on plugins only
+              ~~~
+
+              This helps avoid stale files being reapplied on future bootstraps.
+
+      - name: plugins-and-modules
+        help: Use plugins for curated configs and modules for binaries.
+        x_sections:
+          - title: Install curated config via plugins
+            content: |
+              Plugins bundle config, dotfiles, or setup scripts. Install them straight from GitHub:
+
+              ~~~bash
+              lct plugin install frostme/lct-plugins.alacritty
+              lct plugin install frostme/lct-plugins.ohmyzsh
+              ~~~
+
+              See what is available and remove what you no longer need:
+
+              ~~~bash
+              lct plugin list
+              lct plugin remove frostme/lct-plugins.alacritty
+              ~~~
+          - title: Install runnable modules
+            content: |
+              Modules are lightweight binaries or scripts linked into your PATH. Installation strategy is automatic (release asset, package manager, Makefile, manifest, or direct link):
+
+              ~~~bash
+              lct install -g fsaintjacques/semver-tool  # global module
+              lct install DannyBen/approvals.bash      # from LCTFile
+              ~~~
+
+              Removal mirrors the installation method:
+
+              ~~~bash
+              lct remove -g fsaintjacques/semver-tool
+              ~~~
+          - title: Upgrade and cache hygiene
+            content: |
+              LCT caches plugin and module downloads under `$CACHE_DIR/lct`. If a module looks out of date or a plugin changes structure, force a refresh:
+
+              ~~~bash
+              lct install --force DannyBen/approvals.bash
+              lct plugin install --force owner/repo.plugin
+              ~~~
+
+      - name: secrets-and-env
+        help: Keep sensitive data encrypted and environment variables reproducible.
+        x_sections:
+          - title: Track secrets safely
+            content: |
+              Add secret files so they are encrypted when gathered:
+
+              ~~~bash
+              lct secrets add ~/.ssh/id_rsa
+              lct secrets add ~/.claude.json
+              ~~~
+
+              During `lct gather`, secrets are encrypted into `remote/secrets` and flagged if untracked items are detected.
+          - title: Manage environment variables
+            content: |
+              Store machine-specific environment values in the shared env file and reload them into your shell:
+
+              ~~~bash
+              lct env set OPENAI_API_KEY sk-...
+              lct env list
+              lct env reload
+              ~~~
+
+              Use `lct env unset NAME` to remove entries. Combine with `lct reload` in your shell profile to make values available on login.
+          - title: Keep secrets separate from config
+            content: |
+              Keep API keys in `lct secrets` and `lct env`, while keeping public configuration in `config.yaml`. This allows you to push the remote repository without exposing sensitive data.
   - name: reference
     commands:
       - name: configuration
@@ -182,7 +308,62 @@ commands:
               ~~~
       - name: environment-variables
         help: Environment variables that control LCT behavior.
+        x_sections:
+          - title: Base directory overrides
+            content: |
+              These variables control where LCT stores and reads data. They default to standard XDG-style locations and expand `~` automatically.
+
+              | Variable | Default | Purpose |
+              | --- | --- | --- |
+              | `SOFTWARE_DIR` | `$HOME/software` | Downloaded libraries and tools managed on the machine. |
+              | `CONFIG_DIR` | `$HOME/.config` | Base for application configs (also where `~/.config/lct` lives). |
+              | `SHARE_DIR` | `$HOME/.local/share` | Shared app data, including the LCT remote copy. |
+              | `STATE_DIR` | `$HOME/.local/state` | Persistent state such as logs and state markers. |
+              | `CACHE_DIR` | `$HOME/.cache` | Download and extraction cache for modules and plugins. |
+              | `CODE_DIR` | `$HOME/code` | Optional convenience path for project checkouts. |
+          - title: How LCT uses these values
+            content: |
+              On startup LCT derives working paths from the variables above:
+
+              * `CONFIG_DIR` → `~/.config/lct/config.yaml` (primary config file)
+              * `SHARE_DIR` → `~/.local/share/lct` (remote mirror, plugins, modules, env and alias files)
+              * `STATE_DIR` → `~/.local/state/lct` (debug log)
+              * `CACHE_DIR` → `~/.cache/lct` (module/plugin cache)
+
+              Override the base variables to relocate all derived paths, for example to place everything on an external drive:
+
+              ~~~bash
+              SOFTWARE_DIR=/Volumes/data/software CACHE_DIR=/Volumes/data/cache lct gather
+              ~~~
+
       - name: file-locations
         help: Where lct stores its files.
+        x_sections:
+          - title: Derived paths at a glance
+            content: |
+              LCT expands the base directories (see Environment Variables) into specific working paths:
+
+              | Path | Default | Contents |
+              | --- | --- | --- |
+              | `LCT_CONFIG_DIR` | `$CONFIG_DIR/lct` | Root for user config files. |
+              | `LCT_CONFIG_FILE` | `$CONFIG_DIR/lct/config.yaml` | Main configuration contract read by all commands. |
+              | `LCT_SHARE_DIR` | `$SHARE_DIR/lct` | Shared data root used for bootstrapping. |
+              | `LCT_REMOTE_DIR` | `$SHARE_DIR/lct/remote` | Staging area populated by `lct gather`; push this to your repo. |
+              | `LCT_REMOTE_SECRETS_DIR` | `$SHARE_DIR/lct/remote/secrets` | Encrypted secrets collected during `lct gather`. |
+              | `LCT_ENV_FILE` | `$SHARE_DIR/lct/env.yaml` | Environment variable store used by `lct env` and `lct reload`. |
+              | `LCT_ALIAS_FILE` | `$SHARE_DIR/lct/alias.yaml` | Alias definitions surfaced by `lct reload`. |
+              | `LCT_BREW_FILE` | `$SHARE_DIR/lct/Brewfile` | Brew bundle created during `lct gather`. |
+              | `LCT_PLUGINS_DIR` | `$SHARE_DIR/lct/plugins` | Installed plugin payloads. |
+              | `LCT_PLUGINS_CACHE_DIR` | `$CACHE_DIR/lct/plugins` | Download cache for plugins. |
+              | `LCT_MODULES_DIR` | `$SHARE_DIR/lct/modules` | Installed modules. |
+              | `LCT_MODULES_BIN_DIR` | `$SHARE_DIR/lct/modules/bin` | Symlinked module executables added to PATH. |
+              | `LCT_MODULES_CACHE_DIR` | `$CACHE_DIR/lct/modules` | Download/build cache for modules. |
+              | `LCT_STATE_DIR` | `$STATE_DIR/lct` | State files and logs. |
+              | `LCT_DEBUG_LOG_FILE` | `$STATE_DIR/lct/debug.log` | Verbose log file when `--verbose` is used. |
+          - title: Practical tips
+            content: |
+              * The remote directory (`LCT_REMOTE_DIR`) is safe to version control; secrets are encrypted under `remote/secrets`.
+              * Cache directories can be removed safely; they will be recreated on demand.
+              * If you relocate `SHARE_DIR` or `CACHE_DIR`, ensure your shell profile (`lct setup`) points to the same values to keep paths consistent.
       - name: _cli-reference
         x_alias: lct
