@@ -80,6 +80,7 @@ Base directory for local cache data.
 - [install](lct%20install.md) - Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
 - [self-update](lct%20self-update.md) - Update lct to the latest release
 - [remove](lct%20remove.md) - Remove modules from an LCTFile or globally
+- [list](lct%20list.md) - List installed LCT modules
 - [alias](lct%20alias.md) - Manage lct aliases
 - [file](lct%20file.md) - Manage tracked file paths
 - [secrets](lct%20secrets.md) - Manage encrypted secret paths

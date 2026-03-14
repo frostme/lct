@@ -28,6 +28,7 @@ git -C "$mock_repo_root" tag v1.1.0
 
 approve "${cli} install -g example/demo" "install_module"
 approve "${cli} install -g example/demo" "install_module_idempotent"
+approve "${cli} install -g example/demo --force" "install_module_force"
 approve "cat $tmpdir/.local/share/lct/LCTFile" "install_module_global_lctfile"
 
 semver_repo_root="$tmpdir/mock-github/fsaintjacques/semver-tool"

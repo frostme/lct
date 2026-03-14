@@ -14,6 +14,8 @@ commands:
       - name: command
         help: Command to execute for the alias
         required: true
+  - name: list
+    help: list configured aliases
   - name: remove
     help: unset and remove ALIAS alias
     completions:

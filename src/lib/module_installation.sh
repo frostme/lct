@@ -692,12 +692,17 @@ install_module_repo() {
   module_cache="$LCT_MODULES_CACHE_DIR/$module_slug"
   module_dest="$LCT_MODULES_DIR/$module_slug"
   meta_file="$module_cache/.lct-cache"
+  local force_refresh="${MODULE_INSTALL_FORCE:-0}"
   local status_label="Loaded"
   local cache_commit installed_commit install_needed=0 release_tag="" strategy strategy_detail strategy_name
 
   if [[ -z "$module_slug" ]]; then
     echo "❌ ERROR: Invalid module reference '${module}'" >&2
     return 1
+  fi
+
+  if [[ "$force_refresh" -eq 1 && -d "$module_cache" ]]; then
+    rm -rf -- "$module_cache"
   fi
 
   mkdir -p "$LCT_MODULES_CACHE_DIR"
@@ -750,7 +755,9 @@ install_module_repo() {
   installed_commit="$(cache_metadata_get "installed_commit" "$meta_file")"
 
   install_needed=0
-  if [[ ! -d "$module_dest" ]]; then
+  if [[ "$force_refresh" -eq 1 ]]; then
+    install_needed=1
+  elif [[ ! -d "$module_dest" ]]; then
     install_needed=1
   elif [[ -n "$cache_commit" && "$installed_commit" != "$cache_commit" ]]; then
     install_needed=1

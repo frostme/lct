@@ -12,6 +12,7 @@ Commands:
   install       Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
   self-update   Update lct to the latest release
   remove        Remove modules from an LCTFile or globally
+  list          List installed LCT modules
   alias         Manage lct aliases
   file          Manage tracked file paths
   secrets       Manage encrypted secret paths

@@ -2,6 +2,10 @@
 
 Remove modules from an LCTFile or globally
 
+| Attributes       | &nbsp;
+|------------------|-------------
+| Alias:           | uninstall
+
 ## Usage
 
 ```bash

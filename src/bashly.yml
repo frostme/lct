@@ -118,12 +118,16 @@ commands:
         short: -f
         help: overwrite existing files in remote repository
   - name: install
+    alias: add
     help: Install modules from an LCTFile or globally (bin links are created only for high-confidence scripts)
     examples:
       - lct install DannyBen/approvals.bash
       - lct install -g DannyBen/approvals.bash
       - lct install
     flags:
+      - long: --force
+        short: -f
+        help: Force reinstall and bypass the module cache
       - long: --global
         short: -g
         help: Use global module installation from config.yaml
@@ -135,6 +139,7 @@ commands:
     examples:
       - lct self-update
   - name: remove
+    alias: uninstall
     help: Remove modules from an LCTFile or globally
     examples:
       - lct remove DannyBen/approvals.bash
@@ -146,6 +151,15 @@ commands:
     args:
       - name: module
         help: GitHub owner/repo of the module to remove
+  - name: list
+    help: List installed LCT modules
+    examples:
+      - lct list
+      - lct list -g
+    flags:
+      - long: --global
+        short: -g
+        help: List globally installed modules
   - import: src/commands/alias/alias.yml
   - import: src/commands/file/file.yml
   - import: src/commands/secrets/secrets.yml
