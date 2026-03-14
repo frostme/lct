@@ -6,7 +6,7 @@ source "$(dirname "$0")/approvals.bash"
 describe "gather and bootstrap alias/env secrets flow"
 
 secret_home="$tmpdir/alias-env-secrets"
-mkdir -p "$secret_home/.config/lct" "$secret_home/.local/share" "$secret_home/.local/state" "$secret_home/.cache"
+mkdir -p "$secret_home/.config/lct" "$secret_home/.local/share/lct" "$secret_home/.local/state" "$secret_home/.cache"
 
 cat >"$secret_home/.config/lct/config.yaml" <<'EOF'
 remote: null

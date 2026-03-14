@@ -14,7 +14,7 @@ export APPROVALS_DIR="$(pwd)/approvals"
 
 shopt -s nullglob
 
-if [[ -n "${usage_spec}" ]]; then
+if [[ -n "${usage_spec:-}" ]]; then
   if [[ ! -f "$usage_spec" ]]; then
     echo "Specified spec file '$usage_spec' does not exist" >&2
     exit 1
@@ -44,7 +44,7 @@ fi
 
 for i in "${!specs[@]}"; do
   file="${specs[$i]}"
-  if ((i % node_total == node_index)); then
+  if ((i % node_total == node_index)) || ((node_total == 1)); then
     ./test_setup.sh
     context "$file"
     "./$file"
