@@ -52,7 +52,7 @@ if [[ -d "$LCT_MODULES_DIR" ]]; then
     meta_file="$LCT_MODULES_CACHE_DIR/$module_slug/.lct-cache"
     repo_url="$(cache_metadata_get "repo_url" "$meta_file")"
     module_entries+=("$(format_module_entry "$module_slug" "$repo_url")")
-  done < <(find "$LCT_MODULES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -u)
+  done < <(find "$LCT_MODULES_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | sort -u)
 fi
 
 if [[ ${#module_entries[@]} -eq 0 ]]; then
