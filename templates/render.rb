@@ -28,9 +28,12 @@ end
 def page_link(page, current_page, cli_nav_html)
   slug = page_slug(page)
   active = slug == current_page ? 'active' : ''
-  is_cli_route = /^lct-.+$/.match(current_page)
+  is_cli_route = current_page == 'cli-reference' || /^lct-.+$/.match(current_page)
   [
     '<li>',
+    '<div class="nav-link-wrapper">',
+    '<div class="nav-link-item">',
+    '<div class="nav-link-link">',
     "<a class=\"nav-link #{active}\" href=\"#{slug}.html\">",
     page.name.split('-').map do |word|
       if word.start_with?('_')
@@ -40,7 +43,19 @@ def page_link(page, current_page, cli_nav_html)
       end
     end.join(' '),
     '</a>',
-      (slug == 'cli-reference' && is_cli_route ? cli_nav_html : ''),
+    '</div>',
+    *(slug=='cli-reference' ? [
+    '<div>',
+    "<svg id=\"cli_reference_icon\" class=\"nav-link-icon #{is_cli_route ? 'open' : ''}\" viewBox=\"0 0 24 24\"><path d=\"M6.23 20.23 8 22l10-10L8 2 6.23 3.77 14.46 12z\"></path></svg>",
+    '</div>',
+    ] : []),
+    '</div>',
+    *(slug=='cli-reference' ? [
+    "<div id=\"cli_reference_menu\" class=\"nav-link-submenu #{is_cli_route ? 'open' : ''}\">",
+      cli_nav_html ,
+    '</div>',
+    ] : []),
+    '</div>',
     '</li>'
   ].join
 end
