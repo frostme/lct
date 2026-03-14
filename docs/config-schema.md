@@ -11,6 +11,8 @@ remote: null
 configs: []
 dotfiles: []
 other: []
+encryptAliasFile: false
+encryptEnvFile: false
 plugins: []
 modules: []
 projects: []
@@ -29,6 +31,8 @@ dotfiles:
 other:
   - ~/work/custom.conf
   - ~/.local/bin/dev-tool
+encryptAliasFile: true
+encryptEnvFile: true
 plugins:
   - gh/owner/example-plugin
   - gh/owner/another-plugin

@@ -52,6 +52,14 @@ properties:
     examples:
       - - ~/.claude.json
         - ~/.ssh/id_rsa
+  encryptAliasFile:
+    type: boolean
+    description: When true, encrypt ~/.local/share/lct/alias.yaml during gather and restore it on bootstrap.
+    default: false
+  encryptEnvFile:
+    type: boolean
+    description: When true, encrypt ~/.local/share/lct/env.yaml during gather and restore it on bootstrap.
+    default: false
   plugins:
     type: array
     description: List of lct plugins to install or load.
@@ -97,6 +105,8 @@ examples:
     dotfiles: []
     other: []
     secrets: []
+    encryptAliasFile: false
+    encryptEnvFile: false
     plugins: []
     modules: []
     projects: []
@@ -113,6 +123,8 @@ examples:
     secrets:
       - ~/.claude.json
       - ~/.ssh/id_rsa
+    encryptAliasFile: true
+    encryptEnvFile: true
     plugins:
       - gh/owner/example-plugin
       - gh/owner/another-plugin
