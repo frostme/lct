@@ -18,7 +18,7 @@ mise use -g github:frostme/lct
 
 ## Usage
 
-[See docs](./docs/README.md)
+[See docs](https://frostme.github.io/lct)
 
 ## Contributing
 
