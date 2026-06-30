@@ -304,8 +304,20 @@ commands:
                 - example/lct-module
                 - example/lct-theme
                 - fsaintjacques/semver-tool
+              bootstrap_order:
+                - packages
+                - configs
+                - projects
+                - plugins
+                - modules
+                - secrets
               packageManager: brew
               ~~~
+          - title: Bootstrap order
+            content: |
+              `bootstrap_order` controls the sequence used by `lct bootstrap`. The default order is `packages`, `configs`, `projects`, `plugins`, `modules`, then `secrets`.
+
+              Custom orders must include every supported phase exactly once. LCT validates the list and prints the resolved order before running any phase.
       - name: environment-variables
         help: Environment variables that control LCT behavior.
         x_sections:

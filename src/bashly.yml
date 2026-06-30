@@ -66,6 +66,13 @@ x_markdown_footer: |-
       modules:
         - github.com/example/lct-module
         - github.com/example/lct-theme
+      bootstrap_order:
+        - packages
+        - configs
+        - projects
+        - plugins
+        - modules
+        - secrets
       packageManager: mise
 x_pages:
   title: LCT

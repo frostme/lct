@@ -1,0 +1,3 @@
+Bootstrap execution order: configs -> packages -> projects -> plugins -> modules -> secrets
+Applying library configs
+Installing package manager dependencies

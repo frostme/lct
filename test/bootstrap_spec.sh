@@ -33,6 +33,18 @@ approve "${cli} bootstrap --help" "bootstrap_help"
 it "bootstraps from gathered remote repository"
 approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_force"
 
+it "uses the default bootstrap order"
+approve "${cli} bootstrap --force 2>&1 | grep '^Bootstrap execution order:'" "bootstrap_default_order"
+
+it "uses a custom bootstrap order"
+yq -i '.bootstrap_order = ["configs", "packages", "projects", "plugins", "modules", "secrets"]' "$tmpdir/.local/share/lct/remote/config.yaml"
+approve "${cli} bootstrap --force 2>&1 | grep -E '^(Bootstrap execution order:.*|Applying library configs|Installing package manager dependencies)$'" "bootstrap_custom_order"
+
+it "rejects an invalid bootstrap order"
+yq -i '.bootstrap_order = ["packages", "configs", "projects", "plugins", "modules", "unknown"]' "$tmpdir/.local/share/lct/remote/config.yaml"
+approve "${cli} bootstrap --force 2>&1 | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_invalid_order"
+expect_exit_code 1
+
 it "bootstraps using non-brew package bundle when present"
 rm -f "$tmpdir/.local/share/lct/remote/Brewfile"
 cat >"$tmpdir/.local/share/lct/remote/apt-packages.txt" <<'EOF'

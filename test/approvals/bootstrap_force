@@ -5,6 +5,7 @@ No modules specified in config.yaml, nothing to install.
 └────────────────────────────┘
                               
 Using config.yaml from remote repository
+Bootstrap execution order: packages -> configs -> projects -> plugins -> modules -> secrets
 Installing package manager dependencies
 Installing package bundle from Brewfile (brew)
 brew bundle --file ~/.local/share/lct/remote/Brewfile
