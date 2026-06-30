@@ -7,7 +7,6 @@ script = '''
 set -euo pipefail
 
 ./scripts/setup.sh
-mise run dev
 '''
 
 [cleanup]
