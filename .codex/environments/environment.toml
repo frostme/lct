@@ -6,7 +6,7 @@ name = "lct"
 script = '''
 set -euo pipefail
 
-./scripts/setup.sh
+LCT_SETUP_SKIP_TESTS=1 ./scripts/setup.sh
 '''
 
 [cleanup]
