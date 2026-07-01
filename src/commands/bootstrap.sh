@@ -26,31 +26,43 @@ else
   cp "$LCT_REMOTE_DIR/config.yaml" "$LCT_CONFIG_FILE"
 fi
 
-echo "Installing package manager dependencies"
-lct_log_debug "Installing package manager bundle from ${LCT_REMOTE_DIR}"
-_lct_install_gathered_package_bundle "$LCT_REMOTE_DIR"
-
-if [ -d "$SOFTWARE_DIR" ]; then
-  echo " $SOFTWARE_DIR already exists"
-else
-  echo " Creating $SOFTWARE_DIR"
-  mkdir -p "$SOFTWARE_DIR"
+if ! resolve_bootstrap_order "$LCT_CONFIG_FILE"; then
+  lct_log_error "Bootstrap aborted: invalid bootstrap_order in ${LCT_CONFIG_FILE}"
+  exit 1
 fi
+print_bootstrap_order
+bootstrap_configs_completed=0
 
-echo "Applying library configs"
-lct_log_debug "Applying ${#CONFIGS[@]} config entries"
+bootstrap_packages() {
+  echo "Installing package manager dependencies"
+  lct_log_debug "Installing package manager bundle from ${LCT_REMOTE_DIR}"
+  _lct_install_gathered_package_bundle "$LCT_REMOTE_DIR"
+}
 
-for lib in "${CONFIGS[@]}"; do
-  if [ -d "$CONFIG_DIR/$lib" ] && [ "$FORCE" == 0 ]; then
-    echo "$lib config already exists"
+bootstrap_configs() {
+  if [ -d "$SOFTWARE_DIR" ]; then
+    echo " $SOFTWARE_DIR already exists"
   else
-    echo "Applying $lib config"
-    rm -rf "$CONFIG_DIR/$lib"
-    cp -r "$REMOTE_CONFIGS_DIR/$lib" "$CONFIG_DIR/"
+    echo " Creating $SOFTWARE_DIR"
+    mkdir -p "$SOFTWARE_DIR"
   fi
-done
 
-echo "✅ Configs successfully copied"
+  echo "Applying library configs"
+  lct_log_debug "Applying ${#CONFIGS[@]} config entries"
+
+  for lib in "${CONFIGS[@]}"; do
+    if [ -d "$CONFIG_DIR/$lib" ] && [ "$FORCE" == 0 ]; then
+      echo "$lib config already exists"
+    else
+      echo "Applying $lib config"
+      rm -rf "$CONFIG_DIR/$lib"
+      cp -r "$REMOTE_CONFIGS_DIR/$lib" "$CONFIG_DIR/"
+    fi
+  done
+
+  echo "✅ Configs successfully copied"
+  bootstrap_configs_completed=1
+}
 
 restore_secrets() {
   if ((${#SECRETS[@]} == 0)); then
@@ -172,49 +184,65 @@ restore_secrets() {
     echo "Restored $secret_path"
   done
 }
-if ((${#PROJECTS[@]})); then
-  echo "Cloning configured projects"
-  lct_log_debug "Cloning ${#PROJECTS[@]} projects into ${CODE_DIR}"
-  [[ -d "$CODE_DIR" ]] || mkdir -p "$CODE_DIR"
+bootstrap_projects() {
+  if ((${#PROJECTS[@]})); then
+    echo "Cloning configured projects"
+    lct_log_debug "Cloning ${#PROJECTS[@]} projects into ${CODE_DIR}"
+    [[ -d "$CODE_DIR" ]] || mkdir -p "$CODE_DIR"
 
-  for project in "${PROJECTS[@]}"; do
-    [[ -n "$project" ]] || continue
+    for project in "${PROJECTS[@]}"; do
+      [[ -n "$project" ]] || continue
 
-    if ! project_entry_valid "$project"; then
-      echo "❌ ERROR: Invalid project entry '${project}'. Aborting bootstrap." >&2
-      exit 1
-    fi
+      if ! project_entry_valid "$project"; then
+        echo "❌ ERROR: Invalid project entry '${project}'. Aborting bootstrap." >&2
+        exit 1
+      fi
 
-    repo_name="${project#*/}"
-    dest_dir="${CODE_DIR}/${repo_name}"
-    if [[ -e "$dest_dir" && ! -d "$dest_dir" ]]; then
-      echo "❌ ERROR: Destination path ${dest_dir} exists and is not a directory; cannot clone ${project}" >&2
-      exit 1
-    elif [[ -d "$dest_dir" ]]; then
-      echo " - ${project} already present"
-      continue
-    fi
+      repo_name="${project#*/}"
+      dest_dir="${CODE_DIR}/${repo_name}"
+      if [[ -e "$dest_dir" && ! -d "$dest_dir" ]]; then
+        echo "❌ ERROR: Destination path ${dest_dir} exists and is not a directory; cannot clone ${project}" >&2
+        exit 1
+      elif [[ -d "$dest_dir" ]]; then
+        echo " - ${project} already present"
+        continue
+      fi
 
-    clone_url="$(project_clone_url "$project")"
-    lct_log_debug "Cloning ${project} from ${clone_url} into ${dest_dir}"
-    if ! gum_spinner "Cloning ${project}" git clone --quiet "$clone_url" "$dest_dir"; then
-      echo "❌ ERROR: Failed to clone ${project} from ${clone_url}" >&2
-      exit 1
-    fi
-  done
+      clone_url="$(project_clone_url "$project")"
+      lct_log_debug "Cloning ${project} from ${clone_url} into ${dest_dir}"
+      if ! gum_spinner "Cloning ${project}" git clone --quiet "$clone_url" "$dest_dir"; then
+        echo "❌ ERROR: Failed to clone ${project} from ${clone_url}" >&2
+        exit 1
+      fi
+    done
 
-  echo "✅ Projects cloned"
-fi
+    echo "✅ Projects cloned"
+  fi
+}
 
-############# plugin installations #############
-total_plugins=${#PLUGINS[@]}
-loaded=0
+bootstrap_plugins() {
+  if ((bootstrap_configs_completed == 0)); then
+    load_configuration
+  fi
+  plugin_installation
+  if ((bootstrap_configs_completed == 0)); then
+    load_configuration
+  fi
+  load_plugins
+}
 
-plugin_installation
-load_plugins
+bootstrap_modules() {
+  module_installation
+}
 
-module_installation
-restore_secrets
+bootstrap_secrets() {
+  restore_secrets
+}
+
+for bootstrap_phase in "${BOOTSTRAP_ORDER[@]}"; do
+  "bootstrap_${bootstrap_phase}"
+done
+
 lct_log_info "Bootstrap completed successfully"
 
 # ##################################################

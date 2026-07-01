@@ -85,6 +85,30 @@ properties:
     examples:
       - - frostme/lct
         - frostme/hmgmt-vibe
+  bootstrap_order:
+    type: array
+    description: >-
+      Order in which bootstrap phases run. Every supported phase must appear
+      exactly once.
+    items:
+      type: string
+      enum:
+        - packages
+        - configs
+        - projects
+        - plugins
+        - modules
+        - secrets
+    minItems: 6
+    maxItems: 6
+    uniqueItems: true
+    default:
+      - packages
+      - configs
+      - projects
+      - plugins
+      - modules
+      - secrets
   packageManager:
     type: string
     description: >-
@@ -110,6 +134,13 @@ examples:
     plugins: []
     modules: []
     projects: []
+    bootstrap_order:
+      - packages
+      - configs
+      - projects
+      - plugins
+      - modules
+      - secrets
   - remote: git@github.com:example/dotfiles.git
     configs:
       - alacritty
@@ -134,4 +165,11 @@ examples:
     projects:
       - frostme/lct
       - frostme/hmgmt-vibe
+    bootstrap_order:
+      - packages
+      - configs
+      - projects
+      - plugins
+      - modules
+      - secrets
     packageManager: mise

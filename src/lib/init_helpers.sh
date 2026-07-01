@@ -14,6 +14,13 @@ secrets: []
 plugins: []
 modules: []
 projects: []
+bootstrap_order:
+  - packages
+  - configs
+  - projects
+  - plugins
+  - modules
+  - secrets
 encryptAliasFile: false
 encryptEnvFile: false
 EOF
@@ -27,6 +34,7 @@ EOF
       .plugins = (.plugins // []) |
       .modules = (.modules // []) |
       .projects = (.projects // []) |
+      .bootstrap_order = (.bootstrap_order // ["packages", "configs", "projects", "plugins", "modules", "secrets"]) |
       .encryptAliasFile = (.encryptAliasFile // false) |
       .encryptEnvFile = (.encryptEnvFile // false)
     ' "$LCT_CONFIG_FILE"

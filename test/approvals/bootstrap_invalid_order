@@ -1,0 +1,7 @@
+┌────────────────────────────┐
+│ Starting Bootstrap Process │
+└────────────────────────────┘
+                              
+Using config.yaml from remote repository
+❌ Invalid bootstrap_order in ~/.config/lct/config.yaml: unknown phase 'unknown'.
+Supported phases: packages, configs, projects, plugins, modules, secrets

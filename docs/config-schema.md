@@ -16,6 +16,13 @@ encryptEnvFile: false
 plugins: []
 modules: []
 projects: []
+bootstrap_order:
+  - packages
+  - configs
+  - projects
+  - plugins
+  - modules
+  - secrets
 ```
 
 ## Full config
@@ -43,4 +50,25 @@ projects:
   - frostme/lct
   - frostme/hmgmt-vibe
 packageManager: mise
+bootstrap_order:
+  - plugins
+  - packages
+  - configs
+  - projects
+  - modules
+  - secrets
 ```
+
+## Bootstrap order
+
+`bootstrap_order` controls the sequence used by `lct bootstrap`. The default is:
+
+1. `packages` — install the gathered package-manager bundle.
+2. `configs` — restore configured application directories.
+3. `projects` — clone configured code projects.
+4. `plugins` — install and load LCT plugins.
+5. `modules` — install configured LCT modules.
+6. `secrets` — decrypt and restore configured secrets.
+
+A custom order must include every supported phase exactly once. LCT validates the
+list and prints the resolved order before running any phase.

@@ -137,4 +137,11 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
     modules:
       - github.com/example/lct-module
       - github.com/example/lct-theme
+    bootstrap_order:
+      - packages
+      - configs
+      - projects
+      - plugins
+      - modules
+      - secrets
     packageManager: mise
