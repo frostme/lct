@@ -180,7 +180,13 @@ commands:
               lct reload                # refresh aliases + env vars in your shell
               ~~~
 
-              If a local config folder already exists and you want to replace it, pass `--force` to `lct bootstrap`.
+              Bootstrap is safe to rerun against state LCT previously created:
+
+              * Existing config directories and project Git repositories are reported and skipped.
+              * Package bundles, plugins, and modules use their existing restore/cache checks, and existing secrets are preserved.
+              * Conflicting config paths, non-repository project directories, and missing gathered config sources stop with recovery guidance.
+
+              If a local config folder already exists and you want to replace it, pass `--force` to `lct bootstrap`. Force applies to config destinations only; it does not overwrite project directories. Third-party plugin scripts remain responsible for their own idempotent behavior.
           - title: Keep things clean
             content: |
               Remove unused copies from the remote or cache when they accumulate:

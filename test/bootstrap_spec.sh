@@ -107,3 +107,48 @@ git -C "$project_clone_repo" commit -q -m "initial"
 
 approve "${cli} bootstrap --force | sed -E 's/${tmpdir_escaped}/~/g'" "bootstrap_projects"
 approve "ls -1 $tmpdir/code" "bootstrap_projects_clone"
+
+it "skips expected existing state on a repeated bootstrap"
+if ! output="$(${cli} bootstrap 2>&1)"; then
+  fail "expected repeated bootstrap to succeed"
+fi
+if [[ "$output" != *"nvim config already exists; skipping"* ]] || [[ "$output" != *"example/demo already exists; skipping"* ]]; then
+  fail "expected repeated bootstrap to report skipped config and project state"
+fi
+pass "repeated bootstrap skips expected existing state"
+
+it "rejects a conflicting non-repository project directory"
+rm -rf "$tmpdir/code/demo"
+mkdir -p "$tmpdir/code/demo"
+touch "$tmpdir/code/demo/partial-download"
+if output="$(${cli} bootstrap --force 2>&1)"; then
+  fail "expected bootstrap to reject a conflicting project directory"
+fi
+if [[ "$output" != *"exists and is not a Git repository"* ]] || [[ "$output" != *"Move or remove it, then rerun lct bootstrap."* ]]; then
+  fail "expected actionable project conflict guidance"
+fi
+pass "conflicting project directory is rejected with recovery guidance"
+
+it "rejects a conflicting config path without force"
+yq -i '.projects = []' "$tmpdir/.config/lct/config.yaml"
+yq -i '.projects = []' "$tmpdir/.local/share/lct/remote/config.yaml"
+rm -rf "$tmpdir/.config/nvim"
+touch "$tmpdir/.config/nvim"
+if output="$(${cli} bootstrap 2>&1)"; then
+  fail "expected bootstrap to reject a conflicting config path"
+fi
+if [[ "$output" != *"exists and is not a directory"* ]] || [[ "$output" != *"Rerun with --force to replace it."* ]]; then
+  fail "expected actionable config conflict guidance"
+fi
+pass "conflicting config path is rejected with recovery guidance"
+
+it "reports a missing gathered config source"
+rm -rf "$tmpdir/.config/nvim"
+rm -rf "$tmpdir/.local/share/lct/remote/configs/nvim"
+if output="$(${cli} bootstrap --force 2>&1)"; then
+  fail "expected bootstrap to reject a missing gathered config source"
+fi
+if [[ "$output" != *"is missing or is not a directory"* ]] || [[ "$output" != *"Run 'lct gather --force' on the source machine"* ]]; then
+  fail "expected actionable missing config source guidance"
+fi
+pass "missing gathered config source is rejected with recovery guidance"
