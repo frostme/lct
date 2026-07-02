@@ -20,6 +20,17 @@ mise use -g github:frostme/lct
 
 [See docs](https://frostme.github.io/lct)
 
+### Bootstrap idempotency
+
+`lct bootstrap` is safe to rerun against state it previously created:
+
+- Existing config directories and project Git repositories are reported and skipped.
+- Package bundles, plugins, and modules use their existing restore/cache checks, and existing secrets are preserved.
+- A config destination that is not a directory, a project destination that is not a Git repository, or a missing gathered config source stops with recovery guidance instead of being treated as valid state.
+- `lct bootstrap --force` intentionally replaces configured local config destinations; it does not overwrite project directories.
+
+Third-party plugin scripts are outside this core guarantee and must define their own idempotent behavior.
+
 ## Contributing
 
 - run `setup.sh` to get necessary libraries
