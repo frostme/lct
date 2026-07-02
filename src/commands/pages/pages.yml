@@ -216,6 +216,28 @@ commands:
               lct plugin list
               lct plugin remove frostme/lct-plugins.alacritty
               ~~~
+          - title: Validate plugin idempotency
+            content: |
+              A plugin is repeat-safe when its `main.sh` can run more than once
+              against the same machine state without failing or requiring manual
+              cleanup. Validate a local plugin before publishing it:
+
+              ~~~bash
+              lct plugin validate ./plugins/example
+              ~~~
+
+              The validator syntax-checks `main.sh`, then runs it twice against
+              the same temporary `HOME` with isolated LCT and XDG directories.
+              It reports which run and command failed. Plugin authors should use
+              `mkdir -p`, verify valid existing clone destinations, skip tools
+              that are already installed, and preserve valid user files.
+
+              Validation sets `LCT_PLUGIN_VALIDATION=1` and
+              `LCT_PLUGIN_VALIDATION_RUN=1` or `2`, which CI can use to replace
+              network or host-level operations with deterministic test doubles.
+              The validator is not an operating-system sandbox, so review
+              untrusted plugins and use an isolated runner or container when a
+              plugin can write to absolute paths or execute system installers.
           - title: Install runnable modules
             content: |
               Modules are lightweight binaries or scripts linked into your PATH. Installation strategy is automatic (release asset, package manager, Makefile, manifest, or direct link):

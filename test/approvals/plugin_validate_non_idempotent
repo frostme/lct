@@ -1,0 +1,8 @@
+Validating plugin: non-idempotent
+Syntax check: passed
+Run 1/2: passed
+Run 2/2: failed (exit 1)
+Plugin output:
+mkdir: <VALIDATION_HOME>/.example-plugin: File exists
+Failed command: mkdir "$HOME/.example-plugin"
+❌ Plugin validation failed: non-idempotent main.sh failed on run 2
