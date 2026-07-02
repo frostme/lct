@@ -54,7 +54,7 @@ _lct_add_tracked_package() {
   local package="$2"
 
   MANAGER="$manager" PACKAGE="$package" yq -i '
-    .packages[strenv(MANAGER)] = ((.packages[strenv(MANAGER)] // []) + [strenv(PACKAGE)])
+    .packages[strenv(MANAGER)] = (((.packages[strenv(MANAGER)] // []) + [strenv(PACKAGE)]) | unique)
   ' "$LCT_CONFIG_FILE"
 }
 
