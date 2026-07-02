@@ -54,15 +54,15 @@ bootstrap_configs() {
   for lib in "${CONFIGS[@]}"; do
     source_dir="$REMOTE_CONFIGS_DIR/$lib"
     dest_path="$CONFIG_DIR/$lib"
-    if [[ ! -d "$source_dir" ]]; then
-      echo "❌ ERROR: Gathered config source ${source_dir} is missing or is not a directory." >&2
-      echo "Run 'lct gather --force' on the source machine, then rerun lct bootstrap." >&2
-      exit 1
-    elif [[ -d "$dest_path" && "$FORCE" == 0 ]]; then
+    if [[ -d "$dest_path" && "$FORCE" == 0 ]]; then
       echo "$lib config already exists; skipping"
     elif [[ -e "$dest_path" && ! -d "$dest_path" && "$FORCE" == 0 ]]; then
       echo "❌ ERROR: Config destination ${dest_path} exists and is not a directory." >&2
       echo "Rerun with --force to replace it." >&2
+      exit 1
+    elif [[ ! -d "$source_dir" ]]; then
+      echo "❌ ERROR: Gathered config source ${source_dir} is missing or is not a directory." >&2
+      echo "Run 'lct gather --force' on the source machine, then rerun lct bootstrap." >&2
       exit 1
     else
       echo "Applying $lib config"
@@ -215,7 +215,7 @@ bootstrap_projects() {
         echo "❌ ERROR: Destination path ${dest_dir} exists and is not a directory; cannot clone ${project}" >&2
         exit 1
       elif [[ -d "$dest_dir" ]]; then
-        if git -C "$dest_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        if [[ -e "$dest_dir/.git" ]]; then
           echo " - ${project} already exists; skipping"
           continue
         fi
