@@ -109,10 +109,26 @@ _lct_validate_package_manager_registry() {
     *) return 1 ;;
     esac
     [[ "$detect_commands" =~ ^[a-z0-9][a-z0-9,-]*$ ]] || return 1
-    [[ "$install_handler" =~ ^[a-z0-9][a-z0-9-]*$ ]] || return 1
-    [[ "$remove_handler" =~ ^[a-z0-9][a-z0-9-]*$ ]] || return 1
-    [[ "$export_handler" == "unsupported" || "$export_handler" =~ ^[a-z0-9][a-z0-9-]*$ ]] || return 1
-    [[ "$restore_handler" == "unsupported" || "$restore_handler" =~ ^[a-z0-9][a-z0-9-]*$ ]] || return 1
+
+    case "$install_handler" in
+    brew|apt|dnf|yum|zypper|pacman|aur|nix|asdf|flox|npm|pnpm|yarn|bun|cargo|cargo-binstall|pip|uv|gem|go|composer|winget|scoop|pkg|mise) ;;
+    *) return 1 ;;
+    esac
+
+    case "$remove_handler" in
+    brew|apt|dnf|yum|zypper|pacman|aur|nix|asdf|flox|npm|pnpm|yarn|bun|cargo|cargo-binstall|pip|uv|gem|go|composer|winget|scoop|pkg|mise) ;;
+    *) return 1 ;;
+    esac
+
+    case "$export_handler" in
+    unsupported|brew|pip|apt|dnf|yum|zypper|pacman|aur|nix|winget|pkg|mise) ;;
+    *) return 1 ;;
+    esac
+
+    case "$restore_handler" in
+    unsupported|brew|pip|apt|dnf|yum|zypper|pacman|aur|nix|winget|pkg|mise) ;;
+    *) return 1 ;;
+    esac
 
     if [[ "$export_handler" == "unsupported" || "$restore_handler" == "unsupported" ]]; then
       [[ "$export_handler" == "unsupported" && "$restore_handler" == "unsupported" ]] || return 1
