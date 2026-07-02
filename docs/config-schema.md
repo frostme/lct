@@ -72,3 +72,31 @@ bootstrap_order:
 
 A custom order must include every supported phase exactly once. LCT validates the
 list and prints the resolved order before running any phase.
+
+## Package-manager model
+
+`packageManager` selects the preferred manager for package gather and bootstrap
+flows. Internally, LCT models managers in a registry with three categories:
+
+- `system` — top-level operating-system package managers such as `brew` and `apt`.
+- `runtime` — runtime/toolchain managers such as `mise`.
+- `language` — language ecosystem managers such as `pnpm`, `cargo`, `pip`, and `uv`.
+
+Dependencies use typed identifiers such as `runtime:node`, `runtime:rust`, and
+`runtime:python`. Unsupported bundle export or restore operations are recorded
+explicitly instead of being inferred from a missing implementation.
+
+| Manager | Category | Dependencies | Install/remove | Bundle export/restore |
+| --- | --- | --- | --- | --- |
+| `brew` | system | none | supported | supported |
+| `apt` | system | none | supported | supported |
+| `mise` | runtime | none | supported | supported |
+| `pnpm` | language | `runtime:node` | supported | unsupported |
+| `cargo` | language | `runtime:rust` | supported | unsupported |
+| `pip` | language | `runtime:python` | supported | supported |
+| `uv` | language | none | supported | unsupported |
+
+To add a manager, add a record to `src/lib/package_manager_registry.sh`, add the
+corresponding operation handlers to `src/lib/package_manager.sh`, and extend the
+registry tests and this table. Operation handler identifiers are dispatched by
+LCT and are never evaluated as shell input.

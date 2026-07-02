@@ -145,3 +145,25 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
       - modules
       - secrets
     packageManager: mise
+
+## Package-manager model
+
+LCT keeps package-manager metadata in an internal registry. The registry
+distinguishes **system**, **runtime**, and **language** managers, records typed
+dependencies such as **runtime:node**, and marks unavailable bundle operations
+as **unsupported**.
+
+| Manager | Category | Dependencies | Install/remove | Bundle export/restore |
+| --- | --- | --- | --- | --- |
+| **brew** | system | none | supported | supported |
+| **apt** | system | none | supported | supported |
+| **mise** | runtime | none | supported | supported |
+| **pnpm** | language | **runtime:node** | supported | unsupported |
+| **cargo** | language | **runtime:rust** | supported | unsupported |
+| **pip** | language | **runtime:python** | supported | supported |
+| **uv** | language | none | supported | unsupported |
+
+To add a manager, add one registry record, implement any supported operation
+handlers in **src/lib/package_manager.sh**, and extend the registry tests and
+this table. Registry operation fields are handler identifiers and are never
+evaluated as shell input.

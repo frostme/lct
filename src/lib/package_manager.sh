@@ -90,9 +90,15 @@ _lct_record_package() {
 _lct_install_library() {
   local manager="$1"
   local package="$2"
-  local target bin_dir
+  local target bin_dir install_handler
 
-  case "$manager" in
+  install_handler="$(_lct_package_manager_get "$manager" install_handler 2>/dev/null || true)"
+  if [[ -z "$install_handler" || "$install_handler" == "unsupported" ]]; then
+    printf "Unsupported package manager: %s\n" "$manager" >&2
+    return 1
+  fi
+
+  case "$install_handler" in
   brew)
     brew install "$package" &&
       brew bundle add "$package" --file="$LCT_BREW_FILE"
@@ -192,9 +198,15 @@ _lct_install_library() {
 _lct_remove_library() {
   local manager="$1"
   local package="$2"
-  local target
+  local target remove_handler
 
-  case "$manager" in
+  remove_handler="$(_lct_package_manager_get "$manager" remove_handler 2>/dev/null || true)"
+  if [[ -z "$remove_handler" || "$remove_handler" == "unsupported" ]]; then
+    printf "Unsupported package manager: %s\n" "$manager" >&2
+    return 1
+  fi
+
+  case "$remove_handler" in
   brew)
     brew uninstall "$package" &&
       brew bundle remove "$package" --file="$LCT_BREW_FILE"
@@ -289,61 +301,45 @@ _lct_remove_library() {
 
 _lct_package_bundle_filename() {
   local manager="$1"
-  case "$manager" in
-  brew) echo "Brewfile" ;;
-  pip) echo "requirements.txt" ;;
-  winget) echo "winget-packages.json" ;;
-  mise) echo "mise-packages.txt" ;;
-  nix) echo "nix-packages.txt" ;;
-  apt) echo "apt-packages.txt" ;;
-  dnf) echo "dnf-packages.txt" ;;
-  yum) echo "yum-packages.txt" ;;
-  zypper) echo "zypper-packages.txt" ;;
-  pacman) echo "pacman-packages.txt" ;;
-  aur) echo "aur-packages.txt" ;;
-  pkg) echo "pkg-packages.txt" ;;
-  *) echo "${manager}.packages" ;;
-  esac
+  local bundle_filename
+
+  bundle_filename="$(_lct_package_manager_get "$manager" bundle_filename 2>/dev/null || true)"
+  if [[ -z "$bundle_filename" || "$bundle_filename" == "unsupported" ]]; then
+    echo "${manager}.packages"
+  else
+    echo "$bundle_filename"
+  fi
 }
 
 _lct_package_bundle_known_files() {
-  cat <<'EOF'
-Brewfile
-requirements.txt
-packages.txt
-apt-packages.txt
-dnf-packages.txt
-yum-packages.txt
-zypper-packages.txt
-pacman-packages.txt
-aur-packages.txt
-pkg-packages.txt
-winget-packages.json
-mise-packages.txt
-nix-packages.txt
-EOF
+  local manager
+
+  while IFS= read -r manager; do
+    _lct_package_bundle_filename "$manager"
+  done < <(_lct_package_bundle_managers)
+
+  # Kept for compatibility with repositories produced by older LCT releases.
+  echo "packages.txt"
 }
 
 _lct_package_bundle_managers() {
-  cat <<'EOF'
-brew
-pip
-apt
-dnf
-yum
-zypper
-pacman
-aur
-pkg
-winget
-mise
-nix
-EOF
+  local manager export_handler restore_handler
+
+  while IFS= read -r manager; do
+    export_handler="$(_lct_package_manager_get "$manager" export_handler)" || continue
+    restore_handler="$(_lct_package_manager_get "$manager" restore_handler)" || continue
+    [[ "$export_handler" != "unsupported" && "$restore_handler" != "unsupported" ]] || continue
+    printf '%s\n' "$manager"
+  done < <(_lct_package_manager_names)
 }
 
 _lct_can_dump_package_bundle() {
   local manager="$1"
-  case "$manager" in
+  local export_handler
+
+  export_handler="$(_lct_package_manager_get "$manager" export_handler 2>/dev/null || true)"
+  [[ -n "$export_handler" && "$export_handler" != "unsupported" ]] || return 1
+  case "$export_handler" in
   brew) command -v brew >/dev/null 2>&1 ;;
   pip) command -v python >/dev/null 2>&1 || command -v pip >/dev/null 2>&1 ;;
   apt) command -v dpkg >/dev/null 2>&1 ;;
@@ -362,7 +358,11 @@ _lct_can_dump_package_bundle() {
 
 _lct_can_install_package_bundle() {
   local manager="$1"
-  case "$manager" in
+  local restore_handler
+
+  restore_handler="$(_lct_package_manager_get "$manager" restore_handler 2>/dev/null || true)"
+  [[ -n "$restore_handler" && "$restore_handler" != "unsupported" ]] || return 1
+  case "$restore_handler" in
   brew) command -v brew >/dev/null 2>&1 ;;
   pip) command -v python >/dev/null 2>&1 || command -v pip >/dev/null 2>&1 ;;
   apt) command -v apt-get >/dev/null 2>&1 ;;
@@ -387,11 +387,14 @@ _lct_read_bundle_packages() {
 _lct_install_package_bundle_from_file() {
   local manager="$1"
   local bundle_file="$2"
+  local restore_handler
   local -a packages=()
 
   [[ -f "$bundle_file" ]] || return 1
+  restore_handler="$(_lct_package_manager_get "$manager" restore_handler 2>/dev/null || true)"
+  [[ -n "$restore_handler" && "$restore_handler" != "unsupported" ]] || return 1
 
-  case "$manager" in
+  case "$restore_handler" in
   brew)
     brew bundle --file "$bundle_file"
     ;;
@@ -407,7 +410,7 @@ _lct_install_package_bundle_from_file() {
     if [[ ${#packages[@]} -eq 0 ]]; then
       return 0
     fi
-    case "$manager" in
+    case "$restore_handler" in
     apt) apt-get install -y "${packages[@]}" ;;
     dnf) dnf install -y "${packages[@]}" ;;
     yum) yum install -y "${packages[@]}" ;;
@@ -508,8 +511,12 @@ _lct_install_gathered_package_bundle() {
 _lct_dump_package_bundle() {
   local manager="$1"
   local output_file="$2"
+  local export_handler
 
-  case "$manager" in
+  export_handler="$(_lct_package_manager_get "$manager" export_handler 2>/dev/null || true)"
+  [[ -n "$export_handler" && "$export_handler" != "unsupported" ]] || return 1
+
+  case "$export_handler" in
   brew)
     HOMEBREW_NO_AUTO_UPDATE=1 \
       HOMEBREW_NO_INSTALL_CLEANUP=1 \
