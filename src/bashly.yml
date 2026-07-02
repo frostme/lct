@@ -66,6 +66,11 @@ x_markdown_footer: |-
       modules:
         - github.com/example/lct-module
         - github.com/example/lct-theme
+      packages:
+        brew:
+          - wget
+        pnpm:
+          - '@dotenvx/dotenvx'
       bootstrap_order:
         - packages
         - configs
@@ -96,6 +101,10 @@ x_markdown_footer: |-
   handlers in `src/lib/package_manager.sh`, and extend the registry tests and
   this table. Registry operation fields are handler identifiers and are never
   evaluated as shell input.
+
+  Tracked package lists are stored in the `packages` map in
+  `~/.config/lct/config.yaml`. Manage them with `lct package list`,
+  `lct package add`, and `lct package remove`.
 x_pages:
   title: LCT
   tagline: Local configuration tool
@@ -199,6 +208,7 @@ commands:
       - eval $(lct reload)
   - import: src/commands/plugin/plugin.yml
   - import: src/commands/project/project.yml
+  - import: src/commands/package/package.yml
   - import: src/commands/pages/pages.yml
   - name: completions
     help: |-
