@@ -85,6 +85,24 @@ properties:
     examples:
       - - frostme/lct
         - frostme/hmgmt-vibe
+  packages:
+    type: object
+    description: >-
+      Curated package lists keyed by a package manager registered with LCT.
+    propertyNames:
+      pattern: "^[a-z0-9][a-z0-9-]*$"
+    additionalProperties:
+      type: array
+      items:
+        type: string
+        minLength: 1
+      uniqueItems: true
+    default: {}
+    examples:
+      - brew:
+          - wget
+        pnpm:
+          - "@dotenvx/dotenvx"
   bootstrap_order:
     type: array
     description: >-
@@ -134,6 +152,7 @@ examples:
     plugins: []
     modules: []
     projects: []
+    packages: {}
     bootstrap_order:
       - packages
       - configs
@@ -165,6 +184,11 @@ examples:
     projects:
       - frostme/lct
       - frostme/hmgmt-vibe
+    packages:
+      brew:
+        - wget
+      pnpm:
+        - "@dotenvx/dotenvx"
     bootstrap_order:
       - packages
       - configs

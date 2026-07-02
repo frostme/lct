@@ -14,6 +14,7 @@ secrets: []
 plugins: []
 modules: []
 projects: []
+packages: {}
 bootstrap_order:
   - packages
   - configs
@@ -34,6 +35,7 @@ EOF
       .plugins = (.plugins // []) |
       .modules = (.modules // []) |
       .projects = (.projects // []) |
+      .packages = (.packages // {}) |
       .bootstrap_order = (.bootstrap_order // ["packages", "configs", "projects", "plugins", "modules", "secrets"]) |
       .encryptAliasFile = (.encryptAliasFile // false) |
       .encryptEnvFile = (.encryptEnvFile // false)
