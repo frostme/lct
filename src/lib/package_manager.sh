@@ -536,9 +536,9 @@ _lct_dump_package_bundle() {
   dnf | yum | zypper)
     if command -v rpm >/dev/null 2>&1; then
       rpm -qa --qf '%{NAME}\n' | sort -u >"$output_file"
-    elif [[ "$manager" == "dnf" ]]; then
+    elif [[ "$export_handler" == "dnf" ]]; then
       dnf list installed >"$output_file"
-    elif [[ "$manager" == "yum" ]]; then
+    elif [[ "$export_handler" == "yum" ]]; then
       yum list installed >"$output_file"
     else
       zypper search --installed-only >"$output_file"
