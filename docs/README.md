@@ -88,6 +88,7 @@ Base directory for local cache data.
 - [reload](lct%20reload.md) - Reload lct environment variables and aliases into the current shell
 - [plugin](lct%20plugin.md) - Develop and manage lct plugins
 - [project](lct%20project.md) - Manage tracked code projects
+- [package](lct%20package.md) - Manage tracked packages by package manager
 - [completions](lct%20completions.md) - Generate bash completions
 - [config](lct%20config.md) - Open your config files in your ${EDITOR:-editor}
 - [setup](lct%20setup.md) - Setup lct in your shell
@@ -137,6 +138,11 @@ The user config file at ~/.config/lct/config.yaml should conform to the LCT conf
     modules:
       - github.com/example/lct-module
       - github.com/example/lct-theme
+    packages:
+      brew:
+        - wget
+      pnpm:
+        - '@dotenvx/dotenvx'
     bootstrap_order:
       - packages
       - configs
@@ -167,3 +173,7 @@ To add a manager, add one registry record, implement any supported operation
 handlers in **src/lib/package_manager.sh**, and extend the registry tests and
 this table. Registry operation fields are handler identifiers and are never
 evaluated as shell input.
+
+Tracked package lists are stored in the **packages** map in
+**~/.config/lct/config.yaml**. Manage them with **lct package list**,
+**lct package add**, and **lct package remove**.

@@ -1,0 +1,27 @@
+❌ Unknown package manager: unknown
+Known package managers:
+  - brew
+  - pip
+  - apt
+  - dnf
+  - yum
+  - zypper
+  - pacman
+  - aur
+  - pkg
+  - winget
+  - mise
+  - nix
+  - asdf
+  - flox
+  - npm
+  - pnpm
+  - yarn
+  - bun
+  - cargo
+  - cargo-binstall
+  - uv
+  - gem
+  - go
+  - composer
+  - scoop

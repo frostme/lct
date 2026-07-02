@@ -100,3 +100,18 @@ To add a manager, add a record to `src/lib/package_manager_registry.sh`, add the
 corresponding operation handlers to `src/lib/package_manager.sh`, and extend the
 registry tests and this table. Operation handler identifiers are dispatched by
 LCT and are never evaluated as shell input.
+
+## Curated package lists
+
+The `packages` map is the explicit source of truth for packages tracked by each
+registered manager. Manage it through the CLI:
+
+```bash
+lct package list brew
+lct package add brew wget
+lct package remove brew wget
+lct package add pnpm '@dotenvx/dotenvx'
+```
+
+Duplicate additions are idempotent. Removing an untracked package leaves the
+list unchanged. Both cases print a concise status message and return success.

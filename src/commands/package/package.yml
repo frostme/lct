@@ -1,0 +1,32 @@
+name: package
+help: Manage tracked packages by package manager
+examples:
+  - lct package list brew
+  - lct package add brew wget
+  - lct package remove brew wget
+  - lct package add pnpm '@dotenvx/dotenvx'
+commands:
+  - name: list
+    help: List packages tracked for a package manager
+    args:
+      - name: manager
+        help: Registered package manager name
+        required: true
+  - name: add
+    help: Add a package to a manager-specific tracked list
+    args:
+      - name: manager
+        help: Registered package manager name
+        required: true
+      - name: package
+        help: Package name to track
+        required: true
+  - name: remove
+    help: Remove a package from a manager-specific tracked list
+    args:
+      - name: manager
+        help: Registered package manager name
+        required: true
+      - name: package
+        help: Package name to stop tracking
+        required: true
