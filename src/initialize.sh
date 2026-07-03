@@ -161,13 +161,12 @@ setup_directories() {
 }
 
 load_plugin_configs() {
+  local plugin plugin_name plugin_dir plugin_cache_dir
+
   for plugin in "${PLUGINS[@]}"; do
-    owner="$(echo "$plugin" | awk -F '[/.]' '{print $1}')"
-    repo="$(echo "$plugin" | awk -F '[/.]' '{print $2}')"
-    name="$(echo "$plugin" | awk -F '.' '{print $2}')"
-    plugin_dir="$LCT_PLUGINS_DIR/$owner-$repo${name:+-$name}"
-    plugin_cache_dir="$LCT_PLUGINS_CACHE_DIR/$owner/$repo"
-    [[ -n "$name" ]] && plugin_cache_dir="$plugin_cache_dir/plugins/$name"
+    plugin_parse_entry "$plugin" plugin_name _
+    plugin_dir="$(plugin_install_dir "$plugin_name")"
+    plugin_cache_dir="$(plugin_paths_for_entry "$LCT_PLUGINS_CACHE_DIR" "$plugin_name")"
 
     plugin_config="$plugin_dir/config.yaml"
     [[ -f "$plugin_config" ]] || plugin_config="$plugin_cache_dir/config.yaml"
