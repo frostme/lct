@@ -18,7 +18,11 @@ validate_local_plugin_idempotency() {
     return 1
   fi
 
-  bash_bin="$(command -v bash)"
+  bash_bin="${BASH:-$(command -v bash 2>/dev/null)}"
+  if [[ -z "$bash_bin" ]]; then
+    echo "❌ ERROR: No Bash binary could be resolved" >&2
+    return 1
+  fi
   if ! syntax_output="$("$bash_bin" -n "$entrypoint" 2>&1)"; then
     echo "Validating plugin: $plugin_name"
     echo "Syntax check: failed"
@@ -31,6 +35,7 @@ validate_local_plugin_idempotency() {
     echo "❌ ERROR: Unable to create a temporary plugin validation directory" >&2
     return 1
   fi
+  trap 'rm -rf -- "$validation_root"' RETURN
   validation_home="$validation_root/home"
   validation_plugin_dir="$validation_root/plugin"
   validation_entrypoint="$validation_plugin_dir/main.sh"
@@ -44,13 +49,11 @@ validate_local_plugin_idempotency() {
     "$validation_home/code" \
     "$validation_root/tmp"; then
     echo "❌ ERROR: Unable to initialize temporary plugin validation directories" >&2
-    rm -rf -- "$validation_root"
     return 1
   fi
 
   if ! cp -R "$plugin_dir" "$validation_plugin_dir"; then
     echo "❌ ERROR: Unable to copy the plugin into the temporary validation directory" >&2
-    rm -rf -- "$validation_root"
     return 1
   fi
 
@@ -66,7 +69,6 @@ source "$LCT_PLUGIN_ENTRYPOINT"
 EOF
   then
     echo "❌ ERROR: Unable to create the temporary plugin validation runner" >&2
-    rm -rf -- "$validation_root"
     return 1
   fi
 
@@ -122,10 +124,8 @@ EOF
       cat "$log_file" >&2
     fi
     echo "❌ Plugin validation failed: $plugin_name main.sh failed on run $run_number" >&2
-    rm -rf -- "$validation_root"
     return 1
   done
 
-  rm -rf -- "$validation_root"
   echo "✅ Plugin validation passed: $plugin_name main.sh completed twice"
 }
