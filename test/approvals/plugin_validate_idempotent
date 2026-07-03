@@ -1,0 +1,5 @@
+Validating plugin: idempotent
+Syntax check: passed
+Run 1/2: passed
+Run 2/2: passed
+✅ Plugin validation passed: idempotent main.sh completed twice
