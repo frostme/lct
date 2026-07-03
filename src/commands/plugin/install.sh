@@ -4,14 +4,6 @@ force_install=${args[--force]:-0}
 PLUGIN_INSTALL_FORCE="$force_install"
 lct_log_debug "plugin install command started (plugin=${plugin:-<all>}, version=${requested_version:-<configured>}, force=${force_install})"
 
-rewrite_config_plugins() {
-  local plugin_entries=("$@")
-  yq -i '.plugins = []' "$LCT_CONFIG_FILE"
-  for plugin_entry in "${plugin_entries[@]}"; do
-    FIELD_VALUE="$plugin_entry" yq -i '.plugins += [env(FIELD_VALUE)]' "$LCT_CONFIG_FILE"
-  done
-}
-
 if [[ -n "$plugin" ]]; then
   plugin_cli_ref_parse "$plugin" plugin_name cli_version
   if [[ -n "$requested_version" && -n "$cli_version" ]]; then

@@ -3,14 +3,6 @@ plugin_cli_ref_parse "$plugin" plugin_name _
 plugin_slug=$(plugin_key_slug "$plugin_name")
 plugin_dir="$(plugin_install_dir "$plugin_name")"
 
-rewrite_config_plugins() {
-  local plugin_entries=("$@")
-  yq -i '.plugins = []' "$LCT_CONFIG_FILE"
-  for plugin_entry in "${plugin_entries[@]}"; do
-    FIELD_VALUE="$plugin_entry" yq -i '.plugins += [env(FIELD_VALUE)]' "$LCT_CONFIG_FILE"
-  done
-}
-
 if [[ ! -d "$plugin_dir" ]]; then
   echo "❌ ERROR: Plugin '${plugin_name}' is not installed." >&2
   exit 1

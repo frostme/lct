@@ -242,3 +242,11 @@ load_plugins() {
     fi
   done
 }
+
+rewrite_config_plugins() {
+  local plugin_entries=("$@")
+  yq -i '.plugins = []' "$LCT_CONFIG_FILE"
+  for plugin_entry in "${plugin_entries[@]}"; do
+    FIELD_VALUE="$plugin_entry" yq -i '.plugins += [env(FIELD_VALUE)]' "$LCT_CONFIG_FILE"
+  done
+}

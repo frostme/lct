@@ -23,10 +23,26 @@ updated_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 }
 
+plugin_connect_timeout() {
+  local timeout="${LCT_PLUGIN_CONNECT_TIMEOUT:-10}"
+  if [[ ! "$timeout" =~ ^[0-9]+$ || "$timeout" -le 0 ]]; then
+    timeout=10
+  fi
+  printf '%s\n' "$timeout"
+}
+
+plugin_network_timeout() {
+  local timeout="${LCT_PLUGIN_NETWORK_TIMEOUT:-45}"
+  if [[ ! "$timeout" =~ ^[0-9]+$ || "$timeout" -le 0 ]]; then
+    timeout=45
+  fi
+  printf '%s\n' "$timeout"
+}
+
 plugin_git() {
   local ssh_command connect_timeout network_timeout
-  connect_timeout="${LCT_PLUGIN_CONNECT_TIMEOUT:-10}"
-  network_timeout="${LCT_PLUGIN_NETWORK_TIMEOUT:-45}"
+  connect_timeout="$(plugin_connect_timeout)"
+  network_timeout="$(plugin_network_timeout)"
   ssh_command="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes -o ConnectTimeout=${connect_timeout}}"
 
   env \
@@ -186,7 +202,7 @@ plugin_installation() {
     if [[ ! -d "$plugin_cache_root/.git" ]]; then
       [[ -d "$plugin_cache_root" ]] && rm -rf -- "$plugin_cache_root"
       mkdir -p "$(dirname "$plugin_cache_root")"
-      gum_spinner "Cloning $(basename "$plugin_cache_root")" git clone "$repo_url" "$plugin_cache_root" >/dev/null 2>&1 ||
+      gum_spinner "Cloning $(basename "$plugin_cache_root")" plugin_git clone "$repo_url" "$plugin_cache_root" >/dev/null 2>&1 ||
         {
           echo "❌ ERROR: Unable to clone repository $repo_url" >&2
           exit 1
