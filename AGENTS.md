@@ -164,6 +164,24 @@ For user-visible CLI behavior changes, also run manual smoke tests for the affec
 - Update docs when behavior changes.
 - Keep generated artifacts out of git unless explicitly intended.
 
+### 4.5 Complete the work
+
+When the requested work is complete:
+
+1. Ensure the working tree only contains intentional changes.
+2. Run the appropriate verification commands and record what passed, failed, or could not be run.
+3. Commit the completed work to the task branch with a concise, descriptive message.
+4. Push the branch to `origin`.
+5. Open a pull request against `main` unless the user explicitly asked for a different base branch.
+
+The pull request should include:
+
+- a summary of the change
+- the verification commands and results
+- any assumptions, risks, or follow-up work
+
+Do not leave completed work only as an uncommitted local diff unless the user explicitly asks for that workflow.
+
 ## 5) Coding standards: Bash
 
 ### 5.1 Portability targets
