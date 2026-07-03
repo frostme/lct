@@ -35,7 +35,7 @@ validate_local_plugin_idempotency() {
     echo "❌ ERROR: Unable to create a temporary plugin validation directory" >&2
     return 1
   fi
-  trap 'rm -rf -- "$validation_root"' RETURN
+  trap '[[ -n "${validation_root:-}" ]] && rm -rf -- "$validation_root"' RETURN
   validation_home="$validation_root/home"
   validation_plugin_dir="$validation_root/plugin"
   validation_entrypoint="$validation_plugin_dir/main.sh"
