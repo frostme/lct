@@ -202,11 +202,10 @@ plugin_installation() {
     if [[ ! -d "$plugin_cache_root/.git" ]]; then
       [[ -d "$plugin_cache_root" ]] && rm -rf -- "$plugin_cache_root"
       mkdir -p "$(dirname "$plugin_cache_root")"
-      gum_spinner "Cloning $(basename "$plugin_cache_root")" plugin_git clone "$repo_url" "$plugin_cache_root" >/dev/null 2>&1 ||
-        {
-          echo "❌ ERROR: Unable to clone repository $repo_url" >&2
-          exit 1
-        }
+      if ! plugin_git clone "$repo_url" "$plugin_cache_root" >/dev/null 2>&1; then
+        echo "❌ ERROR: Unable to clone repository $repo_url" >&2
+        exit 1
+      fi
     fi
 
     if ! plugin_git -C "$plugin_cache_root" fetch --quiet --tags; then
