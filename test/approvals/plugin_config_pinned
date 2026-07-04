@@ -1,0 +1,8 @@
+remote: null
+configs: []
+dotfiles: []
+other: []
+plugins:
+  - example/lct-plugins.demo = 'v1.0.0'
+modules: []
+projects: []

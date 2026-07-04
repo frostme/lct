@@ -23,15 +23,19 @@ lct p i owner/plugin
 ```
 
 ```bash
+lct plugin install owner/plugin@v1.2.3
+```
+
+```bash
 lct plugin validate ./plugins/example
 ```
 
 ## Commands
 
 - [init](lct%20plugin%20init.md) - Initiate plugin for the current directory
-- [install](lct%20plugin%20install.md) - Install an lct plugin from the registry (cached and refreshed automatically)
+- [install](lct%20plugin%20install.md) - Install an lct plugin from the registry, optionally pinned to a version or tag
 - [remove](lct%20plugin%20remove.md) - Remove an installed lct plugin
-- [list](lct%20plugin%20list.md) - List all installed lct plugins
+- [list](lct%20plugin%20list.md) - List all installed lct plugins with their installed versions
 - [load](lct%20plugin%20load.md) - Load insalled lct plugins
 - [validate](lct%20plugin%20validate.md) - Validate that a local plugin can run repeatedly
 

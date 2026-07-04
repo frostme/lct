@@ -4,26 +4,35 @@ help: Develop and manage lct plugins
 examples:
   - lct plugin install
   - lct p i owner/plugin
+  - lct plugin install owner/plugin@v1.2.3
   - lct plugin validate ./plugins/example
 commands:
   - name: init
     help: Initiate plugin for the current directory
   - name: install
     alias: i
-    help: Install an lct plugin from the registry (cached and refreshed automatically)
+    help: Install an lct plugin from the registry, optionally pinned to a version or tag
+    flags:
+      - long: --version
+        short: -V
+        arg: version
+        help: Install or pin the plugin to a specific version or tag
+      - long: --force
+        short: -f
+        help: Refresh the cached repository and reinstall the plugin
     args:
       - name: plugin
-        help: Name of the plugin to install
+        help: Name of the plugin to install, optionally suffixed with @version
   - name: remove
     help: Remove an installed lct plugin
     completions:
-      - $(yq '.plugins | .[]' $LCT_CONFIG_FILE 2>/dev/null)
+      - $(yq -r '.plugins[]? | split("=")[0] | sub("\\s+$"; "")' $LCT_CONFIG_FILE 2>/dev/null)
     args:
       - name: plugin
         help: Name of the plugin to remove
         required: true
   - name: list
-    help: List all installed lct plugins
+    help: List all installed lct plugins with their installed versions
   - name: load
     help: Load insalled lct plugins
   - name: validate
